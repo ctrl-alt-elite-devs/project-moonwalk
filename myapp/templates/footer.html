@@ -1,0 +1,26 @@
+{% extends "base.html"}
+
+{% block footer %}
+
+<head>
+    <link rel="stylesheet" href="footer.css">
+</head>
+
+<footer>
+    <p>SIGN UP FOR MORE</p>
+    <label for="phoneNum"></label>
+    <label for="emailAddress"></label>
+
+    <input type="text" id="emailAddress" value='Your email address' autocomplete="on">
+    <button type="button">SUBSCRIBE</button>
+
+    <input type="text" id="phoneNum" value="Your phone number" autocomplete="on">
+    <button type="button">SUBSCRIBE</button>
+
+    <small>Copyright © 2024 MoonWalk Threads - All Rights Reserved.</small>
+    <small>Privacy Policy</small>
+    <small>Terms & Conditions</small>
+
+</footer>
+
+{% endblock %}

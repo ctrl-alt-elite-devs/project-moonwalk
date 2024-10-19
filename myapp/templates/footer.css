@@ -1,0 +1,70 @@
+footer {
+    background-color: #F46471;
+    font-family: 'Cobito', monospace;
+    font-style: normal;
+    text-align: center;
+
+}
+
+#header {
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 24px;
+    display: flex;
+    letter-spacing: 0.15px;
+    color: #000000;
+    margin: auto
+}
+
+#phoneNum {
+    box-sizing: border-box;
+
+    width: 255px;
+    height: 29px;
+    left: 17px;
+    bottom: 139px;
+
+    border: 1px solid #000000;
+    border-radius: 5px;
+}
+
+#emailAddress {
+    box-sizing: border-box;
+
+    width: 255px;
+    height: 29px;
+    left: 17px;
+    bottom: 139px;
+
+    border: 1px solid #000000;
+    border-radius: 5px;
+}
+
+/* Subscribe button */
+button {
+    /*width: 102px;
+    height: 29px;
+    left: 280px;
+    top: 1372px; */
+    font-family: 'Roboto Mono', monospace;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 16px;
+    display: flex;
+    margin: auto;
+    text-align: center;
+    letter-spacing: 0.5px;
+
+    color: #F46471;
+
+    /* Button */
+    /*width: 102px;*/
+
+    background: #000000;
+    border-radius: 5px;
+}
+
+
+
+
