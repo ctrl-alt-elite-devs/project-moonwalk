@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart View</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}" />
+</head>
+<body>
+    <div class="cart-container">
+        <!-- Timer Section -->
+        <div class="timer">
+            <h2>Time Left to Buy Items</h2>
+            <div class="countdown">
+                <div><span>00</span> Days</div>
+                <div><span>00</span> Hrs</div>
+                <div><span>00</span> Mins</div>
+                <div><span>00</span> Secs</div>
+            </div>
+        </div>
+
+        <!-- Cart Items Section -->
+        <div class="cart-items">
+            <div class="cart-item">
+                <img src="{% static 'photos/ItemImage1.png' %}" alt="Item 1">
+                <div class="item-details">
+                    <h3>&lt;Name of item&gt;</h3>
+                    <p>Price: $XX.XX | Size: XX</p>
+                </div>
+                <div class="remove-item">
+                    <button class="remove-btn">
+                        <img src="{% static 'icons/Trash1.svg' %}" alt="Remove" class="trash-icon">
+                    </button>
+                </div>
+            </div>
+
+            <div class="cart-item">
+                <img src="{% static 'photos/ItemImage2.png' %}" alt="Item 2">
+                <div class="item-details">
+                    <h3>&lt;Name of item&gt;</h3>
+                    <p>Price: $XX.XX | Size: XX</p>
+                </div>
+                <div class="remove-item">
+                    <button class="remove-btn">
+                        <img src="{% static 'icons/Trash1.svg' %}" alt="Remove" class="trash-icon">
+                    </button>
+                </div>
+            </div>
+
+            <div class="cart-item">
+                <img src="{% static 'photos/ItemImage3.png' %}" alt="Item 3">
+                <div class="item-details">
+                    <h3>&lt;Name of item&gt;</h3>
+                    <p>Price: $XX.XX | Size: XX</p>
+                </div>
+                <div class="remove-item">
+                    <button class="remove-btn">
+                        <img src="{% static 'icons/Trash1.svg' %}" alt="Remove" class="trash-icon">
+                    </button>
+                </div>
+            </div>
+
+            <div class="cart-item">
+                <img src="{% static 'photos/ItemImage4.png' %}" alt="Item 4">
+                <div class="item-details">
+                    <h3>&lt;Name of item&gt;</h3>
+                    <p>Price: $XX.XX | Size: XX</p>
+                </div>
+                <div class="remove-item">
+                    <button class="remove-btn">
+                        <img src="{% static 'icons/Trash1.svg' %}" alt="Remove" class="trash-icon">
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Section -->
+        <div class="total-section">
+            <p>Items: <span>$102.96</span></p>
+            <p>Shipping: <span>$5.48</span></p>
+            <p>Taxes & Fees: <span>$1.03</span></p>
+            
+            <!-- Custom divider -->
+            <div class="divider"></div>
+        
+            <p><strong>Total: <span>$109.47</span></strong></p>
+        </div>
+
+        <!-- Checkout Button -->
+        <div class="checkout">
+            <button>CHECKOUT</button>
+        </div>
+    </div>
+</body>
+{% endblock %}
