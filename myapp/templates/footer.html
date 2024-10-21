@@ -1,21 +1,30 @@
-{% extends "base.html"}
-
-{% block footer %}
-
+<html>
 <head>
     <link rel="stylesheet" href="footer.css">
 </head>
 
+<body>
 <footer>
     <p>SIGN UP FOR MORE</p>
     <label for="phoneNum"></label>
     <label for="emailAddress"></label>
 
-    <input type="text" id="emailAddress" value='Your email address' autocomplete="on">
-    <button type="button">SUBSCRIBE</button>
+    <div>
+        <input type="text" id="emailAddress" value='Your email address' autocomplete="on">
+        <button type="button">SUBSCRIBE</button>
 
-    <input type="text" id="phoneNum" value="Your phone number" autocomplete="on">
-    <button type="button">SUBSCRIBE</button>
+        <input type="text" id="phoneNum" value="Your phone number" autocomplete="on">
+        <button type="button" class="button">SUBSCRIBE</button>
+    </div>
+
+    <a href="https://www.instagram.com/moonwalkthreads/?hl=en">
+        <img src="img.png">
+    </a>
+    <div class="icon">
+        <div class="instagram">
+            <img>
+        </div>
+    </div>
 
     <small>Copyright © 2024 MoonWalk Threads - All Rights Reserved.</small>
     <small>Privacy Policy</small>
@@ -23,4 +32,6 @@
 
 </footer>
 
-{% endblock %}
+</body>
+</html>
+

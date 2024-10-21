@@ -3,12 +3,13 @@ footer {
     font-family: 'Cobito', monospace;
     font-style: normal;
     text-align: center;
-
 }
+
+
 
 #header {
     font-weight: 700;
-    font-size: 16px;
+    font-size: 24px;
     line-height: 24px;
     display: flex;
     letter-spacing: 0.15px;
@@ -19,20 +20,20 @@ footer {
 #phoneNum {
     box-sizing: border-box;
 
-    width: 255px;
-    height: 29px;
-    left: 17px;
-    bottom: 139px;
+    min-width: 255px;
+    min-height: 29px;
 
     border: 1px solid #000000;
     border-radius: 5px;
+
+    align-self: center;
 }
 
 #emailAddress {
     box-sizing: border-box;
 
-    width: 255px;
-    height: 29px;
+    min-width: 255px;
+    min-height: 29px;
     left: 17px;
     bottom: 139px;
 
@@ -42,10 +43,7 @@ footer {
 
 /* Subscribe button */
 button {
-    /*width: 102px;
-    height: 29px;
-    left: 280px;
-    top: 1372px; */
+    align-self: end;
     font-family: 'Roboto Mono', monospace;
     font-style: normal;
     font-weight: 500;
@@ -58,13 +56,20 @@ button {
 
     color: #F46471;
 
-    /* Button */
-    /*width: 102px;*/
-
     background: #000000;
+    border: none;
     border-radius: 5px;
+    min-width: 102px;
+    min-height: 29px;
+    padding: 5px;
 }
 
+div  {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    align-items: center;
+    gap: 5px;
+}
 
 
 
