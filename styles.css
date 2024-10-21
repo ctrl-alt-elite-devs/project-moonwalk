@@ -1,0 +1,78 @@
+:root{
+    --background_color: #F46471;
+    --font: Roboto;
+    --visibile: True;
+    --font_color_title: #FFFFFF;
+    --font_color_timer: #000000;
+    --drop_title: "Spooky Holloween Apparel"
+}
+
+.image{
+    justify-content: center;
+    transform: translateX(500px);
+    padding: none;
+    margin: none;
+    border: none;
+}
+
+.img_banner{
+    justify-content: center;
+    display: block;
+}
+
+.drop_title{
+    transform: translateY(1.25rem);
+    height: 1.5rem;
+    -webkit-text-stroke-color: #000000;
+    -webkit-text-stroke-width: 0.03125rem;
+}
+
+
+.timer_banner{
+    height: 8.25rem;
+    display: block;
+    margin: none;
+    padding: none;
+    border: none;
+    text-align: center;
+    background-color: var(--background_color);
+    font-family: var(--font);
+    color: var(--font_color_title);
+    font-weight: medium;
+    font-size: 1.125rem;    
+}
+
+.countdown{
+    color: var(--font_color_timer);
+    font-weight: medium;
+    position: relative;
+}
+
+.labels{
+    color: var(--font_color_timer);
+    display: flex;
+    justify-content: center;
+    font-weight: normal;
+    font-size: 0.6rem;
+    transform: translateY(-1.875rem);
+    gap: 1.8rem;
+    position: relative;
+}
+
+.days{
+    transform: translateX(-0.38rem);
+}
+
+.seconds{
+    transform: translateX(0.38rem);
+}
+
+.minutes{
+    transform: translateX(0.2rem);
+}
+
+.hours{
+    transform: translateX(-0.1rem);
+}
+
+
