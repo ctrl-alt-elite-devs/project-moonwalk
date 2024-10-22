@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MoonWalk Threads{% endblock %}</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <!-- Load static files -->
+    {% load static %}
+
+    <!-- Link to your custom CSS file -->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/footer.css' %}">
+    
+</head>
+<body>
+    <header>
+        <div class="brand-header">
+            <img src="{% static 'images/logo.png' %}" alt="MoonWalk Threads Logo" class="brand-logo">
+        </div>
+    </header>
+    <!-- NavBar -->
+    <div class="navbar">
+        <ul class="links">
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="{% url 'about' %}">About</a></li>
+            <li><a href="{% url 'contact' %}">Contact</a></li>
+        </ul>
+        <div class="toggle_btn">
+            <i class="fa-solid fa-bars"></i>
+        </div>
+        <div class="cart_btn">
+            <i class="fa-solid fa-cart-shopping"></i>
+        </div>
+        <div class="profile_btn">
+            <i class="fa-solid fa-user"></i>
+        </div>
+    </div>
+    <div class="dropdown">
+        <li><a href="{% url 'home' %}">Home</a></li>
+        <li><a href="{% url 'about' %}">About</a></li>
+        <li><a href="{% url 'contact' %}">Contact</a></li>
+        <li><a href="#" class="action_btn">Login</a></li>
+    </div>
+
+    {% block content %}
+    {% endblock %}
+
+    <footer>
+        <p>SIGN UP FOR MORE</p>
+        <label for="phoneNum"></label>
+        <label for="emailAddress"></label>
+        
+        <div>
+            <input type="text" id="emailAddress" value='Your email address' autocomplete="on">
+            <button type="button">SUBSCRIBE</button>
+        
+            <input type="text" id="phoneNum" value="Your phone number" autocomplete="on">
+            <button type="button" class="button">SUBSCRIBE</button>
+        </div>
+        
+        <a href="https://www.instagram.com/moonwalkthreads/?hl=en">
+            <img src="{% static 'images/img.png' %}">
+        </a>
+        <div class="icon">
+            <div class="instagram">
+                <img>
+            </div>
+        </div>
+        
+        <small>Copyright © 2024 MoonWalk Threads - All Rights Reserved.</small>
+        <small>Privacy Policy</small>
+        <small>Terms & Conditions</small>
+        
+    </footer>
+
+    <script>
+        const toggleBtn = document.querySelector('.toggle_btn')
+        const toggleBtnIcon = document.querySelector('.toggle_btn i')
+        const dropDownMenu = document.querySelector('.dropdown')
+
+        toggleBtn.onclick = function () {
+            dropDownMenu.classList.toggle('open')
+        }
+    </script>
+</body>
+</html>
