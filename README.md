@@ -23,5 +23,5 @@ The moonwalk folder is the global settings for the entire project.
 The myapp folder is the main application code for all of our pages.
 
 The current html files within templates folder are all of the available pages
-all of which extend the navbar created in base.html, anything added to this file will 
+all of which extend the navbar created in base.html, anything added to this file will
 appear on all pages that extend it.
