@@ -1,5 +1,42 @@
 {% extends 'base.html' %}
+{% load static %}
+
 {% block title %}Home{% endblock %}
+
+
 {% block content %}
-<h1>Welcome to the Home Page</h1>
+
+<!-- Banner -->
+<div class="img_banner">
+    <img src="{% static 'images/img_banner.png' %}" alt="Banner Image">
+</div>
+
+<div class="timer_banner">
+    <div class="drop_title">
+        <p>
+            Fall Apparel
+        </p>
+    </div>
+    <div class="countdown">
+        <p>
+            00 &nbsp;&nbsp;: &nbsp;&nbsp;00 &nbsp;&nbsp;: &nbsp;&nbsp;00 &nbsp;&nbsp;: &nbsp;&nbsp;00
+        </p>
+    </div>
+    <div class="labels">
+        <div class="days">
+            <p>Days</p>
+        </div>
+        <div class="hours">
+            <p>Hrs</p>
+        </div>
+        <div class="minutes">
+            <p>Mins</p>
+        </div>
+        <div class="seconds">
+            <p>Secs</p>
+        </div>
+    </div>
+</div>
+
+<p> Home Page </p>
 {% endblock %}
