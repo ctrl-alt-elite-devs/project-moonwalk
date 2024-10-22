@@ -1,6 +1,6 @@
 /* styles.css */
 
-:root {
+* {
     --background_color: #F46471;
     --font: Roboto;
     --visibile: True;
@@ -12,14 +12,29 @@
 .img_banner {
     display: flex;
     justify-content: center;
-    width: 100%;
     overflow: hidden;
 }
 
 .img_banner img {
     width: 100%;
+    max-width: 1200px;
     height: auto;
     object-fit: cover;
+}
+
+.timer_banner {
+    width: 100%;
+    height: 90px;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    display: block;
+    background-color: var(--background_color);
+    font-family: var(--font);
+    color: var(--font_color_title);
+    font-weight: medium;
+    font-size: 1.125rem;
 }
 
 .drop_title {
@@ -28,49 +43,49 @@
     justify-content: center;
 }
 
-.timer_banner {
-    height: 8.25rem;
-    display: block;
-    text-align: center;
-    background-color: var(--background_color);
-    font-family: var(--font);
-    color: var(--font_color_title);
-    font-weight: medium;
-    font-size: 1.125rem;
-}
-
+/* Countdown container */
 .countdown {
-    color: var(--font_color_timer);
-    font-weight: medium;
     display: flex;
-    justify-content: center;
+    flex-direction: column /* Align time units in a row */
 }
 
+/* Container for each time unit */
+.time-unit {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 0 0.5rem;
+}
+
+/* Style for numbers */
+.number {
+    font-size: 1.5rem;
+    color: var(--font_color_timer);
+    font-weight: bold;
+}
+
+/* Style for labels */
+.label {
+    font-size: .9rem;
+    color: var(--font_color_timer);
+    text-align: center;
+}
+
+/* Style for colons */
+.colon {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--font_color_timer);
+    margin: 0 0.2rem;
+}
+
+/* Adjust the layout for labels under time units */
 .labels {
-    color: var(--font_color_timer);
     display: flex;
     justify-content: center;
-    font-weight: normal;
-    font-size: .8rem;
-    gap: .8rem;
-
+    padding-left: 1rem;
 }
 
-.days {
-    transform: translateX(-0.38rem);
-}
-
-.seconds {
-    transform: translateX(0.38rem);
-}
-
-.minutes {
-    transform: translateX(0.2rem);
-}
-
-.hours {
-    transform: translateX(-0.1rem);
-}
 
 /* Style for header brand image */
 .brand-header {
@@ -88,93 +103,191 @@
 
 /* Custom navbar styles*/
 .navbar {
+    width: 100%;
+    height: 60px;
+    max-width: 1200px;
+    margin: 0 auto;
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    padding: 1rem;
     background-color: #F46471;
-    border-bottom: 1px solid #e5e5e5;
     font-family: 'Cobito', monospace;
-}
-
-.navbar-toggler {
-    display: none; /* This will be for mobile view; can add styles for toggler later */
-    cursor: pointer;
-}
-
-.navbar-toggler-icon {
-    background-color: #000;
-    width: 30px;
-    height: 3px;
-    display: block;
+    align-items: center;
     position: relative;
 }
 
-.navbar-toggler-icon::before,
-.navbar-toggler-icon::after {
-    content: '';
-    width: 30px;
-    height: 3px;
-    background-color: #000;
+.navbar .links {
+    display: flex;
+    gap: 2rem;
+}
+
+.navbar .toggle_btn {
+    color: #000;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: none;
     position: absolute;
-    left: 0;
+    left: 1rem;
+}
+.navbar .toggle_btn:hover {
+    scale: 1.05
 }
 
-.navbar-toggler-icon::before {
-    top: -10px;
+.navbar .cart_btn {
+    color: #000;
+    font-size: 1.5rem;
+    cursor: pointer;
+    position: absolute;
+    right: 3rem;
 }
 
-.navbar-toggler-icon::after {
-    top: 10px;
+.navbar .cart_btn:hover {
+    scale: 1.05;
 }
 
-.navbar-collapse {
-    display: flex;
-    justify-content: flex-end;
+.navbar .profile_btn {
+    color: #000;
+    font-size: 1.5rem;
+    cursor: pointer;
+    position: absolute;
+    right: .5rem;
 }
 
-.navbar-nav {
-    display: flex;
+.navbar .profile_btn:hover {
+    scale: 1.05;
+}
+
+.action_btn {
+    background-color: #000;
+    color: white;
+    padding: .5rem 1rem;
+    border: none;
+    outline: none;
+    border-radius: 20px;
+    font-size: .8rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: scale 0.2 ease;
+}
+.action_btn:hover {
+    scale: 1.05;
+
+}
+
+.action_btn:active {
+    scale: .95;
+    
+}
+
+.navbar .links li {
     list-style: none;
-    margin: 0;
-    padding: 0;
 }
 
-.nav-item {
-    margin-right: 1rem;
-}
-
-.nav-link {
+a {
     font-size: 1rem;
     color: #000;
     text-decoration: none;
 }
 
-.nav-link:hover {
-    color: #007bff; /* Hover color for links */
+a:hover {
+    color: #ffffff; /* Hover color for links */
 }
 
-.navbar-expand-lg {
-    flex-wrap: nowrap;
+/*Dropdown menu styling*/
+.dropdown {
+    display: none;
+    position: absolute;
+    top: 100px;
+    height: 0;
+    width: 300px;
+    background: #F46471;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: height .2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.dropdown.open{
+    height: 180px;
+}
+
+.dropdown li {
+    padding: .7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Mobile styling (for responsive layout) */
 @media (max-width: 992px) {
-    .navbar-collapse {
+    .navbar .links,
+    .navbar .action_btn{
         display: none;
+        padding: .5rem 1rem;
     }
 
-    .navbar-toggler {
+    .navbar .toggle_btn{
+        display: block;
+        
+    }
+
+    .dropdown {
         display: block;
     }
 
-    .navbar-collapse.show {
-        display: flex;
-        flex-direction: column;
+    iframe {
+        width: 70%; /* Adjust map size for larger screens */
+        height: 400px;
     }
+}
 
-    .nav-item {
-        margin-right: 0;
-        margin-bottom: 0.5rem;
+@media (max-width: 576px) {
+    .dropdown {
+        left: 2rem;
+        width: unset;
     }
+}
+
+
+h1 {
+    text-align: left;
+    font-size: 22px;
+    margin-top: 20px;
+}
+
+h2 {
+    font-size: 18px;
+    margin-top: 10px;
+}
+
+/* Contact Information Styling */
+.contact-info h2, .contact-info p {
+    text-align: left;
+    margin: 10px 0;
+}
+
+
+.hours {
+    text-align: left;
+    margin: 20px 0;
+}
+
+.hours ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.hours li {
+    font-size: 14px;
+    padding: 3px 0;
+    padding-left: 50px;
+}
+
+/* Map Styling*/
+iframe {
+    width: 100%;
+    height: 300px;
+    border: 0;
+    margin: 20px 0;
+    border-radius: 15px;
+    overflow: hidden;
 }
