@@ -3,6 +3,8 @@ footer {
     font-family: 'Cobito', monospace;
     font-style: normal;
     text-align: center;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 
@@ -64,11 +66,14 @@ button {
     padding: 5px;
 }
 
+
 div  {
     display: grid;
     grid-template-columns: 2fr 1fr;
     align-items: center;
     gap: 5px;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 
