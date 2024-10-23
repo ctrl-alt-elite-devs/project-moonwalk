@@ -48,7 +48,7 @@ In a terminal within your project directory run the following to update your loc
 
     git fetch
 
-Once local repo has been fully updated run
+Once local repo has been fully updated run the following to bring code from another branch into your current working branch:
 
     git merge origin/<branch-name>
 
