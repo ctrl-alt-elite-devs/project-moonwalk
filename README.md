@@ -30,13 +30,13 @@ appear on all pages that extend it.
 
 # Git commands
 
-### Save progress to repo manually with git bash
+Save progress to repo manually with git bash
 
     git add .
 
     git commit -m "your message"
 
-    git push origin main
+    git push origin/main
 
 If you have already set up the upstream
 
