@@ -1,5 +1,8 @@
 /* styles.css */
 
+body {
+    margin: 0;
+}
 * {
     --background_color: #F46471;
     --font: Roboto;
@@ -33,7 +36,7 @@
     background-color: var(--background_color);
     font-family: var(--font);
     color: var(--font_color_title);
-    font-weight: medium;
+    /*font-weight: medium;*/
     font-size: 1.125rem;
 }
 
