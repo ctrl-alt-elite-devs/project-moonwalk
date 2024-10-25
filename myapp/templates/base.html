@@ -13,6 +13,7 @@
     <!-- Link to your custom CSS file -->
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <link rel="stylesheet" href="{% static 'css/footer.css' %}">
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
 
     <script src="https://kit.fontawesome.com/34f0afb215.js" crossorigin="anonymous"></script>
     
@@ -36,7 +37,7 @@
         <div class="cart_btn">
             <i class="fa-solid fa-cart-shopping"></i>
         </div>
-        <div class="profile_btn">
+        <div class="profile_btn open_login">
             <i class="fa-solid fa-user"></i>
         </div>
     </div>
@@ -44,7 +45,23 @@
         <li><a href="{% url 'home' %}">Home</a></li>
         <li><a href="{% url 'about' %}">About</a></li>
         <li><a href="{% url 'contact' %}">Contact</a></li>
-        <li><a href="#" class="action_btn">Login</a></li>
+        <li><a href="#" class="action_btn open_login">Login</a></li>
+    </div>
+    <!-- The Login Popup -->
+    <div id="login-modal" class="login-modal">
+        <div class="login-content">
+        <span class="login-close">&times;</span>
+        <form id="login-form">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required>
+    
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required>
+    
+            <button type="submit" class="login-btn">Log In</button>
+            <a href="#" class="forgot-password">Forgot password?</a>
+        </form>
+        </div>
     </div>
 
     {% block content %}
@@ -89,5 +106,6 @@
             dropDownMenu.classList.toggle('open')
         }
     </script>
+    <script src="{% static 'scripts/login-script.js' %}"></script>
 </body>
 </html>
