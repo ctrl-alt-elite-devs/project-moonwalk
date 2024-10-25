@@ -70,8 +70,8 @@ button {
 }
 
 
-small {
-    font-size: 6px;
+.littleThings {
+    font-size: 10px;
     font-family: Roboto, sans-serif;
 }
 
@@ -79,7 +79,7 @@ small {
     padding: 10px;
 }
 
-hr {
+#footerLine {
     position: relative;
     left: -10px;
     width: calc(100% + 18px);
