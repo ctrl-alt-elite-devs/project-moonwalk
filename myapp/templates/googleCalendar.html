@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block title %}Calendar{% endblock %}
+{% block content %}
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Edu+AU+VIC+WA+NT+Dots:wght@400..700&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+</head>
+<style>
+    body {
+        font-family: "Roboto", sans-serif;
+        font-weight: 400;
+        font-style: normal;
+    }
+    /* Styling for the back "button" */
+    .backButton{
+        color: black;
+        text-decoration: none;
+        text-align: center;
+        display: block;
+        padding-top: 20px;
+    }
+
+    /* Styling for the back "button" when mouse HOVERS over it */
+    .backButton:hover {
+        color: #F46471;
+        text-decoration: underline;
+    }
+
+    /* Styling for the Event title */
+    h1 {
+        text-align: center;
+        border: 0;
+    }
+
+    /* Styling for google calendar */
+    iframe {
+        margin: 0px;
+        border: 0px;
+        height: 450px;
+        max-width: 1200px;
+        border-radius: 0px;
+    }
+
+    /* Adjust view for tablet size */
+    @media (min-width: 768px) {
+        iframe {
+            height: 700px;
+        }
+    }
+
+    /* Adjust view for desktop size */
+    @media (min-width: 1024px) {
+        iframe {
+            width: 90%;
+            height: 625px;
+            display: block;       
+            margin: 0 auto; 
+        }
+    }
+</style>
+<body>
+<!-- Page title -->
+<h1>EVENTS</h1>
+
+<!-- Google Calendar embedded -->
+{{ iframe_code|safe }}
+
+
+<!-- Back button to home page -->
+<a class= "backButton" href="{% url 'home' %}">Back</a>
+</body>
+{% endblock %}
