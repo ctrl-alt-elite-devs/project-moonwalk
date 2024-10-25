@@ -13,6 +13,8 @@
     <!-- Link to your custom CSS file -->
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <link rel="stylesheet" href="{% static 'css/footer.css' %}">
+
+    <script src="https://kit.fontawesome.com/34f0afb215.js" crossorigin="anonymous"></script>
     
 </head>
 <body>
@@ -49,31 +51,31 @@
     {% endblock %}
 
     <footer>
-        <p>SIGN UP FOR MORE</p>
+        <p id="header">SIGN UP FOR MORE</p>
         <label for="phoneNum"></label>
         <label for="emailAddress"></label>
+
+        <input type="text" id="emailAddress" value='Your email address' autocomplete="on">
+        <button type="button">SUBSCRIBE</button>
         
-        <div>
-            <input type="text" id="emailAddress" value='Your email address' autocomplete="on">
-            <button type="button">SUBSCRIBE</button>
-        
-            <input type="text" id="phoneNum" value="Your phone number" autocomplete="on">
-            <button type="button" class="button">SUBSCRIBE</button>
-        </div>
-        
+        <input type="text" id="phoneNum" value="Your phone number"
+               onclick="document.getElementById('phoneNum').value=''">
+        <button type="button">SUBSCRIBE</button>
+
+        <div class="instaIcon">
         <a href="https://www.instagram.com/moonwalkthreads/?hl=en">
-            <img src="{% static 'images/img.png' %}">
+            <i class="fa-brands fa-instagram fa-2xl"></i>
         </a>
-        <div class="icon">
-            <div class="instagram">
-                <img>
-            </div>
         </div>
-        
+
+        <hr>
+        <div id="littleThings">
+            <small>Privacy Policy</small>
+            <small>Terms & Conditions</small>
+            <small>Contact Us</small>
+        </div>
         <small>Copyright © 2024 MoonWalk Threads - All Rights Reserved.</small>
-        <small>Privacy Policy</small>
-        <small>Terms & Conditions</small>
-        
+
     </footer>
 
     <script>
