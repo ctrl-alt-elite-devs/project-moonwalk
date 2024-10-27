@@ -3,7 +3,6 @@
 
 {% block title %}Home{% endblock %}
 
-
 {% block content %}
 
 <!-- Banner -->
@@ -11,6 +10,7 @@
     <img src="{% static 'images/img_banner.png' %}" alt="Banner Image">
 </div>
 
+<!-- Timer Banner -->
 <div class="timer_banner">
     <div class="drop_title">
         <p>Fall Apparel</p>
@@ -34,6 +34,43 @@
     </div>
 </div>
 
+<!-- Events Section -->
+<div class="header">
+    <h1>EVENTS</h1>
+</div>
+<div class="event-container">
+    <!-- First Event -->
+    <div class="event-box">
+        <div class="event-image">
+            <img src="{% static 'images/image5.png' %}" alt="Event Image">
+        </div>
+        <div class="event-info">
+            <textarea placeholder="First Event Info"></textarea>
+        </div>
+    </div>
+
+    <!-- Second Event -->
+    <div class="event-box">
+        <div class="event-image">
+            <img src="{% static 'images/image5.png' %}" alt="Event Image">
+        </div>
+        <div class="event-info">
+            <textarea placeholder="Second Event Info"></textarea>
+        </div>
+    </div>
+
+    <!-- Third Event -->
+    <div class="event-box">
+        <div class="event-image">
+            <img src="{% static 'images/image5.png' %}" alt="Event Image">
+        </div>
+        <div class="event-info">
+            <textarea placeholder="Third Event Info"></textarea>
+        </div>
+    </div>
+</div>
+
 <p> Home Page </p>
 <a href="{% url 'googleCalendar' %}">View More</a>
+
 {% endblock %}
