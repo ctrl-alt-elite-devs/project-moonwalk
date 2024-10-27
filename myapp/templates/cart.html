@@ -1,95 +1,80 @@
 {% extends 'base.html' %}
-{% load static %}
 {% block content %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cart View</title>
-    <link rel="stylesheet" href="{% static 'style.css' %}" />
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/cart.css' %}" />
 </head>
 <body>
     <div class="cart-container">
+
         <!-- Timer Section -->
-        <div class="timer">
-            <h2>Time Left to Buy Items</h2>
-            <div class="countdown">
-                <div><span>00</span> Days</div>
-                <div><span>00</span> Hrs</div>
-                <div><span>00</span> Mins</div>
-                <div><span>00</span> Secs</div>
+ <div class="countdown-container">
+        <div class="countdown-title">Time Left to Buy Items</div>
+        <div class="countdown-timer">
+            <div class="time-box">
+                <span id="days">00</span>
+                <p>Days</p>
+            </div>
+            <div class="colon">:</div>
+            <div class="time-box">
+                <span id="hours">00</span>
+                <p>Hrs</p>
+            </div>
+            <div class="colon">:</div>
+            <div class="time-box">
+                <span id="minutes">00</span>
+                <p>Mins</p>
+            </div>
+            <div class="colon">:</div>
+            <div class="time-box">
+                <span id="seconds">00</span>
+                <p>Secs</p>
             </div>
         </div>
-
-        <!-- Cart Items Section -->
+    </div>
+        <!-- Cart items section -->
         <div class="cart-items">
-            <div class="cart-item">
-                <img src="{% static 'photos/ItemImage1.png' %}" alt="Item 1">
-                <div class="item-details">
-                    <h3>&lt;Name of item&gt;</h3>
-                    <p>Price: $XX.XX | Size: XX</p>
-                </div>
-                <div class="remove-item">
-                    <button class="remove-btn">
-                        <img src="{% static 'icons/Trash1.svg' %}" alt="Remove" class="trash-icon">
-                    </button>
-                </div>
-            </div>
+            <h2><center>Your Cart</center></h2>
+            <!-- Loop through cart items from the context -->
+            {% for item in cart_items %}
+                <div class="cart-item">
+                    <img src="{% static item.image %}" alt="{{ item.name }}" width="200" height="200">
+                    <div class="item-details">
+                        <h4>{{ item.name }}</h4>
+                        <p>Price: ${{ item.price }} | Size:{{ item.size }} </p>
+                    </div>
 
-            <div class="cart-item">
-                <img src="{% static 'photos/ItemImage2.png' %}" alt="Item 2">
-                <div class="item-details">
-                    <h3>&lt;Name of item&gt;</h3>
-                    <p>Price: $XX.XX | Size: XX</p>
+                    <div class="remove-item">
+                        <button class="remove-btn">
+                            <img src="{% static 'icons/Trash1.svg' %}" alt="Remove" class="trash-icon">
+                        </button>
+                    </div>
                 </div>
-                <div class="remove-item">
-                    <button class="remove-btn">
-                        <img src="{% static 'icons/Trash1.svg' %}" alt="Remove" class="trash-icon">
-                    </button>
-                </div>
-            </div>
-
-            <div class="cart-item">
-                <img src="{% static 'photos/ItemImage3.png' %}" alt="Item 3">
-                <div class="item-details">
-                    <h3>&lt;Name of item&gt;</h3>
-                    <p>Price: $XX.XX | Size: XX</p>
-                </div>
-                <div class="remove-item">
-                    <button class="remove-btn">
-                        <img src="{% static 'icons/Trash1.svg' %}" alt="Remove" class="trash-icon">
-                    </button>
-                </div>
-            </div>
-
-            <div class="cart-item">
-                <img src="{% static 'photos/ItemImage4.png' %}" alt="Item 4">
-                <div class="item-details">
-                    <h3>&lt;Name of item&gt;</h3>
-                    <p>Price: $XX.XX | Size: XX</p>
-                </div>
-                <div class="remove-item">
-                    <button class="remove-btn">
-                        <img src="{% static 'icons/Trash1.svg' %}" alt="Remove" class="trash-icon">
-                    </button>
-                </div>
-            </div>
+            {% empty %}
+                <p>Your cart is empty.</p>
+            {% endfor %}
         </div>
 
-        <!-- Total Section -->
         <div class="total-section">
-            <p>Items: <span>$102.96</span></p>
-            <p>Shipping: <span>$5.48</span></p>
-            <p>Taxes & Fees: <span>$1.03</span></p>
+            <p>Items: <span>${{ cart_total|floatformat:2 }}</span></p>
+            <p>Shipping: <span>$0.00</span></p>
+            <p>Taxes & Fees: <span>$0.00</span></p>
             
             <!-- Custom divider -->
             <div class="divider"></div>
         
-            <p><strong>Total: <span>$109.47</span></strong></p>
+            <p>Total: ${{ cart_total|floatformat:2 }}</p>
         </div>
 
-        <!-- Checkout Button -->
+               <!-- Checkout Button -->
         <div class="checkout">
             <button>CHECKOUT</button>
+        </div>
+    </div>
+
         </div>
     </div>
 </body>
