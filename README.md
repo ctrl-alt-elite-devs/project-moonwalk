@@ -28,6 +28,28 @@ The current html files within templates folder are all of the available pages
 all of which extend the navbar created in base.html, anything added to this file will
 appear on all pages that extend it.
 
+# How to run on phone on your network
+
+In settings.py add your local IP to the variable ALLOWED_HOSTS = [] 
+example: ALLOWED_HOSTS = ['192.168.1.10', 'localhost', '127.0.0.1'] (replace 192.168.1.10 with your own local IP)
+
+To find local IP
+Windows use in cmd: 
+    ipconfig
+Look for the “IPv4 Address” under your active network connection (e.g., Wi-Fi or Ethernet). It should look like 192.168.1.10 or similar.
+
+Mac in terminal:
+    ipconfig getifaddr en0
+will give you back your local ip
+
+Run Django with the following command to make it accessible on your local network:
+    python manage.py runserver 0.0.0.0:8000
+
+Finally, on your phone's web browser enter http//:192.168.1.10:8000 (replace 192.168.1.10 with your own local IP)
+
+now you should be able to see the page on your phone and be able to refresh and see updates as you change code.
+
+
 # Git commands
 
 Save progress to repo manually with git bash
