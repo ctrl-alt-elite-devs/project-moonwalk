@@ -79,6 +79,29 @@
     }
 </script>
 
+<!-- Product Section -->
+<section class="product-section">
+    <div class="product-grid">
+        {% for product in products %}
+        <div class="product-card">
+            <!-- Image -->
+            <img class="product-image" src="{{ product.image.url }}" alt="Product Image" />
+            <!-- Details -->
+            <div class="product-body">
+                <h5 class="product-title">{{ product.name }}</h5>
+                <p class="product-price">${{ product.price }}</p>
+                <p class="product-price">{{ product.size }}</p>
+            </div>
+            <!-- Actions -->
+            <div class="product-footer">
+                <a class="btn btn-outline-dark" href="#">Add to cart</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+
 <!-- Events Section -->
 <div class="header">
     <h1>EVENTS</h1>
@@ -115,7 +138,6 @@
     </div>
 </div>
 
-<p> Home Page </p>
 <a href="{% url 'googleCalendar' %}">View More</a>
 
 {% endblock %}
