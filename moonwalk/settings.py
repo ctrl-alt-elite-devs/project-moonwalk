@@ -120,8 +120,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 # Additional locations of static files
-STATICFILES_DIRS = [
-    BASE_DIR / "myapp" / "static",  # Or wherever your static folder is located
+STATICFILES_DIRS = ['static/',  # Or wherever your static folder is located
 ]
 
 MEDIA_URL = 'media/'

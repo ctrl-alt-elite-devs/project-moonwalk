@@ -42,14 +42,21 @@ body {
 
 .drop_title {
     height: 1.5rem;
+    font-size: 1.5rem;
     display: flex;
     justify-content: center;
+    font-weight: bold;
+    -webkit-text-stroke-color: #000000;
+    -webkit-text-stroke-width: 0.8px;
+    transform: translateY(-20px);
 }
 
 /* Countdown container */
 .countdown {
     display: flex;
-    flex-direction: column /* Align time units in a row */
+    flex-direction: column; /* Align time units in a row */
+    align-items: center;
+    transform: translateY(5px);
 }
 
 /* Container for each time unit */
@@ -58,6 +65,7 @@ body {
     flex-direction: row;
     align-items: center;
     margin: 0 0.5rem;
+    gap: 1.2rem
 }
 
 /* Style for numbers */
@@ -67,12 +75,18 @@ body {
     font-weight: bold;
 }
 
-/* Style for labels */
-.label {
-    font-size: .9rem;
+/* Style for labels for time units in the banner*/
+.labels_time_units {
+    display: flex;
+    flex-direction: row;
+    font-size: .6rem;
     color: var(--font_color_timer);
-    text-align: center;
+    justify-content: center;
+    gap: 3.6rem;
 }
+
+/* Manually chnaging the position of units days, hours, minutes, and seconds */
+
 
 /* Style for colons */
 .colon {
