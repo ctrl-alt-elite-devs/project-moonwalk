@@ -20,6 +20,11 @@
     border-radius: 10px;
     text-align: center;
   }
+  #login-form label{
+    text-align: left;
+    display: block;
+    margin-top: 15px;
+  }
   
   /* The Close Button */
   .login-close {
@@ -27,6 +32,7 @@
     float: right;
     font-size: 28px;
     font-weight: bold;
+    margin-top: -8px;
   }
   
   .login-close:hover,
@@ -45,7 +51,7 @@
   }
   
   button.login-btn {
-    background-color: black;
+    background-color: #F46471;
     color: white;
     border: none;
     padding: 12px;
@@ -53,16 +59,34 @@
     margin-top: 10px;
     cursor: pointer;
     border-radius: 5px;
+    font-size: 14px;
   }
   
   button.login-btn:hover {
-    background-color: #333;
+    background-color: #f24c5a;
   }
   
   a.forgot-password {
-    display: block;
-    margin-top: 10px;
-    color: gray;
-    text-decoration: none;
+    text-decoration: underline;
   }
+
+  a.create-account {
+    text-decoration: underline;
+  }
+
+  a.create-account:hover {
+    color: #f07680;
+  }
+
+  a.forgot-password:hover {
+    color: #f07680;
+  }
+
+  .forgot-create-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 35px; 
+    margin-top: 20px;
+}
   
