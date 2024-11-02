@@ -17,7 +17,6 @@
     </div>
     <div class="countdown">
         <div class="time-unit">
-            <!--Need to manually create any extra spaces after the first "&nbsp"-->
             <!--id was added to each so the value can be changed through script-->
             <span class="number" id="number_Days">00</span> 
             <span class="colon">:</span>
@@ -38,45 +37,51 @@
 <!--Countdown script-->
 <script>
     // Get the time from python using django
-    var remainingTime = {{ total_time }};
+    var remainingTime_str = "{{ total_time }}";
+    var remainingTime = parseFloat(remainingTime_str);
+    console.log(remainingTime);
+    
 
     // Define the function that will update the html values
     function updateCountdown(){
-
+        console.log("Entered the function");
         // Get each time units values
         var days = Math.floor(remainingTime / 86400);
         var hours = Math.floor((remainingTime % 86400) / 3600);
         var minutes = Math.floor((remainingTime % 3600) / 60);
         var seconds = Math.floor(remainingTime % 60);
+
+        console.log(days)
+        console.log(hours)
         
         // Format each unit
-        days_str = String.format("%02d", days);
-        hours_str = String.format("%02d", hours);
-        minutes_str = String.format("%02d", minutes);
-        seconds_str = String.format("%02d", seconds);
+        //days_str = String.format("%02d", days);
+        //hours_str = String.format("%02d", hours);
+        //minutes_str = String.format("%02d", minutes);
+        //seconds_str = String.format("%02d", seconds);
 
         // Update the values here
-        document.getElementById("label_days").innerHTML = days_str;
-        document.getElementById("label_hours").innerHTML = hours_str;
-        document.getElementById("label_minutes").innerHTML = minutes_str;
-        document.getElementById("label_seconds").innerHTML = seconds_str;
+        document.getElementById("number_Days").innerHTML = days;
+        document.getElementById("number_Hours").innerHTML = hours;
+        document.getElementById("number_Minutes").innerHTML = minutes;
+        document.getElementById("number_Seconds").innerHTML = seconds;
 
         // Check to see if no time remains
-        if (timeRemaining <= 0) {
+        if (remainingTime <= 0) {
                 // Set values to 00
                 clearInterval(update);
-                document.getElementById("label_days").innerHTML = "00";
-                document.getElementById("label_hours").innerHTML = "00";
-                document.getElementById("label_minutes").innerHTML = "00";
-                document.getElementById("label_seconds").innerHTML = "00";
+                document.getElementById("number_Days").innerHTML = "00";
+                document.getElementById("number_Hours").innerHTML = "00";
+                document.getElementById("number_Minutes").innerHTML = "00";
+                document.getElementById("number_Seconds").innerHTML = "00";
 
-            } else {
-                timeRemaining--;
-            }
-
-        // Update the timer every second
-        var update = setInterval(updateCountdown, 1000)
+        } else {
+                remainingTime--;
+        }
     }
+    
+    // Update the timer every second
+    var update = setInterval(updateCountdown, 1000);
 </script>
 
 <p> Home Page </p>
