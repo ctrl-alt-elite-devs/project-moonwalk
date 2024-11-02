@@ -38,7 +38,10 @@
 <!--Countdown script-->
 <script>
     // Get the time from python using django
-    var remainingTime = {{ total_time }};
+    //not doing what its supposed to
+    // var remainingTime = {{ total_time }};
+    //so putting in a temporary var
+    var remainingTime;
 
     // Define the function that will update the html values
     function updateCountdown(){

@@ -7,6 +7,7 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Load static files -->
     {% load static %}
 
@@ -59,14 +60,40 @@
             <label for="password">Password</label>
             <input type="password" id="password" name="password" required>
     
-            <button type="submit" class="login-btn">Log In</button>
+            <button type="submit" class="login-btn" id="login-button">Log In</button>
+            <ul id="locations-list"></ul>
             <div class="forgot-create-container">
                 <a href="#" class="forgot-password">Forgot Password</a>
                 <a href="#" class="create-account">Create Account</a>
             </div>
+
         </form>
         </div>
     </div>
+
+    <script>
+        $(document).ready(function(){
+            $('#login-button').on('click', function(){
+                $.ajax({
+                    url: "{% url 'listLocations' %}",
+                    method: "GET",
+                    success: function(response) {
+                        if (response.status === "success") {
+                            $('#locations-list').empty();
+                            response.locations.forEach(function(location) {
+                                $('locations-list').append("<li>${location.name} - ${location.id}</li>")
+                            });
+                        } else {
+                            alert("Error fetching locations: " + response.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        alert("An error occurred: " + error);
+                    }
+                });
+            });
+        });
+    </script>
 
     {% block content %}
     {% endblock %}
@@ -88,6 +115,12 @@
             <i class="fa-brands fa-instagram fa-2xl"></i>
         </a>
         </div>
+
+        <ul>
+            {% for location in locations %}
+                <li>{{location.name}} - {{location.id}}</li>
+            {% endfor %}
+        </ul>
 
         <hr id="footerLine">
         <div class="littleThings">
