@@ -9,7 +9,6 @@ body {
     margin: 0 auto;
 }
 
-
 h1 {
     text-align: left;
     font-size: 22px;
@@ -21,12 +20,16 @@ h2 {
     margin-top: 10px;
 }
 
+a.viewmore_button {
+    background-color: #F46471;
+    color: black;
+}
+
 /* Contact Information Styling */
 .contact-info h2, .contact-info p {
     text-align: left;
     margin: 10px 0;
 }
-
 
 .hours {
     text-align: left;
