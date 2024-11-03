@@ -3,7 +3,6 @@
 
 {% block title %}Home{% endblock %}
 
-
 {% block content %}
 
 <!-- Banner -->
@@ -11,29 +10,137 @@
     <img src="{% static 'images/img_banner.png' %}" alt="Banner Image">
 </div>
 
+<!-- Timer Banner -->
 <div class="timer_banner">
     <div class="drop_title">
         <p>Fall Apparel</p>
     </div>
     <div class="countdown">
         <div class="time-unit">
-            <span class="number">00</span>
+            <!--Need to manually create any extra spaces after the first "&nbsp"-->
+            <!--id was added to each so the value can be changed through script-->
+            <span class="number" id="number_Days">00</span> 
             <span class="colon">:</span>
-            <span class="number">00</span>
+            <span class="number" id="number_Hours">00</span>
             <span class="colon">:</span>
-            <span class="number">00</span>
+            <span class="number" id="number_Minutes">00</span>
             <span class="colon">:</span>
-            <span class="number">00</span>
+            <span class="number" id="number_Seconds">00</span>
         </div>
-        <div class="labels">
-            <div class="label">Days</div>
-            <div class="label">Hrs</div>
-            <div class="label">Mins</div>
-            <div class="label">Secs</div>
+        <div class="labels_time_units">
+            <div class="label_days">Days</div>
+            <div class="label_hours">Hrs</div>
+            <div class="label_minutes">Mins</div>
+            <div class="label_seconds">Secs</div>
+        </div>
+    </div>
+</div>
+<!--Countdown script-->
+<script>
+    // Get the time from python using django
+    //not doing what its supposed to
+    // var remainingTime = {{ total_time }};
+    //so putting in a temporary var
+    var remainingTime;
+
+    // Define the function that will update the html values
+    function updateCountdown(){
+
+        // Get each time units values
+        var days = Math.floor(remainingTime / 86400);
+        var hours = Math.floor((remainingTime % 86400) / 3600);
+        var minutes = Math.floor((remainingTime % 3600) / 60);
+        var seconds = Math.floor(remainingTime % 60);
+        
+        // Format each unit
+        days_str = String.format("%02d", days);
+        hours_str = String.format("%02d", hours);
+        minutes_str = String.format("%02d", minutes);
+        seconds_str = String.format("%02d", seconds);
+
+        // Update the values here
+        document.getElementById("label_days").innerHTML = days_str;
+        document.getElementById("label_hours").innerHTML = hours_str;
+        document.getElementById("label_minutes").innerHTML = minutes_str;
+        document.getElementById("label_seconds").innerHTML = seconds_str;
+
+        // Check to see if no time remains
+        if (timeRemaining <= 0) {
+                // Set values to 00
+                clearInterval(update);
+                document.getElementById("label_days").innerHTML = "00";
+                document.getElementById("label_hours").innerHTML = "00";
+                document.getElementById("label_minutes").innerHTML = "00";
+                document.getElementById("label_seconds").innerHTML = "00";
+
+            } else {
+                timeRemaining--;
+            }
+
+        // Update the timer every second
+        var update = setInterval(updateCountdown, 1000)
+    }
+</script>
+
+<!-- Product Section -->
+<section class="product-section">
+    <div class="product-grid">
+        {% for product in products %}
+        <div class="product-card">
+            <!-- Image -->
+            <img class="product-image" src="{{ product.image.url }}" alt="Product Image" />
+            <!-- Details -->
+            <div class="product-body">
+                <h5 class="product-title">{{ product.name }}</h5>
+                <p class="product-price">${{ product.price }}</p>
+                <p class="product-price">{{ product.size }}</p>
+            </div>
+            <!-- Actions -->
+            <div class="product-footer">
+                <a class="btn btn-outline-dark" href="#">Add to cart</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+
+<!-- Events Section -->
+<div class="header">
+    <h1>EVENTS</h1>
+</div>
+<div class="event-container">
+    <!-- First Event -->
+    <div class="event-box">
+        <div class="event-image">
+            <img src="{% static 'images/image5.png' %}" alt="Event Image">
+        </div>
+        <div class="event-info">
+            <textarea placeholder="First Event Info"></textarea>
+        </div>
+    </div>
+
+    <!-- Second Event -->
+    <div class="event-box">
+        <div class="event-image">
+            <img src="{% static 'images/image5.png' %}" alt="Event Image">
+        </div>
+        <div class="event-info">
+            <textarea placeholder="Second Event Info"></textarea>
+        </div>
+    </div>
+
+    <!-- Third Event -->
+    <div class="event-box">
+        <div class="event-image">
+            <img src="{% static 'images/image5.png' %}" alt="Event Image">
+        </div>
+        <div class="event-info">
+            <textarea placeholder="Third Event Info"></textarea>
         </div>
     </div>
 </div>
 
-<p> Home Page </p>
-<a href="{% url 'googleCalendar' %}" class="viewmore_button" type="button">View More</a>
+<a href="{% url 'googleCalendar' %}">View More</a>
+
 {% endblock %}

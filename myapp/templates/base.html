@@ -7,12 +7,17 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Load static files -->
     {% load static %}
 
     <!-- Link to your custom CSS file -->
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/homestyles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/products.css' %}">
     <link rel="stylesheet" href="{% static 'css/footer.css' %}">
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+
+    <script src="https://kit.fontawesome.com/34f0afb215.js" crossorigin="anonymous"></script>
     
 </head>
 <body>
@@ -31,10 +36,10 @@
         <div class="toggle_btn">
             <i class="fa-solid fa-bars"></i>
         </div>
-        <div class="cart_btn">
+        <a href="{% url 'cart' %}" class="cart_btn">
             <i class="fa-solid fa-cart-shopping"></i>
-        </div>
-        <div class="profile_btn">
+        </a>
+        <div class="profile_btn open_login">
             <i class="fa-solid fa-user"></i>
         </div>
     </div>
@@ -42,38 +47,91 @@
         <li><a href="{% url 'home' %}">Home</a></li>
         <li><a href="{% url 'about' %}">About</a></li>
         <li><a href="{% url 'contact' %}">Contact</a></li>
-        <li><a href="#" class="action_btn">Login</a></li>
+        <li><a href="#" class="action_btn open_login">Login</a></li>
     </div>
+    <!-- The Login Popup -->
+    <div id="login-modal" class="login-modal">
+        <div class="login-content">
+        <span class="login-close">&times;</span>
+        <form id="login-form">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required>
+    
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required>
+    
+            <button type="submit" class="login-btn" id="login-button">Log In</button>
+            <ul id="locations-list"></ul>
+            <div class="forgot-create-container">
+                <a href="#" class="forgot-password">Forgot Password</a>
+                <a href="#" class="create-account">Create Account</a>
+            </div>
+
+        </form>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function(){
+            $('#login-button').on('click', function(){
+                $.ajax({
+                    url: "{% url 'listLocations' %}",
+                    method: "GET",
+                    success: function(response) {
+                        if (response.status === "success") {
+                            $('#locations-list').empty();
+                            response.locations.forEach(function(location) {
+                                $('locations-list').append("<li>${location.name} - ${location.id}</li>")
+                            });
+                        } else {
+                            alert("Error fetching locations: " + response.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        alert("An error occurred: " + error);
+                    }
+                });
+            });
+        });
+    </script>
 
     {% block content %}
     {% endblock %}
 
     <footer>
-        <p>SIGN UP FOR MORE</p>
+        <p id="header">SIGN UP FOR MORE</p>
         <label for="phoneNum"></label>
         <label for="emailAddress"></label>
+
+        <input type="text" id="emailAddress" value='Your email address' autocomplete="on">
+        <button type="button">SUBSCRIBE</button>
         
-        <div>
-            <input type="text" id="emailAddress" value='Your email address' autocomplete="on">
-            <button type="button">SUBSCRIBE</button>
-        
-            <input type="text" id="phoneNum" value="Your phone number" autocomplete="on">
-            <button type="button" class="button">SUBSCRIBE</button>
-        </div>
-        
+        <input type="text" id="phoneNum" value="Your phone number"
+            onclick="document.getElementById('phoneNum').value=''">
+        <button type="button">SUBSCRIBE</button>
+
+        <div class="instaIcon">
         <a href="https://www.instagram.com/moonwalkthreads/?hl=en">
-            <img src="{% static 'images/img.png' %}">
+            <i class="fa-brands fa-instagram fa-2xl"></i>
         </a>
-        <div class="icon">
-            <div class="instagram">
-                <img>
-            </div>
         </div>
-        
-        <small>Copyright © 2024 MoonWalk Threads - All Rights Reserved.</small>
-        <small>Privacy Policy</small>
-        <small>Terms & Conditions</small>
-        
+
+        <ul>
+            {% for location in locations %}
+                <li>{{location.name}} - {{location.id}}</li>
+            {% endfor %}
+        </ul>
+
+        <hr id="footerLine">
+        <div class="littleThings">
+            <div>
+                <small>Privacy Policy</small>
+                <small>Terms & Conditions</small>
+                <small>Contact Us</small>
+            </div>
+            <small id="bottomLine">Copyright © 2024 MoonWalk Threads - All Rights Reserved.</small>
+        </div>
+
     </footer>
 
     <script>
@@ -85,5 +143,6 @@
             dropDownMenu.classList.toggle('open')
         }
     </script>
+    <script src="{% static 'scripts/login-script.js' %}"></script>
 </body>
 </html>
