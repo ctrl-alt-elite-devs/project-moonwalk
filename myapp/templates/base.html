@@ -51,7 +51,7 @@
     <!-- The Login Popup -->
     <div id="login-modal" class="login-modal">
         <div class="login-content">
-        <span class="login-close">&times;</span>
+        <span class="login-x login-close">&times;</span>
         <form id="login-form">
             <label for="email">Email</label>
             <input type="email" id="email" name="email" required>
@@ -62,10 +62,35 @@
             <button type="submit" class="login-btn">Log In</button>
             <div class="forgot-create-container">
                 <a href="#" class="forgot-password">Forgot Password</a>
-                <a href="#" class="create-account">Create Account</a>
+                <a href="#" class="create-account open_signup">Create Account</a>
             </div>
         </form>
         </div>
+    </div>
+     <!-- The Create Account Popup -->
+    <div id="signup-modal" class="signup-modal">
+        <div class="signup-content login-content">
+            <span class="login-x signup-close">&times;</span>
+            <form id="login-form">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+
+                <label for="first-name">First Name</label>
+                <input type="first-name" id="first-name" name="first-name" required>
+
+                <label for="last-name">Last Name</label>
+                <input type="last-name" id="last-name" name="last-name" required>
+        
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+
+                <label for="password">Confirm Password</label>
+                <input type="password" id="password" name="password" required>
+        
+                <button type="submit" class="login-btn">Create Account</button>
+            </form>
+            </div>
+
     </div>
 
     {% block content %}
