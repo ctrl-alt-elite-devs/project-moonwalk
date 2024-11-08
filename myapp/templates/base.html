@@ -7,14 +7,18 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Load static files -->
     {% load static %}
 
     <!-- Link to your custom CSS file -->
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/homestyles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/products.css' %}">
     <link rel="stylesheet" href="{% static 'css/footer.css' %}">
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
 
     <script src="https://kit.fontawesome.com/34f0afb215.js" crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Edu+AU+VIC+WA+NT+Dots:wght@400..700&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
     
 </head>
 <body>
@@ -33,10 +37,10 @@
         <div class="toggle_btn">
             <i class="fa-solid fa-bars"></i>
         </div>
-        <div class="cart_btn">
+        <a href="{% url 'cart' %}" class="cart_btn">
             <i class="fa-solid fa-cart-shopping"></i>
-        </div>
-        <div class="profile_btn">
+        </a>
+        <div class="profile_btn open_login">
             <i class="fa-solid fa-user"></i>
         </div>
     </div>
@@ -44,8 +48,53 @@
         <li><a href="{% url 'home' %}">Home</a></li>
         <li><a href="{% url 'about' %}">About</a></li>
         <li><a href="{% url 'contact' %}">Contact</a></li>
-        <li><a href="#" class="action_btn">Login</a></li>
+        <li><a href="#" class="action_btn open_login">Login</a></li>
     </div>
+    <!-- The Login Popup -->
+    <div id="login-modal" class="login-modal">
+        <div class="login-content">
+        <span class="login-close">&times;</span>
+        <form id="login-form">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required>
+    
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required>
+    
+            <button type="submit" class="login-btn" id="login-button">Log In</button>
+            <ul id="locations-list"></ul>
+            <div class="forgot-create-container">
+                <a href="#" class="forgot-password">Forgot Password</a>
+                <a href="#" class="create-account">Create Account</a>
+            </div>
+
+        </form>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function(){
+            $('#login-button').on('click', function(){
+                $.ajax({
+                    url: "{% url 'listLocations' %}",
+                    method: "GET",
+                    success: function(response) {
+                        if (response.status === "success") {
+                            $('#locations-list').empty();
+                            response.locations.forEach(function(location) {
+                                $('locations-list').append("<li>${location.name} - ${location.id}</li>")
+                            });
+                        } else {
+                            alert("Error fetching locations: " + response.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        alert("An error occurred: " + error);
+                    }
+                });
+            });
+        });
+    </script>
 
     {% block content %}
     {% endblock %}
@@ -59,7 +108,7 @@
         <button type="button">SUBSCRIBE</button>
         
         <input type="text" id="phoneNum" value="Your phone number"
-               onclick="document.getElementById('phoneNum').value=''">
+            onclick="document.getElementById('phoneNum').value=''">
         <button type="button">SUBSCRIBE</button>
 
         <div class="instaIcon">
@@ -68,13 +117,21 @@
         </a>
         </div>
 
-        <hr>
-        <div id="littleThings">
-            <small>Privacy Policy</small>
-            <small>Terms & Conditions</small>
-            <small>Contact Us</small>
+        <ul>
+            {% for location in locations %}
+                <li>{{location.name}} - {{location.id}}</li>
+            {% endfor %}
+        </ul>
+
+        <hr id="footerLine">
+        <div class="littleThings">
+            <div>
+                <small>Privacy Policy</small>
+                <small>Terms & Conditions</small>
+                <small>Contact Us</small>
+            </div>
+            <small id="bottomLine">Copyright © 2024 MoonWalk Threads - All Rights Reserved.</small>
         </div>
-        <small>Copyright © 2024 MoonWalk Threads - All Rights Reserved.</small>
 
     </footer>
 
@@ -87,5 +144,6 @@
             dropDownMenu.classList.toggle('open')
         }
     </script>
+    <script src="{% static 'scripts/login-script.js' %}"></script>
 </body>
 </html>

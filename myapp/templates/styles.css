@@ -1,5 +1,5 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: "Roboto", sans-serif;
     margin: 0;
     padding: 0;
 }
@@ -8,7 +8,6 @@ body {
     width: 90%;
     margin: 0 auto;
 }
-
 
 h1 {
     text-align: left;
@@ -26,7 +25,6 @@ h2 {
     text-align: left;
     margin: 10px 0;
 }
-
 
 .hours {
     text-align: left;
@@ -55,9 +53,10 @@ iframe {
     overflow: hidden; /* Ensures content does not overflow */
 }
 
-@media (min-width: 768px) {
-    iframe {
-        width: 70%; /* Adjust map size for larger screens */
-        height: 400px;
+/* Adjust view for desktop size */
+    @media (min-width: 1024px) {
+        iframe {
+            width: 90%;
+            height: 700px;
+        }
     }
-}

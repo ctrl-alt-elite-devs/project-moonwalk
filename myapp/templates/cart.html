@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart View</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/cart.css' %}" />
+</head>
+<body>
+    <div class="cart-container">
+
+        <!-- Timer Section -->
+ <div class="countdown-container">
+        <div class="countdown-title">Time Left to Buy Items</div>
+        <div class="countdown-timer">
+            <div class="time-box">
+                <span id="days">00</span>
+                <p>Days</p>
+            </div>
+            <div class="colon">:</div>
+            <div class="time-box">
+                <span id="hours">00</span>
+                <p>Hrs</p>
+            </div>
+            <div class="colon">:</div>
+            <div class="time-box">
+                <span id="minutes">00</span>
+                <p>Mins</p>
+            </div>
+            <div class="colon">:</div>
+            <div class="time-box">
+                <span id="seconds">00</span>
+                <p>Secs</p>
+            </div>
+        </div>
+    </div>
+        <!-- Cart items section -->
+        <div class="cart-items">
+            <h2><center>Your Cart</center></h2>
+            <!-- Loop through cart items from the context -->
+            {% for item in cart_items %}
+                <div class="cart-item">
+                    <img src="{% static item.image %}" alt="{{ item.name }}" width="200" height="200">
+                    <div class="item-details">
+                        <h4>{{ item.name }}</h4>
+                        <p>Price: ${{ item.price }} | Size:{{ item.size }} </p>
+                    </div>
+
+                    <div class="remove-item">
+                        <button class="remove-btn">
+                            <img src="{% static 'icons/Trash1.svg' %}" alt="Remove" class="trash-icon">
+                        </button>
+                    </div>
+                </div>
+            {% empty %}
+                <p>Your cart is empty.</p>
+            {% endfor %}
+        </div>
+
+        <div class="total-section">
+            <p>Items: <span>${{ cart_total|floatformat:2 }}</span></p>
+            <p>Shipping: <span>$0.00</span></p>
+            <p>Taxes & Fees: <span>$0.00</span></p>
+            
+            <!-- Custom divider -->
+            <div class="divider"></div>
+        
+            <p>Total: ${{ cart_total|floatformat:2 }}</p>
+        </div>
+
+               <!-- Checkout Button -->
+        <div class="checkout">
+            <button>CHECKOUT</button>
+        </div>
+    </div>
+
+        </div>
+    </div>
+</body>
+{% endblock %}
