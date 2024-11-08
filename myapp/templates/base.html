@@ -7,6 +7,7 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Load static files -->
     {% load static %}
 
@@ -17,6 +18,7 @@
     <link rel="stylesheet" href="{% static 'css/login.css' %}">
 
     <script src="https://kit.fontawesome.com/34f0afb215.js" crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Edu+AU+VIC+WA+NT+Dots:wght@400..700&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
     
 </head>
 <body>
@@ -59,11 +61,13 @@
             <label for="password">Password</label>
             <input type="password" id="password" name="password" required>
     
-            <button type="submit" class="login-btn">Log In</button>
+            <button type="submit" class="login-btn" id="login-button">Log In</button>
+            <ul id="locations-list"></ul>
             <div class="forgot-create-container">
                 <a href="#" class="forgot-password">Forgot Password</a>
                 <a href="#" class="create-account open_signup">Create Account</a>
             </div>
+
         </form>
         </div>
     </div>
@@ -93,6 +97,30 @@
 
     </div>
 
+    <script>
+        $(document).ready(function(){
+            $('#login-button').on('click', function(){
+                $.ajax({
+                    url: "{% url 'listLocations' %}",
+                    method: "GET",
+                    success: function(response) {
+                        if (response.status === "success") {
+                            $('#locations-list').empty();
+                            response.locations.forEach(function(location) {
+                                $('locations-list').append("<li>${location.name} - ${location.id}</li>")
+                            });
+                        } else {
+                            alert("Error fetching locations: " + response.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        alert("An error occurred: " + error);
+                    }
+                });
+            });
+        });
+    </script>
+
     {% block content %}
     {% endblock %}
 
@@ -113,6 +141,12 @@
             <i class="fa-brands fa-instagram fa-2xl"></i>
         </a>
         </div>
+
+        <ul>
+            {% for location in locations %}
+                <li>{{location.name}} - {{location.id}}</li>
+            {% endfor %}
+        </ul>
 
         <hr id="footerLine">
         <div class="littleThings">

@@ -12,19 +12,29 @@
         font-weight: 400;
         font-style: normal;
     }
-    /* Styling for the back "button" */
+    /* Styling for the back button */
     .backButton{
+        background-color: #F46471;
         color: black;
         text-decoration: none;
         text-align: center;
+        padding: 5px;
         display: block;
-        padding-top: 20px;
+        width: 100px;
+        border-radius: 5px;
+        margin: 0 auto;
+        margin-top: 20px;
+        margin-bottom: 20px;
     }
 
-    /* Styling for the back "button" when mouse HOVERS over it */
+    /* Styling for the back button when mouse HOVERS over it */
     .backButton:hover {
-        color: #F46471;
-        text-decoration: underline;
+        color: white;
+    }
+
+    /* center the 'back' in the button */
+    a.backButton {
+        text-align: center;
     }
 
     /* Styling for the Event title */
@@ -34,17 +44,25 @@
     }
 
     /* Styling for google calendar */
+    .c {
+        text-align: center;
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+
     iframe {
-        margin: 0px;
         border: 0px;
         height: 450px;
-        max-width: 1200px;
+        width: 90%%;
         border-radius: 0px;
+        display: inline-block;
+        margin: 0px;
     }
 
     /* Adjust view for tablet size */
     @media (min-width: 768px) {
         iframe {
+            width: 90%;
             height: 700px;
         }
     }
@@ -54,8 +72,9 @@
         iframe {
             width: 90%;
             height: 625px;
-            display: block;
-            margin: 0 auto;
+        }
+        .c {
+            margin: 0px;
         }
     }
 </style>
@@ -64,7 +83,7 @@
 <h1>EVENTS</h1>
 
 <!-- Google Calendar embedded -->
-{{ iframe_code|safe }}
+<div class="c">{{ iframe_code|safe }}</div>
 
 
 <!-- Back button to home page -->
