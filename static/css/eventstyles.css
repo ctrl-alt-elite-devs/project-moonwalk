@@ -1,81 +1,52 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: Roboto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #F46471;
-    height: 100vh;
-    flex-direction: column;
-}
-
-.header {
-    position: absolute;
-    top: 10px;
+/* Styling for the event subsection title */
+.event-subtitle {
     text-align: center;
-    width: 100%;
-}
-
-.header h1 {
-    font-size: 36px;
+    font-size: 24px;
     font-weight: bold;
-    color: #ffffff;
+    color: #000;
+    background-color: #F46471; /* Light pink background */
+    padding: 15px 0; /* Vertical padding only */
+    margin: 0 auto 20px auto; /* Center the title with space below */
+    width: 100vw; /* Full width to span across the viewport */
+    position: relative; /* Needed for full width */
+    left: 50%; /* Start positioning from center */
+    transform: translateX(-50%); /* Center-aligns the full-width background */
+    font-family: 'Roboto', sans-serif; /* Sets font style */
 }
 
-.event-container {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    width: 80%;
+
+/* Container for the events section */
+.event-section {
     max-width: 1000px;
-    margin-top: 100px; /* Adjust as necessary */
+    margin: 80px auto; /* Centers the section on the page */
 }
 
+/* Flex container for the row of events */
+.event-row {
+    display: flex;
+    justify-content: center; /* Centers the events horizontally */
+    gap: 80px; /* Space between event boxes */
+}
+
+/* Individual event box styling */
 .event-box {
-    display: flex;
-    align-items: center;
-    background-color: #d9dde2;
-    border-radius: 15px;
-    padding: 20px;
-    gap: 20px;
+    width: 200px;
+    text-align: center;
+}
+
+/* Styling for event images */
+.event-box img {
     width: 100%;
-}
-
-.event-image {
-    flex: 1;
-    height: 150px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
+    height: auto;
     border-radius: 10px;
-}
-
-.event-image img {
-    height: 100%;
-    width: auto;
-    transform: rotate(90deg); /* Rotate the image 90 degrees */
     object-fit: cover;
-    border-radius: 10px;
-}
-
-.event-info {
-    flex: 2;
-    margin-left: 10px;
-}
-
-.event-info textarea {
-    width: 100%;
-    height: 100%;
-    padding: 10px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    resize: none;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Styling for event descriptions */
+.event-description {
+    margin-top: 10px;
+    font-size: 20px;
+    color: #333;
+    line-height: 1.4;
 }

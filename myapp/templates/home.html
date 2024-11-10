@@ -107,41 +107,45 @@
 </section>
 
 
-<!-- Events Section -->
-<div class="header">
-    <h1>EVENTS</h1>
-</div>
-<div class="event-container">
-    <!-- First Event -->
-    <div class="event-box">
-        <div class="event-image">
-            <img src="{% static 'images/image5.png' %}" alt="Event Image">
-        </div>
-        <div class="event-info">
-            <textarea placeholder="First Event Info"></textarea>
-        </div>
-    </div>
+<div class="event-section">
+    <!-- Events Subheading -->
+    <h2 class="event-subtitle">Upcoming Events</h2>
 
-    <!-- Second Event -->
-    <div class="event-box">
-        <div class="event-image">
-            <img src="{% static 'images/image5.png' %}" alt="Event Image">
+    <!-- Events Row -->
+    <div class="event-row">
+        <!-- First Event -->
+        <div class="event-box">
+            <img src="{% static 'images/events1.jpg' %}" alt="Event 1 Image">
+            <p class="event-description">
+                <strong>Name:</strong> Auburn's Giveaway<br>
+                <strong>Date:</strong> December 1, 2024<br>
+                <strong>Description:</strong> Get lucky on this giveaway event!
+            </p>
         </div>
-        <div class="event-info">
-            <textarea placeholder="Second Event Info"></textarea>
-        </div>
-    </div>
 
-    <!-- Third Event -->
-    <div class="event-box">
-        <div class="event-image">
-            <img src="{% static 'images/image5.png' %}" alt="Event Image">
+        <!-- Second Event -->
+        <div class="event-box">
+            <img src="{% static 'images/events2.jpg' %}" alt="Event 2 Image">
+            <p class="event-description">
+                <strong>Name:</strong> Not Your Boyfriend's Market<br>
+                <strong>Date:</strong> December 10, 2024<br>
+                <strong>Description:</strong>Vintage Clothes and more!
+            </p>
         </div>
-        <div class="event-info">
-            <textarea placeholder="Third Event Info"></textarea>
+
+        <!-- Third Event -->
+        <div class="event-box">
+            <img src="{% static 'images/events3.jpg' %}" alt="Event 3 Image">
+            <p class="event-description">
+                <strong>Name:</strong> Christmas Sale<br>
+                <strong>Date:</strong> January 25, 2024<br>
+                <strong>Description:</strong> Get your hands on the biggest sale this year!
+            </p>
         </div>
     </div>
 </div>
+
+
 
 <div class="viewmore"><a class="viewmore_button" href="{% url 'googleCalendar' %}" type="button">View More</a></div>
 
