@@ -1,11 +1,39 @@
 from django.shortcuts import render
+import datetime
 from .models import Product
 from .square_service import client
 from django.http import JsonResponse
 
 def home(request):
+    # Current date is hard coded
+    date = "2024-12-06 00:00:00"
+    today = datetime.datetime.now()
+    # Specify the date format being provided
+    countdown_date = datetime.datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
+
+    # Calculate the time to the specified date from when the web is loaded
+    total_time = countdown_date - today
+    # Convert the total time to seconds
+    total_time = total_time.total_seconds()
     products = Product.objects.all()
-    return render(request, 'home.html', {'products':products})
+    return render(request, 'home.html', {'total_time': total_time, 'products':products})
+    # return render(request, 'home.html')
+
+def total_time(request):
+    # Current date is hard coded
+    date = "2024-12-06 00:00:00"
+    today = datetime.datetime.now
+    # Specify the date format being provided
+    countdown_date = datetime.datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
+
+    # Calculate the time to the specified date from when the web is loaded
+    total_time = countdown_date - today
+    # Convert the total time to seconds
+    total_time = total_time.total_seconds()
+    context = {
+        'total_time': total_time
+    }
+    return render(request, 'home.html', context)
 
 def about(request):
     return render(request, 'about.html')
