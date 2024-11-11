@@ -62,10 +62,27 @@
             <input type="password" id="password" name="password" required>
     
             <button type="submit" class="login-btn" id="login-button">Log In</button>
+
             <ul id="locations-list"></ul>
+            
             <div class="forgot-create-container">
                 <a href="#" class="forgot-password">Forgot Password</a>
                 <a href="#" class="create-account open_signup">Create Account</a>
+            </div>
+
+            <!-- Placeholder for the Google Sign-In button -->
+            <div id="g_id_onload"
+                data-client_id="967536116046-niqbv6jvmqddk43u38pmhq6caqmohlur.apps.googleusercontent.com"
+                data-callback="handleCredentialResponse">
+            </div>
+
+            <div class="g_id_signin"
+                data-type="standard"
+                data-size="large"
+                data-theme="outline"
+                data-text="sign_in_with"
+                data-shape="rectangular"
+                data-logo_alignment="left">
             </div>
 
         </form>
@@ -75,23 +92,36 @@
     <div id="signup-modal" class="signup-modal">
         <div class="signup-content login-content">
             <span class="login-x signup-close">&times;</span>
-            <form id="login-form">
+            <form id="signup-form">
                 <label for="email">Email</label>
-                <input type="email" id="email" name="email" required>
+                <input type="email" id="signup-email" name="email" required>
 
-                <label for="first-name">First Name</label>
-                <input type="first-name" id="first-name" name="first-name" required>
-
-                <label for="last-name">Last Name</label>
-                <input type="last-name" id="last-name" name="last-name" required>
-        
+                <div class = "name-row-container">
+                    <div class = "name-container">
+                        <label for="first-name">First Name</label>
+                        <input type="first-name" id="first-name" name="first-name" required>
+                    </div>
+                    <div class = "name-container">
+                        <label for="last-name">Last Name</label>
+                        <input type="last-name" id="last-name" name="last-name" required>
+                    </div>
+                </div>
+               
                 <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
+                <input type="password" id="signup-password" name="password" required>
 
                 <label for="password">Confirm Password</label>
-                <input type="password" id="password" name="password" required>
-        
-                <button type="submit" class="login-btn">Create Account</button>
+                <input type="password" id="confirm-password" name="password" required>
+
+                <label for="phone">(Optional) Phone Number</label>
+                <input type="tel" id="signup-phone" name="phone" >
+
+                <div class="checkbox-container">
+                    <label class="checkbox-label"><input type="checkbox" id="text-checkbox"> Would you like to receive updates via text message?</label><br>
+                    <label class="checkbox-label"><input type="checkbox" id="email-checkbox"> Would you like to receive updates via email?</label><br>
+                    <label class="checkbox-label"><input type="checkbox" id="Agreement-checkbox"> Do you agree to the <a href="#" class="terms-link">Terms of Service</a></label><br>
+                </div>
+                <button type="submit" class="create-account-btn login-btn">Create Account</button>
             </form>
             </div>
 
@@ -120,6 +150,8 @@
             });
         });
     </script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="{% static 'scripts/login-script.js' %}"></script>
 
     {% block content %}
     {% endblock %}
@@ -169,6 +201,6 @@
             dropDownMenu.classList.toggle('open')
         }
     </script>
-    <script src="{% static 'scripts/login-script.js' %}"></script>
+
 </body>
 </html>

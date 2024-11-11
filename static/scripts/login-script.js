@@ -15,7 +15,7 @@ var closeSignup = document.getElementsByClassName("signup-close")[0];
 // Add click event listeners to each button that opens the login modal
 openLogin.forEach(function(button) {
   button.onclick = function() {
-      loginModal.style.display = "block";
+      loginModal.style.display = "flex";
   };
 });
 
@@ -23,7 +23,7 @@ openLogin.forEach(function(button) {
 openSignup.forEach(function(button) {
   button.onclick = function() {
     loginModal.style.display = "none";
-    signupModal.style.display = "block";
+    signupModal.style.display = "flex";
   };
 });
 
@@ -42,9 +42,6 @@ window.onclick = function(event) {
   if (event.target == loginModal) {
     loginModal.style.display = "none";
   }
-  if (event.target == signupModal) {
-    signupModal.style.display = "none";
-  }
 }
 
 // Handle login form submission (for demonstration purposes)
@@ -60,6 +57,14 @@ document.getElementById("signup-form").onsubmit = function(event) {
   alert("Email: " + document.getElementById("signup-email").value + 
         "\nFirst Name: " + document.getElementById("first-name").value + 
         "\nLast Name: " + document.getElementById("last-name").value + 
-        "\nPassword: " + document.getElementById("signup-password").value);
+        "\nPassword: " + document.getElementById("signup-password").value +
+        "\nConfirm Password: " + document.getElementById("confirm-password").value +
+        "\nPhone #: " + document.getElementById("signup-phone").value);
   signupModal.style.display = "none";
 };
+
+function handleCredentialResponse(response) {
+  // Decode and handle the token (ID Token)
+  alert("Encoded JWT ID token: " + response.credential);
+  // Here you could send the ID token to your server for further verification or processing
+}
