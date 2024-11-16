@@ -33,7 +33,7 @@ def total_time(request):
     context = {
         'total_time': total_time
     }
-    return render(request, 'home.html', context)
+    return render(request, 'home.html', 'cart.html', context)
 
 def about(request):
     return render(request, 'about.html')
@@ -43,6 +43,17 @@ def contact(request):
 
 def cart(request):
     #mock items
+        # Current date is hard coded
+    date = "2024-12-06 00:00:00"
+    today = datetime.datetime.now()
+    # Specify the date format being provided
+    countdown_date = datetime.datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
+
+    # Calculate the time to the specified date from when the web is loaded
+    total_time = countdown_date - today
+    # Convert the total time to seconds
+    total_time = total_time.total_seconds()
+
     cart_items = [
         {'name': 'Item 1', 'price': 79.99,'size': 'M', 'image': 'photos/Itemimage1.png'},
         {'name': 'Item 2', 'price': 12.99,'size': 'M', 'image': 'photos/Itemimage2.png'},
@@ -54,8 +65,8 @@ def cart(request):
     # Calculate total price of items in the cart
     cart_total = sum(item['price'] for item in cart_items)
     cart_total = f"{cart_total:.3f}"
-    # Render the cart page with items and total
-    return render(request, 'cart.html', {'cart_items': cart_items, 'cart_total': cart_total})
+    # Render the cart page with items and total and timer count down
+    return render(request, 'cart.html', {'cart_items': cart_items, 'cart_total': cart_total, 'total_time': total_time,})
 
 def googleCalendar(request):
     iframe_code = '''
