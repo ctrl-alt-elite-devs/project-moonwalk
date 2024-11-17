@@ -99,8 +99,39 @@
             </div>
             <!-- Actions -->
             <div class="product-footer">
-                <a class="btn btn-outline-dark" href="#">Add to cart</a>
+                <products class="btn btn-outline-dark add-to-cart-btn" data-id="{{ product.id }}">Add to Cart</button>
             </div>
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script>
+                $(document).ready(function() {
+                    // Attach click event only once per element
+                    $('.add-to-cart-btn').each(function() {
+                        $(this).off('click').on('click', function(event) {
+                            event.preventDefault();
+            
+                            var productId = $(this).data('id');
+            
+                            $.ajax({
+                                url: '/add-to-cart/' + productId + '/',
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRFToken': '{{ csrf_token }}'
+                                },
+                                success: function(response) {
+                                    alert(response.message);
+                                },
+                                error: function(xhr, status, error) {
+                                    if (xhr.status === 400) {
+                                        alert(xhr.responseJSON.message); // "Already in cart" message
+                                    } else {
+                                        alert('Failed to add product to cart. Please try again.');
+                                    }
+                                }
+                            });
+                        });
+                    });
+                });
+            </script>
         </div>
         {% endfor %}
     </div>

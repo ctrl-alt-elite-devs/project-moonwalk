@@ -73,6 +73,18 @@
     color: #FFFFFF;
 }
 
+.add-to-cart-btn {
+    background-color: transparent;
+    color: #000; /* Dark text */
+    border: 1px solid #000; /* Dark border */
+    cursor: pointer;
+}
+
+.add-to-cart-btn:hover {
+    background-color: #000; /* Dark background on hover */
+    color: #fff; /* White text on hover */
+}
+
 /* Responsive Adjustments */
 @media (max-width: 768px) {
     .product-image {
