@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Payment</title>
+    <!-- a sandbox script to start for payment stuff -->
+    <!--<script src="https://sandbox.web.squarecdn.com/v0/square.js"></script>-->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/paymentPortal.css' %}">
+</head>
+<body class="paymentPortal">
+    <form class="payment">
+        <h1>Payment</h1>
+        <input type="tel" pattern="\d*" maxlength="19" class="paymentInput" id="creditCardNum" placeholder="Credit Card Number" autocomplete="on" required>
+        <!-- Expiration Date -->
+        <div class="expDate">
+            <div class="month">
+                <select name="Month">
+                    <option value="january">January</option>
+                    <option value="february">February</option>
+                    <option value="march">March</option>
+                    <option value="april">April</option>
+                    <option value="may">May</option>
+                    <option value="june">June</option>
+                    <option value="july">July</option>
+                    <option value="august">August</option>
+                    <option value="september">September</option>
+                    <option value="october">October</option>
+                    <option value="november">November</option>
+                    <option value="december">December</option>
+                </select>
+            </div>
+            <div class="year">
+                <select name="year">
+                    <option value="2024">2024</option>
+                    <option value="2025">2025</option>
+                    <option value="2026">2026</option>
+                    <option value="2027">2027</option>
+                    <option value="2028">2028</option>
+                    <option value="2029">2029</option>
+                    <option value="2030">2030</option>
+                    <option value="2031">2031</option>
+                    <option value="2032">2032</option>
+                    <option value="2033">2033</option>
+                    <option value="2034">2034</option>
+                    <option value="2035">2035</option>
+                    <option value="2036">2036</option>
+                    <option value="2037">2037</option>
+                    <option value="2038">2038</option>
+                    <option value="2039">2039</option>
+                    <option value="2040">2040</option>
+                    <option value="2041">2041</option>
+                    <option value="2042">2042</option>
+                    <option value="2043">2043</option>
+                    <option value="2044">2044</option>
+                    <option value="2045">2045</option>
+                    <option value="2046">2046</option>
+                    <option value="2047">2047</option>
+                    <option value="2048">2048</option>
+                    <option value="2049">2049</option>
+                    <option value="2050">2050</option>
+                </select>
+            </div>
+        </div>
+        <input type="text" class="paymentInput" id="cardExp" placeholder="MM/YY" autocomplete="on">
+        <input type="password" class="paymentInput" id="cvv" placeholder="CVV" autocomplete="on" maximum-scale="1">
+    </form>
+
+    <h1>Billing</h1>
+    <input type="text" class="paymentInput" id="firstName" placeholder="First Name" autocomplete="given-name">
+    <input type="text" class="paymentInput" id="lastName" placeholder="Last Name" autocomplete="on">
+    <input type="text" class="paymentInput" id="address" placeholder="Address" autocomplete="on">
+    <input type="text" class="paymentInput" id="aptNumber" placeholder="Apt. Suite">
+    <input type="text" class="paymentInput" id="city" placeholder="City" autocomplete="on">
+    <input list="states" class = paymentInput" id="state" autocomplete="on">
+    <input type="text" class="paymentInput" id="zipcode" placeholder="Zip Code" autocomplete="on">
+    <datalist id="states">
+        <option value="AL"></option>
+        <option value="AK"></option>
+        <option value="AZ"></option>
+        <option value="AR"></option>
+        <option value="AS"></option>
+        <option value="CA"></option>
+    </datalist>
+</body>
+
+<script>
+    var inputs = document.getElementsByClassName('paymentInput');
+    for (var i = 0; i < inputs.length; i++) {
+
+    }
+</script>
+</html>

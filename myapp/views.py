@@ -78,3 +78,5 @@ def listLocations(request):
     return JsonResponse({"status": "error", "message": "Invalid request number"})
 
 
+def paymentPortal(request):
+    return render(request, 'paymentPortal.html')

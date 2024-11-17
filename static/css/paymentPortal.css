@@ -1,0 +1,35 @@
+/* styling for paymentPortal.css */
+
+.paymentPortal {
+    margin: 5%;
+    align-items: center;
+}
+
+.paymentInput {
+    min-width: 95%;
+    min-height:100px;
+    font-size: 44px;
+    margin: 10px;
+    border-radius: 20px;
+    padding-left: 10px;
+}
+
+.year select,
+.month select {
+    font-size: 44px;
+
+    min-width: 45%;
+    min-height:100px;
+}
+
+.month select {
+    float: left;
+}
+
+.year select {
+    float: right;
+}
+
+input:invalid {
+    border: 1px solid red;
+}
