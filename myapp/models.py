@@ -32,6 +32,7 @@ class Product(models.Model):
     size = models.CharField(max_length=20)
     description = models.CharField(max_length=250, default='', blank=True, null=True)
     image = models.ImageField(upload_to='uploads/product/')
+    featured = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name

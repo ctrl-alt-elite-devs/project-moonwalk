@@ -7,9 +7,10 @@
 <div class="shop-filter">
     <button class="shop-filter-button" onclick="toggleDropdown()">Filter</button>
     <div class="shop-filter-content" id="shop-filter-content">
-        <a href="#">Option 1</a>
-        <a href="#">Option 2</a>
-        <a href="#">Option 3</a>
+        <a href="{% url 'shop' %}">All Products</a>
+        {% for category in categories %}
+            <a href="{% url 'shop-category' category.name %}">{{ category.name }}</a>
+        {% endfor %}
     </div>
 </div>
 

@@ -21,7 +21,8 @@ def home(request):
     # Convert the total time to seconds
     total_time = total_time.total_seconds()
     products = Product.objects.all()
-    return render(request, 'home.html', {'total_time': total_time, 'products':products})
+    featured = Product.objects.filter(featured=True)
+    return render(request, 'home.html', {'total_time': total_time, 'products':products, 'featured':featured})
     # return render(request, 'home.html')
 
 
@@ -41,20 +42,23 @@ def total_time(request):
     }
     return render(request, 'home.html', 'cart.html', context)
 
-def shop(request):
-    products = Product.objects.all()
-    return render(request, 'shop.html', {'products':products})
+def shop(request, foo=None):
+    # If a category is provided (foo), filter by category, else show all products
+    if foo:
+        foo = foo.replace('-', ' ')
+        try:
+            category = Category.objects.get(name=foo)
+            products = Product.objects.filter(category=category)
+        except Category.DoesNotExist:
+            messages.success(request, ("Category Doesn't Exist!"))
+            return redirect('shop')
+    else:
+        # No category, show all products
+        products = Product.objects.all()
+        category = None  # No category selected
 
-def category(request, foo):
-    foo = foo.replace('-', ' ')
-
-    try:
-        category = Category.objects.get(name=foo)
-        products = Product.objects.filter(category=category)
-        return render(request, 'shop.html', {'products':products, 'category':category})
-    except:
-        messages.success(request, ("Category Doesn't Exist!"))
-        return redirect('home')
+    categories = Category.objects.all()  # Pass all categories to the template
+    return render(request, 'shop.html', {'products': products, 'category': category, 'categories': categories})
 
 def about(request):
     return render(request, 'about.html')
