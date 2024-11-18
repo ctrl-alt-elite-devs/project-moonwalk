@@ -13,5 +13,5 @@ urlpatterns = [
     path('googleCalendar/', views.googleCalendar, name='googleCalendar'),
     path('listLocations/', views.listLocations, name='listLocations'),
     path('checkout/', views.checkout, name='checkout'),
-    path('orderSummary/', views.orderSummary, name='orderSummary')
+    path('product/<int:pk>', views.productDetails, name='productDetails'), # Product details page
 ]
