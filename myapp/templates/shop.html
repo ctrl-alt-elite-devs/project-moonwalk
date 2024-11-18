@@ -1,5 +1,89 @@
 {% extends 'base.html' %}
-{% block title %}About{% endblock %}
+{% load static %}
+{% block title %}Shop{% endblock %}
 {% block content %}
-<h1>About Us</h1>
+<h1>Shop</h1>
+<!-- Dropdown Button for Categories -->
+<div class="shop-filter">
+    <button class="shop-filter-button" onclick="toggleDropdown()">Filter</button>
+    <div class="shop-filter-content" id="shop-filter-content">
+        <a href="#">Option 1</a>
+        <a href="#">Option 2</a>
+        <a href="#">Option 3</a>
+    </div>
+</div>
+
+<section class="shop-product-section">
+    <div class="shop-product-grid">
+        {% for product in products %}
+        <div class="shop-product-card">
+            <!-- Image -->
+            <img class="shop-product-image" src="{{ product.image.url }}" alt="Product Image" />
+            <!-- Details -->
+            <div class="shop-product-body">
+                <h5 class="shop-product-title">{{ product.name }}</h5>
+                <p class="shop-product-price">${{ product.price }}</p>
+                <p class="shop-product-price">{{ product.size }}</p>
+            </div>
+            <!-- Actions -->
+            <div class="shop-product-footer">
+                <a class="btn btn-outline-dark" href="{% url 'productDetails' product.id %}">View Product</a>
+                <button class="btn btn-outline-dark shop-add-to-cart-btn" data-id="{{ product.id }}">Add to Cart</button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+
+    // Add to Cart Functionality
+    $(document).ready(function() {
+        // Attach click event only once per element
+        $('.shop-add-to-cart-btn').each(function() {
+            $(this).off('click').on('click', function(event) {
+                event.preventDefault();
+
+                var productId = $(this).data('id');
+
+                $.ajax({
+                    url: '/add-to-cart/' + productId + '/',
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        alert(response.message);
+                    },
+                    error: function(xhr, status, error) {
+                        if (xhr.status === 400) {
+                            alert(xhr.responseJSON.message); // "Already in cart" message
+                        } else {
+                            alert('Failed to add product to cart. Please try again.');
+                        }
+                    }
+                });
+            });
+        });
+    });
+    // Function to toggle the dropdown menu
+    function toggleDropdown() {
+        document.getElementById("shop-filter-content").classList.toggle("show");
+    }
+
+    // Close the dropdown if the user clicks outside of it
+    window.onclick = function(event) {
+        if (!event.target.matches('.shop-filter-button')) {
+            var dropdowns = document.getElementsByClassName("shop-filter-content");
+            for (var i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (openDropdown.classList.contains('show')) {
+                openDropdown.classList.remove('show');
+                }
+            }
+        }
+    }
+</script>
+
 {% endblock %}
