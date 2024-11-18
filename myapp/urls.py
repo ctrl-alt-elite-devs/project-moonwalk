@@ -14,4 +14,5 @@ urlpatterns = [
     path('listLocations/', views.listLocations, name='listLocations'),
     path('checkout/', views.checkout, name='checkout'),
     path('product/<int:pk>', views.productDetails, name='productDetails'), # Product details page
+    path('orderSummary/', views.orderSummary, name='orderSummary'),
 ]
