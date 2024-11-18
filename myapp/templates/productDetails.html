@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Home{% endblock %}
+{% block title %}Product Description{% endblock %}
 
 {% block content %}
 <!DOCTYPE HTML>
@@ -29,10 +29,10 @@
       <div class="product-details-img">
         <img src="{{ product.image.url }}" class="productImg" alt="missing img" height="300" width="300">
       </div>
-        <div class="card-body">
-          <p class="card-title"><strong>{{ product.name }}</strong></p>
+        <div class="product-card-body">
+          <p class="product-card-title"><strong>{{ product.name }}</strong></p>
           <br/>
-          <p class="card-text">{{ product.description }}</p>
+          <p class="product-card-text">{{ product.description }}</p>
           <br/><br/>
           <p><strong>Price: </strong>{{ product.price }}</p>
           <p><strong>Size: </strong>{{ product.size }}</p>
