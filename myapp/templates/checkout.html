@@ -30,6 +30,7 @@
 <div class="tabinfo" id="Delivery">
     <div class="deliver-home">
         <form action="payment.html" method="POST" class="shipping-form">
+            {% csrf_token %}
             <!--Shipping Address Information-->
             <h4>Shipping Address</h4>
             <input type="text" id="name" name="name" placeholder="First Name" required><br>
@@ -97,8 +98,10 @@
             <h4>Contact Information</h4>
             <input type="text" id="name" name="name" placeholder="Email Address" required><br>
             <input type="text" id="name" name="name" placeholder="Phone Number" required><br>
-            
-            <button type="submit" class="payment-button">Payment</button>
+
+            <div href="{% url 'payment' %}" class="paymentButton">
+                <button type="submit" class="payment-button">Payment</button>
+            </div>
         </form>
     </div>
 </div>
@@ -123,11 +126,6 @@
     }
     
     document.getElementsByClassName("tablinks")[0].click();
-    </script>
-
-    <script>
-        var nextPage = document.getElementById('paymentButton');
-        nextPage.addEventListener('click', )
     </script>
 
 {% endblock %}

@@ -1,23 +1,23 @@
 {% extends 'base.html' %}
 {% block title %}Payment{% endblock %}
 <head>
-    <meta charset="UTF-8">
-    <title>Payment</title>
     <!-- a sandbox script to start for payment stuff -->
-    <script type="text/javascript" src="https://sandbox.web.squarecdn.com/v1/square.js"></script>
+    <!-- <script type="text/javascript" src="https://sandbox.web.squarecdn.com/v1/square.js"></script>-->
     {% load static %}
-    <link rel="stylesheet" href="{% static 'css/paymentPortal.css' %}">
+    <link rel="stylesheet" href="{% static 'css/payment.css' %}">
 </head>
 {% block content %}
+<div class="payment_page">
     <form class="payment">
         <h1>Payment</h1>
-        <div id="digitalPayment">
-            <div id="google-pay"></div>
-            <div id="apple-pay"></div>
-        </div>
         <div id="paymentWrapper">
+            <div id="digitalPayment">
+                <div id="google-pay"></div>
+                <div id="apple-pay"></div>
+            </div>
+
             <div id="card"></div>
-            <button id="pay" type="button">Pay</button>
+            <button id="pay">Pay</button>
         </div>
 
         <!-- Old credit card input code. Simplified code is uptop
@@ -26,7 +26,7 @@
         <input type="text" class="paymentInput" id="cardExp" placeholder="MM/YY" autocomplete="on">
         <input type="password" class="paymentInput" id="cvv" placeholder="CVV" autocomplete="on" maximum-scale="1">-->
 
-        <h1>Billing</h1>
+        <!-- <h1>Billing</h1>
         <input type="text" class="paymentInput" id="firstName" placeholder="First Name" autocomplete="given-name">
         <input type="text" class="paymentInput" id="lastName" placeholder="Last Name" autocomplete="on">
         <input type="text" class="paymentInput" id="address" placeholder="Address" autocomplete="on">
@@ -41,9 +41,9 @@
             <option value="AR"></option>
             <option value="AS"></option>
             <option value="CA"></option>
-        </datalist>
+        </datalist> -->
     </form>
-    <button id="paymentButton">Pay</button>
+</div>
 
 <!-- credit card payment script -->
 <script>
@@ -66,7 +66,6 @@
             payButton.addEventListener('click', async ()=>{
                 const result = await card.tokenize();
                 if (result) {
-                    alert("beginning request");
                     fetch("{% url 'process_payment' %}", {
                         method: 'POST',
                         headers: {

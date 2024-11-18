@@ -3,6 +3,7 @@ import datetime
 from .models import Cart, Product
 from .square_service import client
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 import json
 import uuid
@@ -126,6 +127,7 @@ def googleCalendar(request):
     '''
     return render(request, 'googleCalendar.html', {'iframe_code': iframe_code})
 
+@csrf_exempt
 def checkout(request):
     return render(request, 'checkout.html')
 
