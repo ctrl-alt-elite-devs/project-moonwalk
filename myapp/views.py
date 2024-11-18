@@ -19,6 +19,7 @@ def home(request):
     products = Product.objects.all()
     return render(request, 'home.html', {'total_time': total_time, 'products':products})
     # return render(request, 'home.html')
+    
 
 def total_time(request):
     # Current date is hard coded
@@ -142,5 +143,11 @@ def listLocations(request):
         except Exception as e:
             return JsonResponse({"status": "error", "message": str(e)})
     return JsonResponse({"status": "error", "message": "Invalid request number"})
+
+
+# Creating the request for product details
+def productDetails(request,pk):
+    product = Product.objects.get(id=pk)
+    return render(request, 'productDetails.html', {'product': product})
 
 

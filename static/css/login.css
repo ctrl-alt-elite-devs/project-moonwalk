@@ -1,25 +1,25 @@
 /* Style the modal (background) */
 .login-modal {
     display: none; /* Hidden by default */
-    position: fixed; 
-    z-index: 1; 
+    position: fixed;
+    z-index: 1;
     left: 0;
     top: 0;
-    width: 100%; 
-    height: 100%; 
-    background-color: rgba(0,0,0,0.4); 
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
   justify-content: center;
     align-items: center;
   }
   .signup-modal {
     display: none;
-    position: fixed; 
-    z-index: 1; 
+    position: fixed;
+    z-index: 1;
     left: 0;
     top: 0;
-    width: 100%; 
-    height: 100%; 
-    background-color: rgba(0,0,0,0.4); 
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
     justify-content: center;
     align-items: center;
   }
@@ -27,7 +27,7 @@
   /* Modal content */
   .login-content {
     background-color: white;
-    margin: 15% auto; 
+    margin: 15% auto;
     padding: 20px;
     border: 1px solid #888;
     width: 350px;
@@ -37,7 +37,7 @@
     overflow-y: auto; /* Allow vertical scrolling */
   }
   .signup-content {
-    margin: 10% auto; 
+    margin: 10% auto;
   }
 
   #login-form label{
@@ -141,7 +141,7 @@
 }
 
 #terms-modal p,
-#terms-modal h3, 
+#terms-modal h3,
 #terms-modal h2 {
     text-align: left;
 }

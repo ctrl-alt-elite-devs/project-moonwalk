@@ -18,13 +18,13 @@
     <div class="countdown">
         <div class="time-unit">
             <!--id was added to each so the value can be changed through script-->
-            <span class="number" id="number_Days">00</span> 
+            <span class="number" id="number_Days"></span>
             <span class="colon">:</span>
-            <span class="number" id="number_Hours">00</span>
+            <span class="number" id="number_Hours"></span>
             <span class="colon">:</span>
-            <span class="number" id="number_Minutes">00</span>
+            <span class="number" id="number_Minutes"></span>
             <span class="colon">:</span>
-            <span class="number" id="number_Seconds">00</span>
+            <span class="number" id="number_Seconds"></span>
         </div>
         <div class="labels_time_units">
             <div class="label_days">Days</div>
@@ -34,55 +34,6 @@
         </div>
     </div>
 </div>
-<!--Countdown script-->
-<script>
-    // Get the time from python using django
-    var remainingTime_str = "{{ total_time }}";
-    var remainingTime = parseFloat(remainingTime_str);
-    console.log(remainingTime);
-    
-
-    // Define the function that will update the html values
-    function updateCountdown(){
-        console.log("Entered the function");
-        // Get each time units values
-        var days = Math.floor(remainingTime / 86400);
-        var hours = Math.floor((remainingTime % 86400) / 3600);
-        var minutes = Math.floor((remainingTime % 3600) / 60);
-        var seconds = Math.floor(remainingTime % 60);
-
-        console.log(days)
-        console.log(hours)
-        
-        // Format each unit
-        //days_str = String.format("%02d", days);
-        //hours_str = String.format("%02d", hours);
-        //minutes_str = String.format("%02d", minutes);
-        //seconds_str = String.format("%02d", seconds);
-
-        // Update the values here
-        document.getElementById("number_Days").innerHTML = days;
-        document.getElementById("number_Hours").innerHTML = hours;
-        document.getElementById("number_Minutes").innerHTML = minutes;
-        document.getElementById("number_Seconds").innerHTML = seconds;
-
-        // Check to see if no time remains
-        if (remainingTime <= 0) {
-                // Set values to 00
-                clearInterval(update);
-                document.getElementById("number_Days").innerHTML = "00";
-                document.getElementById("number_Hours").innerHTML = "00";
-                document.getElementById("number_Minutes").innerHTML = "00";
-                document.getElementById("number_Seconds").innerHTML = "00";
-
-        } else {
-                remainingTime--;
-        }
-    }
-    
-    // Update the timer every second
-    var update = setInterval(updateCountdown, 1000);
-</script>
 
 <!-- Product Section -->
 <section class="product-section">
@@ -99,6 +50,7 @@
             </div>
             <!-- Actions -->
             <div class="product-footer">
+                <a class="btn btn-outline-dark" href="{% url 'productDetails' product.id %}">View Product</a>
                 <products class="btn btn-outline-dark add-to-cart-btn" data-id="{{ product.id }}">Add to Cart</button>
             </div>
             <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

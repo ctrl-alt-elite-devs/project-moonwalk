@@ -1,0 +1,32 @@
+/* Root Variables */
+:root {
+    --border-color: #E0E0E0;
+    --font-color: #333333;
+    --hover-scale: 1.05;
+    --button-color: #333333;
+    --button-border-color: #333333;
+    --button-hover-color: #F46471;
+}
+
+.product-details-card{
+    border: 1px solid var(--button-border-color);
+    padding-left: .5rem;
+    margin: auto;
+    width: 20rem;
+}
+
+/* Button Styling */
+.product-details-footer .btn {
+    font-size: 0.875rem;
+    color: var(--button-color);
+    border: 1px solid var(--button-border-color);
+    padding: 0.5rem 1rem;
+    transition: background-color 0.3s, color 0.3s;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.product-details-footer .btn:hover {
+    background-color: var(--button-hover-color);
+    color: #FFFFFF;
+}
