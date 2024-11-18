@@ -29,7 +29,6 @@ footer {
 
     min-width: 255px;
     min-height: 29px;
-    max-width: 50%;
 
     border: 1px solid #000000;
     border-radius: 5px;
@@ -37,13 +36,19 @@ footer {
     align-self: center;
 }
 
+.subscribeInput::placeholder {
+    color: black;
+}
+
 /* Subscribe button */
-button {
+.subscribeButton {
     font-family: Roboto, sans-serif;
     font-style: normal;
     font-weight: normal;
-    font-size: 12px;
+    font-size: 16px;
     letter-spacing: 0.5px;
+
+    padding: 5px;
 
     color: #F46471;
 
@@ -51,7 +56,7 @@ button {
     border: 1px solid transparent;
     border-radius: 5px;
     min-width: 102px;
-    min-height: 40px;
+    min-height: 29px;
 }
 
 

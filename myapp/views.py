@@ -3,6 +3,8 @@ import datetime
 from .models import Product
 from .square_service import client
 from django.http import JsonResponse
+import json
+import uuid
 
 def home(request):
     # Current date is hard coded
@@ -79,4 +81,39 @@ def listLocations(request):
 
 
 def paymentPortal(request):
-    return render(request, 'paymentPortal.html')
+    square_app_id = 'sandbox-sq0idb-8IPgsCCDGo1xxuoCMh0SSQ'
+    square_location_id = 'LNG128XEAPR21'
+    context = {
+        "square_app_id": square_app_id,
+        "square_location_id": square_location_id
+    }
+    return render(request, 'paymentPortal.html', context)
+
+def process_payment(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        token = data.get("token")
+        amount = 100
+
+        #getting an uuid (for idempotency) (every payment needs one)
+
+        try:
+            result = client.payments.create_payment(
+                body = {
+                    "source_id": token,
+                    "idempotency_key": "7b0f3ec5-086a-4871-8f13-3c81b3875218",
+                    "amount_money": {
+                        "amount": amount,
+                        "currency": "USD"
+                    },
+                    "autocomplete": True,
+                    #"customer_id": "W92WH6P11H4Z77CTET0RNTGFW8",
+                    "note": "Brief description"
+                })
+            if result.is_success:
+                return JsonResponse({"status": "success", "payment_id}": result.body['payment']['id']})
+            else:
+                return JsonResponse({"status": "error", "errors": result.errors})
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)})
+    return JsonResponse({"status": "error", "message": "Invalid request method"})

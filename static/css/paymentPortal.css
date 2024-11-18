@@ -5,11 +5,15 @@
     align-items: center;
 }
 
+#pay {
+    min-width: 100px;
+}
 .paymentInput {
     min-width: 95%;
     min-height:100px;
     font-size: 44px;
     margin: 10px;
+    border-color: black;
     border-radius: 20px;
     padding-left: 10px;
 }
@@ -20,14 +24,18 @@
 
     min-width: 45%;
     min-height:100px;
+
+    -moz-appearance: none;
 }
 
 .month select {
     float: left;
+    font-size: 44px;
 }
 
 .year select {
     float: right;
+    font-size: 44px;
 }
 
 input:invalid {
