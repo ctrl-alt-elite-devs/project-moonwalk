@@ -118,9 +118,9 @@
             <p>Total: ${{ cart_total|floatformat:2 }}</p>
         </div>
 
-               <!-- Checkout Button -->
+            <!-- Checkout Button -->
         <div class="checkout">
-            <button>CHECKOUT</button>
+            <a href="{% url 'checkout' %}"><button>CHECKOUT</button></a>
         </div>
     </div>
 

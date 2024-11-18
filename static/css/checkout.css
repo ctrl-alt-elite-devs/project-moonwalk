@@ -1,0 +1,82 @@
+* {
+    box-sizing: border-box;
+}
+
+.order-type h1{
+    text-align: center;
+}
+
+.delivery-selection{
+    text-align: center;
+    margin: 20px;
+    border: solid 1px black;
+    border-radius: 5px;
+    height: 40px;
+    display: flex;
+    max-width: 100%;
+}
+
+.delivery-selection button{
+    background-color: transparent;
+    color: black;
+    width: 100%;
+    height: 40px;
+    padding: 0px;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.delivery-selection button:hover{
+    background-color: #F46471;
+}
+
+.store-pickup{
+    padding: 20px;
+    
+}
+
+.store-pickup h4{
+    margin: 0px;
+}
+
+.store-pickup p{
+    margin: 0px;
+}
+
+.deliver-home{
+    padding: 20px;
+    max-width: 100%;
+}
+
+.deliver-home h4 {
+    margin-bottom: 10px;
+}
+
+.deliver-home select, .deliver-home input {
+    padding: 10px;
+    font-size: 14px;
+    width: 100%;
+    background-color: transparent;
+    color: black;
+    border: solid 1px grey;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.deliver-home button, .store-pickup button {
+    background-color: #F46471;
+    color: black;
+    width: 100%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    height: 40px;
+}
+
+.deliver-home button:hover, .store-pickup button:hover {
+    color: white;
+}
+
+
+.delivery-selection .tablinks.active, .store-pickup .tablinks.active {
+    background-color: #F46471;
+}
