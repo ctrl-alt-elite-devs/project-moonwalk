@@ -10,7 +10,7 @@
 
 .product-details-card{
     border: 1px solid var(--button-border-color);
-    padding-left: 3rem;
+    padding-left: .5rem;
     margin: auto;
     width: 20rem;
 }
