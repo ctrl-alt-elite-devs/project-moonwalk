@@ -9,6 +9,7 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+    
 
 class Customer(models.Model):
     first_name = models.CharField(max_length=50)
@@ -19,6 +20,7 @@ class Customer(models.Model):
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
+    
 
 class Product(models.Model):
     name = models.CharField(max_length=100)
@@ -42,3 +44,12 @@ class Order(models.Model):
 
     def __str__(self):
         return self.product
+    
+class Cart(models.Model):
+    session_key = models.CharField(max_length=40, blank=True, null=True)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, blank=True, null=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'Cart for {self.customer or self.session_key}'

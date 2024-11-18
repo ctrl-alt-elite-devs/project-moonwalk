@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<!DOCTYPE HTML>
+<html lang="en">
+<!--The container that will hold all objects on the product_view page
+<div class="product_page">
+    Container responsible for holding the product image
+    <div class="product_image">
+        insert product img here
+        <p>This is the product page</p>
+        <img src="{{ product.image.url }}" class="productImg">
+    </div>
+    The container responsible for displaying product details
+        size, price, time left to buy
+    <div class="product_details">
+
+    </div>
+    The container responsible for buttons like "Add to cart" or "Back"
+    <div class="product_buttons">
+        
+    </div>
+</div> -->
+<br/><br/>
+<div class="product-details-card">
+      <div class="product-details-img">
+        <img src="{{ product.image.url }}" class="productImg" alt="missing img" height="300" width="300">
+      </div>
+        <div class="card-body">
+          <p class="card-title"><strong>{{ product.name }}</strong></p>
+          <br/>
+          <p class="card-text">{{ product.description }}</p>
+          <br/><br/>
+          <p><strong>Price: </strong>{{ product.price }}</p>
+          <p><strong>Size: </strong>{{ product.size }}</p>
+          <div class="product-details-footer">
+            <a class="btn btn-secondary" href="{% url 'home' %}">Back</a>
+            <a class="btn btn-outline-dark" href="#">Add to cart</a>
+          </div>
+        </div>
+    <br/><br/>
+</div>
+<br/><br/>
+
+</html>
+
+{% endblock %}
