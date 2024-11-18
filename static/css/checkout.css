@@ -2,9 +2,11 @@
     box-sizing: border-box;
 }
 
+
 .order-type h1{
     text-align: center;
 }
+
 
 .delivery-selection{
     text-align: center;
@@ -16,6 +18,7 @@
     max-width: 100%;
 }
 
+
 .delivery-selection button{
     background-color: transparent;
     color: black;
@@ -26,35 +29,42 @@
     font-size: 14px;
 }
 
+
 .delivery-selection button:hover{
     background-color: #F46471;
 }
 
+
 .store-pickup{
     padding: 20px;
-    
+
 }
+
 
 .store-pickup h4{
     margin: 0px;
 }
 
+
 .store-pickup p{
     margin: 0px;
 }
+
 
 .deliver-home{
     padding: 20px;
     max-width: 100%;
 }
 
+
 .deliver-home h4 {
     margin-bottom: 10px;
 }
 
+
 .deliver-home select, .deliver-home input {
     padding: 10px;
-    font-size: 14px;
+    font-size: 16px;
     width: 100%;
     background-color: transparent;
     color: black;
@@ -62,6 +72,7 @@
     border-radius: 5px;
     margin-bottom: 10px;
 }
+
 
 .deliver-home button, .store-pickup button {
     background-color: #F46471;
@@ -72,9 +83,12 @@
     height: 40px;
 }
 
+
 .deliver-home button:hover, .store-pickup button:hover {
     color: white;
 }
+
+
 
 
 .delivery-selection .tablinks.active, .store-pickup .tablinks.active {

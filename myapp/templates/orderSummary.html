@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block title %}OrderSummary{% endblock %}
+<head>
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/orderSummary.css' %}"/>
+</head>
+{% block content %}
+<div class="summary">
+<h1 class="order-summary-title">Order Summary</h1>
+<h3>Your Order Details</h3>
+<span id="display-method-items"></span>
+<p id="display-details"></p>
+
+
+<div id="delivery-details" style="display:none;">
+    <h4>Contact Information:</h4>
+    <p id="display-email"></p>
+    <p id="display-phone"></p>
+</div>
+
+
+<div id="pickup-details" style="display:none;">
+    <h4>MoonWalk Threads</h4>
+    <p>490 High St, Auburn, CA 95603</p>
+</div>
+
+
+<h4 class="payment-title">Payment</h4>
+<hr>
+<h3>Your Order Total</h3>
+</div>
+
+
+<script>
+window.onload = function() {
+    var deliveryMethod = localStorage.getItem('deliveryMethod');
+
+
+    if (deliveryMethod === 'Delivery') {
+        document.getElementById("display-method-items").innerText = 'Delivery to:'; // Show 'Delivery to:'
+
+
+        var firstName = localStorage.getItem('customerFirstName');
+        var lastName = localStorage.getItem('customerLastName');
+        var streetAddress = localStorage.getItem('customerStreetAddress');
+        var addressOptional = localStorage.getItem('customerAddressOptional');
+        var city = localStorage.getItem('customerCity');
+        var state = localStorage.getItem('customerState');
+        var zipCode = localStorage.getItem('customerZipCode');
+        var email = localStorage.getItem('customerEmail');
+        var phone = localStorage.getItem('customerPhone');
+
+
+        // Display the address and contact details
+        /*document.getElementById("display-name").innerText = firstName + " " + lastName;
+        document.getElementById("display-street").innerText = streetAddress + (addressOptional ? ", " + addressOptional : "");
+        document.getElementById("display-city-state-zip").innerText = city + ", " + state + " " + zipCode;*/
+        document.getElementById("display-email").innerText = email;
+        document.getElementById("display-phone").innerText = phone;
+        document.getElementById("display-details").innerText = firstName + " " + lastName + "\n" + streetAddress + (addressOptional ? ", " + addressOptional : "") + " " + city + ", " + state + " " + zipCode;
+
+
+        // Show the delivery details section
+        document.getElementById("delivery-details").style.display = "block";
+    } else if (deliveryMethod === 'Pickup') {
+        document.getElementById("display-method-items").innerText = 'Pick Up at Store'; // Show 'Pickup'
+        document.getElementById("pickup-details").style.display = "block";
+    } else {
+        document.getElementById("display-method-items").innerText = 'Not Selected'; // Default text if no method selected
+    }
+};
+</script>
+
+
+{% endblock %}
