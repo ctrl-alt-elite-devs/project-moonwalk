@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart View</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/cart.css' %}" />
+</head>
+<body>
+    <div class="cart-container">
+
+        <!-- Timer Section -->
+ <div class="countdown-container">
+        <div class="countdown-title">Time Left to Buy Items</div>
+        <div class="countdown-timer">
+            <div class="time-box">
+                <span id="number_Days">00</span>
+                <p>Days</p>
+            </div>
+            <div class="colon">:</div>
+            <div class="time-box">
+                <span id="number_Hours">00</span>
+                <p>Hrs</p>
+            </div>
+            <div class="colon">:</div>
+            <div class="time-box">
+                <span id="number_Minutes">00</span>
+                <p>Mins</p>
+            </div>
+            <div class="colon">:</div>
+            <div class="time-box">
+                <span id="number_Seconds">00</span>
+                <p>Secs</p>
+            </div>
+        </div>
+         
+        <script>
+            // Get the time from python using django
+            var remainingTime_str = "{{ total_time }}";
+            var remainingTime = parseFloat(remainingTime_str);
+            console.log(remainingTime);
+            
+        
+            // Define the function that will update the html values
+            function updateCountdown(){
+                console.log("Entered the function");
+                // Get each time units values
+                var days = Math.floor(remainingTime / 86400);
+                var hours = Math.floor((remainingTime % 86400) / 3600);
+                var minutes = Math.floor((remainingTime % 3600) / 60);
+                var seconds = Math.floor(remainingTime % 60);
+        
+                console.log(days)
+                console.log(hours)
+                
+                // Format each unit
+                //days_str = String.format("%02d", days);
+                //hours_str = String.format("%02d", hours);
+                //minutes_str = String.format("%02d", minutes);
+                //seconds_str = String.format("%02d", seconds);
+        
+                // Update the values here
+                document.getElementById("number_Days").innerHTML = days;
+                document.getElementById("number_Hours").innerHTML = hours;
+                document.getElementById("number_Minutes").innerHTML = minutes;
+                document.getElementById("number_Seconds").innerHTML = seconds;
+        
+                // Check to see if no time remains
+                if (remainingTime <= 0) {
+                        // Set values to 00
+                        clearInterval(update);
+                        document.getElementById("number_Days").innerHTML = "00";
+                        document.getElementById("number_Hours").innerHTML = "00";
+                        document.getElementById("number_Minutes").innerHTML = "00";
+                        document.getElementById("number_Seconds").innerHTML = "00";
+        
+                } else {
+                        remainingTime--;
+                }
+            }
+            
+            // Update the timer every second
+            var update = setInterval(updateCountdown, 1000);
+        </script>
+    </div>
+<!-- Cart items section -->
+<div class="cart-items">
+    <h2><center>Your Cart</center></h2>
+    <!-- Loop through cart items from the context -->
+    {% for item in cart_items %}
+    <div class="cart-item" id="cart-item-{{ item.id }}">
+        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" width="200" height="200">
+        <div class="item-details">
+            <h4>{{ item.product.name }}</h4>
+            <p>Price: ${{ item.product.price|floatformat:2 }} | Size: {{ item.product.size }}</p>
+        </div>
+
+        <div class="remove-item">
+            <button class="remove-btn" data-id="{{ item.id }}">
+                <img src="{% static 'icons/Trash1.svg' %}" alt="Remove" class="trash-icon">
+            </button>
+        </div>
+        <script>
+            $(document).ready(function() {
+                // Remove any previous event handlers before attaching a new one
+                $('.remove-btn').off('click').on('click', function(event) {
+                    event.preventDefault(); // Prevent default button behavior
+        
+                    var cartItemId = $(this).data('id'); // Get the cart item ID from the button's data attribute
+        
+                    $.ajax({
+                        url: '/remove-from-cart/' + cartItemId + '/', // Use the remove URL with the cart item ID
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}' // Include CSRF token for POST requests
+                        },
+                        success: function(response) {
+                            alert(response.message); // Show success message once
+                            $('#cart-item-' + cartItemId).remove(); // Remove the item from the DOM
+                            location.reload(); // Reload to update totals
+                        },
+                        error: function(xhr) {
+                            alert('Error: ' + xhr.responseJSON.message); // Show error message if something goes wrong
+                        }
+                    });
+                });
+            });
+        </script>
+    </div>
+    {% empty %}
+        <p>Your cart is empty.</p>
+    {% endfor %}
+
+    {% if cart_items %}
+        <div class="total-section">
+            <p>Items: ${{ total_price|floatformat:2 }}</p>
+            <p>Shipping & Taxes Calculated at Checkout</p>
+            <!-- Custom divider -->
+            <div class="divider"></div>
+            <p>Total: ${{ total_price|floatformat:2 }}</p>
+        </div>
+     {% endif %}
+            <!-- Checkout Button -->
+        <div class="checkout">
+            <a href="{% url 'checkout' %}"><button>CHECKOUT</button></a>
+        </div>
+    </div>
+
+        </div>
+    </div>
+</body>
+{% endblock %}

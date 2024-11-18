@@ -1,0 +1,96 @@
+/* Styling for the event subsection title */
+.event-subtitle {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: #000;
+    background-color: #F46471; /* Light pink background */
+    padding: 15px 0; /* Vertical padding only */
+    margin: 0 auto 20px auto; /* Center the title with space below */
+    width: 100%; /* Full width for responsiveness */
+    font-family: 'Roboto', sans-serif; /* Sets font style */
+}
+
+/* Container for the events section */
+.event-section {
+    max-width: 1000px;
+    margin: 80px auto; /* Centers the section on the page */
+    padding: 0 1rem; /* Adds padding for smaller screens */
+}
+
+/* Grid Layout for Events */
+.event-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Adjusts columns based on available space */
+    gap: 20px; /* Space between event boxes */
+    justify-items: center; /* Centers event boxes horizontally */
+}
+
+/* Individual event box styling */
+.event-box {
+    text-align: center;
+    border: 1px solid #E0E0E0; /* Optional: Add subtle border */
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Adds subtle shadow */
+    overflow: hidden; /* Ensures content stays within bounds */
+    padding: 10px; /* Adds internal spacing */
+    max-width: 300px; /* Optional: Limit box size on larger screens */
+    background-color: #fff; /* Optional: Add background color */
+}
+
+/* Styling for event images */
+.event-box img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    object-fit: cover;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* Adds subtle shadow to images */
+}
+
+/* Styling for event descriptions */
+.event-description {
+    margin-top: 10px;
+    font-size: 16px;
+    color: #333;
+    line-height: 1.5;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .event-subtitle {
+        font-size: 20px; /* Smaller font for title */
+        padding: 10px 0; /* Reduce padding */
+    }
+
+    .event-row {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Smaller column size for mobile */
+        gap: 15px; /* Reduce gap for better spacing */
+    }
+
+    .event-box {
+        padding: 8px; /* Reduce internal spacing */
+        max-width: 100%; /* Allow boxes to take full width */
+    }
+
+    .event-description {
+        font-size: 14px; /* Smaller font for descriptions */
+    }
+}
+
+@media (max-width: 480px) {
+    .event-subtitle {
+        font-size: 18px; /* Further reduce title size */
+    }
+
+    .event-row {
+        gap: 10px; /* Adjust spacing for very small screens */
+    }
+
+    .event-box {
+        padding: 5px; /* Minimize padding */
+    }
+
+    .event-description {
+        font-size: 12px; /* Smaller text for descriptions */
+    }
+}
