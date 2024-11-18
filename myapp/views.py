@@ -126,6 +126,9 @@ def googleCalendar(request):
 def checkout(request):
     return render(request, 'checkout.html')
 
+def orderSummary(request):
+    return render(request, 'orderSummary.html')
+
 #testing square api's
 def listLocations(request):
     if request.method == "GET":
