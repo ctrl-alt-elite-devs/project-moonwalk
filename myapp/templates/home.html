@@ -138,8 +138,7 @@
     </div>
 </div>
 
-
-
-<div class="viewmore"><a class="viewmore_button" href="{% url 'googleCalendar' %}" type="button">View More</a></div>
-
+<div class="viewmore-style" style="text-align: center; margin-bottom: 20px;">
+    <button onclick="window.location.href='{% url 'googleCalendar' %}'" type="button" id="viewmore_button">View More</button>
+</div>
 {% endblock %}
