@@ -32,7 +32,7 @@
 <!--Delivery Method-->
 <div class="tabinfo" id="Delivery">
     <div class="deliver-home">
-        <form action="{% url 'orderSummary' %}" method="POST" class="shipping-form" id="checkout-form">
+        <form action="payment.html" method="POST" class="shipping-form">
             {% csrf_token %}
             <!--Shipping Address Information-->
             <h4>Shipping Address</h4>

@@ -3,7 +3,10 @@ import datetime
 from .models import Cart, Product
 from .square_service import client
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
+import json
+import uuid
 
 def home(request):
     # Current date is hard coded
@@ -19,7 +22,7 @@ def home(request):
     products = Product.objects.all()
     return render(request, 'home.html', {'total_time': total_time, 'products':products})
     # return render(request, 'home.html')
-    
+
 
 def total_time(request):
     # Current date is hard coded
@@ -62,7 +65,7 @@ def cart(request):
         cart_items = Cart.objects.filter(session_key=request.session.session_key)
 
     total_price = sum(item.product.price for item in cart_items)
-    
+
     # Render the cart page with items and total and timer count down
     return render(request, 'cart.html', {'total_time': total_time,'cart_items': cart_items,
         'total_price': total_price})
@@ -124,6 +127,7 @@ def googleCalendar(request):
     '''
     return render(request, 'googleCalendar.html', {'iframe_code': iframe_code})
 
+@csrf_exempt
 def checkout(request):
     return render(request, 'checkout.html')
 
@@ -151,3 +155,40 @@ def productDetails(request,pk):
     return render(request, 'productDetails.html', {'product': product})
 
 
+def paymentPortal(request):
+    square_app_id = 'sandbox-sq0idb-8IPgsCCDGo1xxuoCMh0SSQ'
+    square_location_id = 'LNG128XEAPR21'
+    context = {
+        "square_app_id": square_app_id,
+        "square_location_id": square_location_id
+    }
+    return render(request, 'payment.html', context)
+
+def process_payment(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        token = data.get("token")
+        amount = 100
+
+        #getting an uuid (for idempotency) (every payment needs one)
+
+        try:
+            result = client.payments.create_payment(
+                body = {
+                    "source_id": token,
+                    "idempotency_key": "7b0f3ec5-086a-4871-8f13-3c81b3875218",
+                    "amount_money": {
+                        "amount": amount,
+                        "currency": "USD"
+                    },
+                    "autocomplete": True,
+                    #"customer_id": "W92WH6P11H4Z77CTET0RNTGFW8",
+                    "note": "Brief description"
+                })
+            if result.is_success:
+                return JsonResponse({"status": "success", "payment_id}": result.body['payment']['id']})
+            else:
+                return JsonResponse({"status": "error", "errors": result.errors})
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)})
+    return JsonResponse({"status": "error", "message": "Invalid request method"})
