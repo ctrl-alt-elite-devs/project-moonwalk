@@ -21,7 +21,8 @@ def home(request):
     # Convert the total time to seconds
     total_time = total_time.total_seconds()
     products = Product.objects.all()
-    return render(request, 'home.html', {'total_time': total_time, 'products':products})
+    featured = Product.objects.filter(featured=True)
+    return render(request, 'home.html', {'total_time': total_time, 'products':products, 'featured':featured})
     # return render(request, 'home.html')
 
 
