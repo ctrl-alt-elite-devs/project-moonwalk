@@ -1,5 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'base.html' %}
+{% block title %}Payment{% endblock %}
 <head>
     <meta charset="UTF-8">
     <title>Payment</title>
@@ -8,7 +8,7 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/paymentPortal.css' %}">
 </head>
-<body class="paymentPortal">
+{% block content %}
     <form class="payment">
         <h1>Payment</h1>
         <div id="digitalPayment">
@@ -44,7 +44,6 @@
         </datalist>
     </form>
     <button id="paymentButton">Pay</button>
-</body>
 
 <!-- credit card payment script -->
 <script>
@@ -156,4 +155,5 @@
         }
     })()
 </script>
-</html>
+
+{% endblock %}

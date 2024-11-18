@@ -1,6 +1,6 @@
 from django.shortcuts import render
 import datetime
-from .models import Product
+from .models import Cart, Product
 from .square_service import client
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
@@ -157,7 +157,7 @@ def paymentPortal(request):
         "square_app_id": square_app_id,
         "square_location_id": square_location_id
     }
-    return render(request, 'paymentPortal.html', context)
+    return render(request, 'payment.html', context)
 
 def process_payment(request):
     if request.method == 'POST':

@@ -13,6 +13,7 @@ urlpatterns = [
     path('googleCalendar/', views.googleCalendar, name='googleCalendar'),
     path('listLocations/', views.listLocations, name='listLocations'),
     path('checkout/', views.checkout, name='checkout'),
+    path('checkout/payment.html', views.paymentPortal, name='payment'),
     path('product/<int:pk>', views.productDetails, name='productDetails'), # Product details page
     path('process_payment/', views.process_payment, name='process_payment'),
 
