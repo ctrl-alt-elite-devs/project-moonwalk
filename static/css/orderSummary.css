@@ -3,12 +3,6 @@
     margin-top: 0px;
 }
 
-.details{
-    display: none;
-    margin: 0;
-    padding: 0;
-}
-
 #delivery-details p, #pickup-details p{
     margin: 0px;
 }
