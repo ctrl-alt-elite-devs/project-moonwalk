@@ -1,0 +1,46 @@
+.order-summary-title {
+text-align: center;
+margin-top: 0px;
+}
+
+
+#delivery-details p, #pickup-details p{
+margin: 0px;
+}
+
+
+#delivery-details h4{
+margin-bottom: 0px;
+}
+
+
+#pickup-details h4{
+margin: 0px;
+}
+
+
+#display-method-items {
+font-weight: bold;
+margin-bottom: 10px;
+}
+
+
+#display-details, #pickup-details{
+margin-top: 0px;
+}
+
+
+.summary{
+max-width: 100%;
+padding: 20px;
+}
+
+
+.payment-title{
+margin-top: 10px;
+}
+
+
+hr {
+background-color: grey;
+}
