@@ -4,6 +4,7 @@
     <!-- a sandbox script to start for payment stuff -->
     <!-- <script type="text/javascript" src="https://sandbox.web.squarecdn.com/v1/square.js"></script>-->
     {% load static %}
+    {% csrf_token %}
     <link rel="stylesheet" href="{% static 'css/payment.css' %}">
 </head>
 {% block content %}
@@ -17,7 +18,9 @@
             </div>
 
             <div id="card"></div>
-            <button id="pay">Pay</button>
+            <a id="payButtonContainer" href="{% url 'orderSummary' %}">
+                <button id="pay" type="button">Pay</button>
+            </a>
         </div>
 
         <!-- Old credit card input code. Simplified code is uptop
