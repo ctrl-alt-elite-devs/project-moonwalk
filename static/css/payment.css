@@ -1,0 +1,67 @@
+/* styling for payment.css */
+
+.payment_page {
+    margin: 10px;
+
+    align-items: center;
+}
+.paymentPortal {
+    margin: 5%;
+    align-items: center;
+}
+
+#paymentWrapper {
+    width: 95%;
+    align-self: center;
+}
+
+#pay {
+    position: relative;
+
+    margin-top: 5px;
+    padding: 10px 0;
+
+    min-width: 100px;
+    min-height: 50px;
+
+    font-size: 24px;
+    color: black;
+
+    background-color: white;
+
+    box-sizing: border-box;
+    border: 1px solid black;
+    border-radius: 10px;
+
+    cursor: pointer;
+    align-self: center;
+}
+
+#pay:hover {
+    background-color: #F46471;
+}
+
+#pay:active {
+    background-color: #F46471;
+}
+
+.digital-payment {
+    margin: 10px;
+}
+
+#google-pay {
+    max-width: 40%;
+}
+
+.paymentInput {
+    min-width: 95%;
+    min-height: 10%;
+    max-width: 95%;
+
+    font-size: 16px;
+    margin: 10px;
+    border-color: black;
+    border-radius: 20px;
+    padding-left: 10px;
+}
+

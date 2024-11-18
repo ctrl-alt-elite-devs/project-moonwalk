@@ -2,18 +2,20 @@
 {% block title %}CheckOut{% endblock %}
 <head>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'css/checkout.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/checkout.css' %}"/>
 </head>
 {% block content %}
 <div class="order-type">
     <h1>How Would You Like To Get Your Order?</h1>
 </div>
 
+
 <!--Tabs for Delivery and Pick Up: Choose which delivery method-->
 <div class="delivery-selection">
     <button class="tablinks" onclick="openTab(event, 'Delivery')">Delivery</button>
     <button class="tablinks" onclick="openTab(event, 'Pickup')">Pick Up at Store</button>
 </div>
+
 
 <!--PickUp Method-->
 <div class="tabinfo" id="Pickup">
@@ -22,24 +24,26 @@
         <br>
         <p>MoonWalk Threads</p>
         <p>Address: 490 High St, Auburn, CA 95603</p>
-        <button type="submit" class="payment-button">Payment</button>
+        <a href="{% url 'orderSummary' %}"><button type="submit" class="payment-button">Payment</button></a>
     </div>
 </div>
+
 
 <!--Delivery Method-->
 <div class="tabinfo" id="Delivery">
     <div class="deliver-home">
         <form action="payment.html" method="POST" class="shipping-form">
+            {% csrf_token %}
             <!--Shipping Address Information-->
             <h4>Shipping Address</h4>
-            <input type="text" id="name" name="name" placeholder="First Name" required><br>
-            <input type="text" id="name" name="name" placeholder="Last Name" required><br>
-            <input type="text" id="name" name="name" placeholder="Street Address" required><br>
-            <input type="text" id="name" name="name" placeholder="Apt, Suite, Building (Optional)" required><br>
-            <input type="text" id="name" name="name" placeholder="Zip Code" required><br>
-            <input type="text" id="name" name="name" placeholder="City" required><br>
+            <input type="text" id="customerFirstName" name="firstName" placeholder="First Name" pattern="[A-Za-z]+" required title="Please enter a valid first name (letters only)."><br>
+            <input type="text" id="customerLastName" name="lastName" placeholder="Last Name" pattern="[A-Za-z]+" title="Please enter a valid last name (letters only)." required><br>
+            <input type="text" id="customerStreetAddress" name="streetAddress" placeholder="Street Address" title="Please enter your street address." required><br>
+            <input type="text" id="customerAddressOptional" name="addressOptional" placeholder="Apt, Suite, Building (Optional)"><br>
+            <input type="text" id="customerZipCode" name="zipCode" placeholder="Zip Code" pattern="^\d{5}$" minlength="5" maxlength="5" required title="Zip code must be exactly 5 digits."><br>
+            <input type="text" id="customerCity" name="city" placeholder="City" pattern="[A-Za-z]+" title="Please enter a valid city name (letters only)."required><br>
             <!--Select States from Drop Down-->
-            <select class="states"> 
+            <select class="states" id="customerState">
                 <option value="AL">Alabama</option>
                 <option value="AK">Alaska</option>
                 <option value="AZ">Arizona</option>
@@ -95,16 +99,18 @@
         
             <!--Contact Information-->
             <h4>Contact Information</h4>
-            <input type="text" id="name" name="name" placeholder="Email Address" required><br>
-            <input type="text" id="name" name="name" placeholder="Phone Number" required><br>
-            
-            <button type="submit" class="payment-button">Payment</button>
+            <input type="email" id="customerEmail" name="email" placeholder="Email Address" title="Please enter a valid email address." required><br>
+            <input type="text" id="customerPhone" name="phone" placeholder="Phone Number" pattern="^\d{10}$" minlength="10" maxlength="10" required title="Phone number must be exactly 10 digits."><br>
+            <input type="hidden" id="delivery-method-items" name="delivery-method-items">
+            <a href="{% url 'orderSummary' %}"><button type="submit" class="payment-button">Payment</button></a>
         </form>
     </div>
 </div>
 
+
 <!--Script for the Tabs-->
 <script>
+    var selectedOption = "";
     function openTab(evt, tabName) {
         var i, tabinfo, tablinks;
     
@@ -120,9 +126,48 @@
     
         document.getElementById(tabName).style.display = "block";
         evt.currentTarget.className += " active";
+
+
+        selectedOption = tabName;
+        localStorage.setItem('deliveryMethod', selectedOption);
     }
-    
+    //Set Delivery to default
     document.getElementsByClassName("tablinks")[0].click();
+
+
+   //store variables from shipping address
+    document.getElementById('checkout-form').addEventListener('submit', function(event) {
+
+
+        var firstName = document.getElementById('customerFirstName').value;
+        var lastName = document.getElementById('customerLastName').value;
+        var streetAddress = document.getElementById('customerStreetAddress').value;
+        var addressOptional = document.getElementById('customerAddressOptional').value;
+        var zipCode = document.getElementById('customerZipCode').value;
+        var city = document.getElementById('customerCity').value;
+        var state = document.getElementById('customerState').value;
+
+
+        var email = document.getElementById('customerEmail').value;
+        var phone = document.getElementById('customerPhone').value;
+
+
+        localStorage.setItem('customerFirstName', firstName);
+        localStorage.setItem('customerLastName', lastName);
+        localStorage.setItem('customerStreetAddress', streetAddress);
+        localStorage.setItem('customerAddressOptional', addressOptional);
+        localStorage.setItem('customerZipCode', zipCode);
+        localStorage.setItem('customerCity', city);
+        localStorage.setItem('customerState', state);
+
+
+        localStorage.setItem('customerEmail', email);
+        localStorage.setItem('customerPhone', phone);
+
+
+        this.submit();
+    });
     </script>
+
 
 {% endblock %}

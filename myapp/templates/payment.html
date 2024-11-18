@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% block title %}Payment{% endblock %}
+<head>
+    <!-- a sandbox script to start for payment stuff -->
+    <!-- <script type="text/javascript" src="https://sandbox.web.squarecdn.com/v1/square.js"></script>-->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/payment.css' %}">
+</head>
+{% block content %}
+<div class="payment_page">
+    <form class="payment">
+        <h1>Payment</h1>
+        <div id="paymentWrapper">
+            <div id="digitalPayment">
+                <div id="google-pay"></div>
+                <div id="apple-pay"></div>
+            </div>
+
+            <div id="card"></div>
+            <button id="pay">Pay</button>
+        </div>
+
+        <!-- Old credit card input code. Simplified code is uptop
+        <input type="tel" inputmode="numeric" minlength="19" maxlength="19" class="paymentInput" id="creditCardNum"
+               placeholder="Credit Card Number" autocomplete="cc-number">
+        <input type="text" class="paymentInput" id="cardExp" placeholder="MM/YY" autocomplete="on">
+        <input type="password" class="paymentInput" id="cvv" placeholder="CVV" autocomplete="on" maximum-scale="1">-->
+
+        <!-- <h1>Billing</h1>
+        <input type="text" class="paymentInput" id="firstName" placeholder="First Name" autocomplete="given-name">
+        <input type="text" class="paymentInput" id="lastName" placeholder="Last Name" autocomplete="on">
+        <input type="text" class="paymentInput" id="address" placeholder="Address" autocomplete="on">
+        <input type="text" class="paymentInput" id="aptNumber" placeholder="Apt. Suite">
+        <input type="text" class="paymentInput" id="city" placeholder="City" autocomplete="on">
+        <input type="text" class="paymentInput" id="state" placeholder="State">
+        <input type="text" class="paymentInput" id="zipcode" placeholder="Zip Code" autocomplete="on">
+        <datalist id="states">
+            <option value="AL"></option>
+            <option value="AK"></option>
+            <option value="AZ"></option>
+            <option value="AR"></option>
+            <option value="AS"></option>
+            <option value="CA"></option>
+        </datalist> -->
+    </form>
+</div>
+
+<!-- credit card payment script -->
+<script>
+    (async()=>{
+        const payments = Square.payments(
+            '{{ square_app_id }}',
+            '{{ square_location_id }}'
+        );
+        const cardOptions = {
+            style: {
+                input: {
+                    backgroundColor: 'white'
+                },
+            }
+        };
+        try {
+            const card = await payments.card(cardOptions);
+            await card.attach('#card');
+            const payButton = document.getElementById('pay');
+            payButton.addEventListener('click', async ()=>{
+                const result = await card.tokenize();
+                if (result) {
+                    fetch("{% url 'process_payment' %}", {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        body: JSON.stringify({ token: result})
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                alert("Payment successful");
+                            } else {
+                                alert("Payment failed");
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
+                }
+                alert(JSON.stringify(result, null, 2));
+            })
+        } catch (e) {
+            console.error(e);
+        }
+    })()
+</script>
+
+<!-- google-pay payment option script -->
+<script>
+    (async()=>{
+        const payments = Square.payments(
+            'sandbox-sq0idb-8IPgsCCDGo1xxuoCMh0SSQ',
+            'LNG128XEAPR21'
+        );
+
+        const paymentRequest = payments.paymentRequest({
+            total: {
+                amount: "1.00",
+                label: "Total"
+            },
+            countryCode: "US",
+            currencyCode: "USD"
+        });
+
+        try{
+            const googlePay = await payments.googlePay(paymentRequest);
+            await googlePay.attach('#google-pay');
+
+            const googlePayButton = document.getElementById('google-pay');
+            googlePayButton.addEventListener('click', async () => {
+                const result = await googlePay.tokenize();
+                alert(JSON.stringify(result, null, 2));
+            })
+        } catch (e) {
+            console.error(e);
+        }
+    })()
+</script>
+
+<!-- apple-pay payment option-->
+<script>
+    (async()=>{
+        const payments = Square.payments(
+            'sandbox-sq0idb-8IPgsCCDGo1xxuoCMh0SSQ',
+            'LNG128XEAPR21'
+        );
+
+        const paymentRequest = payments.paymentRequest({
+            total: {
+                amount: "1.00",
+                label: "Total"
+            },
+            countryCode: "US",
+            currencyCode: "USD"
+        });
+
+        try{
+            const applePay = await payments.applePay(paymentRequest);
+
+            const applePayButton = document.getElementById('apple-pay');
+            applePayButton.style.display = 'inherit';
+            applePayButton.addEventListener('click', async () => {
+                const result = await applePay.tokenize();
+                alert(JSON.stringify(result, null, 2));
+            })
+        } catch (e) {
+            console.error(e);
+        }
+    })()
+</script>
+
+{% endblock %}
