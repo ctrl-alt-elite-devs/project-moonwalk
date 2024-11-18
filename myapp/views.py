@@ -19,6 +19,7 @@ def home(request):
     products = Product.objects.all()
     return render(request, 'home.html', {'total_time': total_time, 'products':products})
     # return render(request, 'home.html')
+    
 
 def total_time(request):
     # Current date is hard coded
@@ -123,6 +124,9 @@ def googleCalendar(request):
     '''
     return render(request, 'googleCalendar.html', {'iframe_code': iframe_code})
 
+def checkout(request):
+    return render(request, 'checkout.html')
+
 #testing square api's
 def listLocations(request):
     if request.method == "GET":
@@ -136,5 +140,11 @@ def listLocations(request):
         except Exception as e:
             return JsonResponse({"status": "error", "message": str(e)})
     return JsonResponse({"status": "error", "message": "Invalid request number"})
+
+
+# Creating the request for product details
+def productDetails(request,pk):
+    product = Product.objects.get(id=pk)
+    return render(request, 'productDetails.html', {'product': product})
 
 
