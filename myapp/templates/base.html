@@ -20,6 +20,7 @@
 
     <!-- Link to your custom CSS file -->
     <link rel="stylesheet" href="{% static 'css/homestyles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/shopstyles.css' %}">
     <link rel="stylesheet" href="{% static 'css/products.css' %}">
     <link rel="stylesheet" href="{% static 'css/footer.css' %}">
     <link rel="stylesheet" href="{% static 'css/login.css' %}">
@@ -41,6 +42,7 @@
     <div class="navbar">
         <ul class="links">
             <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="{% url 'shop' %}">Shop</a></li>
             <li><a href="{% url 'about' %}">About</a></li>
             <li><a href="{% url 'contact' %}">Contact</a></li>
         </ul>
@@ -56,6 +58,7 @@
     </div>
     <div class="dropdown">
         <li><a href="{% url 'home' %}">Home</a></li>
+        <li><a href="{% url 'shop' %}">Shop</a></li>
         <li><a href="{% url 'about' %}">About</a></li>
         <li><a href="{% url 'contact' %}">Contact</a></li>
         <li><a href="#" class="action_btn open_login">Login</a></li>

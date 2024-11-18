@@ -1,6 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 import datetime
-from .models import Cart, Product
+from django.contrib import messages
+from .models import Cart, Product, Category
 from .square_service import client
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -39,6 +40,21 @@ def total_time(request):
         'total_time': total_time
     }
     return render(request, 'home.html', 'cart.html', context)
+
+def shop(request):
+    products = Product.objects.all()
+    return render(request, 'shop.html', {'products':products})
+
+def category(request, foo):
+    foo = foo.replace('-', ' ')
+
+    try:
+        category = Category.objects.get(name=foo)
+        products = Product.objects.filter(category=category)
+        return render(request, 'shop.html', {'products':products, 'category':category})
+    except:
+        messages.success(request, ("Category Doesn't Exist!"))
+        return redirect('home')
 
 def about(request):
     return render(request, 'about.html')
