@@ -123,6 +123,9 @@ def googleCalendar(request):
     '''
     return render(request, 'googleCalendar.html', {'iframe_code': iframe_code})
 
+def checkout(request):
+    return render(request, 'checkout.html')
+
 #testing square api's
 def listLocations(request):
     if request.method == "GET":

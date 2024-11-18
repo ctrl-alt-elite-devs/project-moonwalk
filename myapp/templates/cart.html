@@ -141,9 +141,9 @@
             <p>Total: ${{ total_price|floatformat:2 }}</p>
         </div>
      {% endif %}
-               <!-- Checkout Button -->
+            <!-- Checkout Button -->
         <div class="checkout">
-            <button>CHECKOUT</button>
+            <a href="{% url 'checkout' %}"><button>CHECKOUT</button></a>
         </div>
     </div>
 

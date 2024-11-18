@@ -12,4 +12,5 @@ urlpatterns = [
     path('contact/', views.contact, name='contact'),
     path('googleCalendar/', views.googleCalendar, name='googleCalendar'),
     path('listLocations/', views.listLocations, name='listLocations'),
+    path('checkout/', views.checkout, name='checkout')
 ]
