@@ -17,8 +17,7 @@ urlpatterns = [
     path('product/<int:pk>', views.productDetails, name='productDetails'), # Product details page,
     path('orderSummary/', views.orderSummary, name='orderSummary'),
     path('checkout/payment.html', views.paymentPortal, name='payment'),
-    path('product/<int:pk>', views.productDetails, name='productDetails'), # Product details page
-    path('category/<str:foo>', views.category, name='category'),
+    path('shop/<str:foo>/', views.shop, name='shop-category'),
     path('process_payment/', views.process_payment, name='process_payment'),
 
     #following path is just to test payment portal
