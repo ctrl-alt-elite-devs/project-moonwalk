@@ -22,6 +22,8 @@
     <link rel="stylesheet" href="{% static 'css/products.css' %}">
     <link rel="stylesheet" href="{% static 'css/footer.css' %}">
     <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <link rel="stylesheet" href="{% static 'css/eventstyles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/checkout.css' %}">
     <link rel="stylesheet" href="{% static 'css/productDetails.css' %}">
 
     <script src="https://kit.fontawesome.com/34f0afb215.js" crossorigin="anonymous"></script>
@@ -60,7 +62,7 @@
     <!-- The Login Popup -->
     <div id="login-modal" class="login-modal">
         <div class="login-content">
-        <span class="login-close">&times;</span>
+        <span class="login-x login-close">&times;</span>
         <form id="login-form">
             <label for="email">Email</label>
             <input type="email" id="email" name="email" required>
@@ -69,13 +71,103 @@
             <input type="password" id="password" name="password" required>
     
             <button type="submit" class="login-btn" id="login-button">Log In</button>
+
             <ul id="locations-list"></ul>
+            
             <div class="forgot-create-container">
                 <a href="#" class="forgot-password">Forgot Password</a>
-                <a href="#" class="create-account">Create Account</a>
+                <a href="#" class="create-account open_signup">Create Account</a>
+            </div>
+
+            <!-- Placeholder for the Google Sign-In button -->
+            <div id="g_id_onload"
+                data-client_id="967536116046-niqbv6jvmqddk43u38pmhq6caqmohlur.apps.googleusercontent.com"
+                data-callback="handleCredentialResponse">
+            </div>
+
+            <div class="g_id_signin"
+                data-type="standard"
+                data-size="large"
+                data-theme="outline"
+                data-text="sign_in_with"
+                data-shape="rectangular"
+                data-logo_alignment="left">
             </div>
 
         </form>
+        </div>
+    </div>
+    <!-- The Create Account Popup -->
+    <div id="signup-modal" class="signup-modal">
+        <div class="signup-content login-content">
+            <span class="login-x signup-close">&times;</span>
+            <form id="signup-form">
+                <label for="email">Email</label>
+                <input type="email" id="signup-email" name="email" required>
+
+                <div class = "name-row-container">
+                    <div class = "name-container">
+                        <label for="first-name">First Name</label>
+                        <input type="first-name" id="first-name" name="first-name" required>
+                    </div>
+                    <div class = "name-container">
+                        <label for="last-name">Last Name</label>
+                        <input type="last-name" id="last-name" name="last-name" required>
+                    </div>
+                </div>
+               
+                <label for="password">Password</label>
+                <input type="password" id="signup-password" name="password" required>
+
+                <label for="password">Confirm Password</label>
+                <input type="password" id="confirm-password" name="password" required>
+
+                <label for="phone">(Optional) Phone Number</label>
+                <input type="tel" id="signup-phone" name="phone" >
+
+                <div class="checkbox-container">
+                    <label class="checkbox-label"><input type="checkbox" id="text-checkbox"> Would you like to receive updates via text message?</label><br>
+                    <label class="checkbox-label"><input type="checkbox" id="email-checkbox"> Would you like to receive updates via email?</label><br>
+                    <label class="checkbox-label"><input type="checkbox" id="agreement-checkbox"> Do you agree to the <a href="#" class="terms-link">Terms of Service</a></label><br>
+                </div>
+                <button type="submit" class="create-account-btn login-btn">Create Account</button>
+            </form>
+            </div>
+    </div>
+    <div id="terms-modal" class="login-modal">
+        <div class="login-content">
+        <span class="login-x terms-close">&times;</span>
+
+        <h2>Terms of Service</h2>
+        <p>Last updated: November 2024</p>
+
+        <h3>1. Acceptance of Terms</h3>
+        <p>By accessing or using our service, you agree to comply with and be bound by these Terms of Service, and all applicable laws and regulations. If you do not agree to these terms, do not use our service.</p>
+
+        <h3>2. User Responsibilities</h3>
+        <p>You are responsible for your actions while using our service. You agree not to misuse the service for unlawful purposes or in a manner that could damage, disable, overburden, or impair the functionality of the service.</p>
+
+        <h3>3. Privacy Policy</h3>
+        <p>Your use of the service is also governed by our Privacy Policy, which outlines how we collect, use, and protect your personal information. Please review our Privacy Policy for more details.</p>
+
+        <h3>4. Account Creation</h3>
+        <p>In order to access certain features, you may need to create an account. You agree to provide accurate, current, and complete information during the registration process, and to keep your account credentials secure.</p>
+
+        <h3>5. Termination of Access</h3>
+        <p>We reserve the right to suspend or terminate your access to the service at our discretion, without notice, for violations of these Terms of Service or any other behavior that may harm the service or other users.</p>
+
+        <h3>6. Limitation of Liability</h3>
+        <p>We are not liable for any direct, indirect, incidental, special, or consequential damages arising out of or related to your use or inability to use the service. Our liability is limited to the maximum extent permitted by law.</p>
+
+        <h3>7. Changes to Terms</h3>
+        <p>We reserve the right to update or modify these Terms of Service at any time. We will notify you of any significant changes by posting an updated version on this page. Your continued use of the service after such changes will constitute your acceptance of the modified terms.</p>
+
+        <h3>8. Governing Law</h3>
+        <p>These Terms of Service are governed by the laws of [Your Country/Region]. Any disputes will be subject to the jurisdiction of the courts in [Your Location].</p>
+
+        <h3>9. Contact Information</h3>
+        <p>If you have any questions about these Terms of Service, please contact us at [Your Contact Information].</p>
+
         </div>
     </div>
 
@@ -102,6 +194,8 @@
             });
         });
     </script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="{% static 'scripts/login-script.js' %}"></script>
 
     {% block content %}
     {% endblock %}
@@ -151,6 +245,6 @@
             dropDownMenu.classList.toggle('open')
         }
     </script>
-    <script src="{% static 'scripts/login-script.js' %}"></script>
+
 </body>
 </html>

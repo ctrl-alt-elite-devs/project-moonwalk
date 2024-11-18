@@ -18,7 +18,7 @@
     <div class="countdown">
         <div class="time-unit">
             <!--id was added to each so the value can be changed through script-->
-            <span class="number" id="number_Days"></span> 
+            <span class="number" id="number_Days"></span>
             <span class="colon">:</span>
             <span class="number" id="number_Hours"></span>
             <span class="colon">:</span>
@@ -50,50 +50,95 @@
             </div>
             <!-- Actions -->
             <div class="product-footer">
-                <a class="btn btn-outline-dark" href="#">Add to cart</a>
                 <a class="btn btn-outline-dark" href="{% url 'productDetails' product.id %}">View Product</a>
+                <products class="btn btn-outline-dark add-to-cart-btn" data-id="{{ product.id }}">Add to Cart</button>
             </div>
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script>
+                $(document).ready(function() {
+                    // Attach click event only once per element
+                    $('.add-to-cart-btn').each(function() {
+                        $(this).off('click').on('click', function(event) {
+                            event.preventDefault();
+            
+                            var productId = $(this).data('id');
+            
+                            $.ajax({
+                                url: '/add-to-cart/' + productId + '/',
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRFToken': '{{ csrf_token }}'
+                                },
+                                success: function(response) {
+                                    alert(response.message);
+                                },
+                                error: function(xhr, status, error) {
+                                    if (xhr.status === 400) {
+                                        alert(xhr.responseJSON.message); // "Already in cart" message
+                                    } else {
+                                        alert('Failed to add product to cart. Please try again.');
+                                    }
+                                }
+                            });
+                        });
+                    });
+                });
+            </script>
         </div>
         {% endfor %}
     </div>
 </section>
 
 
-<!-- Events Section -->
-<div class="header">
-    <h1>EVENTS</h1>
-</div>
-<div class="event-container">
-    <!-- First Event -->
-    <div class="event-box">
-        <div class="event-image">
-            <img src="{% static 'images/image5.png' %}" alt="Event Image">
-        </div>
-        <div class="event-info">
-            <textarea placeholder="First Event Info"></textarea>
-        </div>
-    </div>
+<div class="event-section">
+    <!-- Events Subheading -->
+    <h2 class="event-subtitle">Upcoming Events</h2>
 
-    <!-- Second Event -->
-    <div class="event-box">
-        <div class="event-image">
-            <img src="{% static 'images/image5.png' %}" alt="Event Image">
+    <!-- Events Row -->
+    <div class="event-row">
+        <!-- First Event -->
+        <div class="event-box">
+            <img src="{% static 'images/events1.jpg' %}" alt="Event 1 Image">
+            <p class="event-description">
+                <strong>Name:</strong> Auburn's Giveaway<br>
+                <strong>Date:</strong> December 1, 2024<br>
+                <strong>Description:</strong> Get lucky on this giveaway event!
+            </p>
         </div>
-        <div class="event-info">
-            <textarea placeholder="Second Event Info"></textarea>
-        </div>
-    </div>
 
-    <!-- Third Event -->
-    <div class="event-box">
-        <div class="event-image">
-            <img src="{% static 'images/image5.png' %}" alt="Event Image">
+        <!-- Second Event -->
+        <div class="event-box">
+            <img src="{% static 'images/events2.jpg' %}" alt="Event 2 Image">
+            <p class="event-description">
+                <strong>Name:</strong> Not Your Boyfriend's Market<br>
+                <strong>Date:</strong> December 10, 2024<br>
+                <strong>Description:</strong>Vintage Clothes and more!
+            </p>
         </div>
-        <div class="event-info">
-            <textarea placeholder="Third Event Info"></textarea>
+
+        <!-- Third Event -->
+        <div class="event-box">
+            <img src="{% static 'images/events3.jpg' %}" alt="Event 3 Image">
+            <p class="event-description">
+                <strong>Name:</strong> Christmas Sale<br>
+                <strong>Date:</strong> December 25, 2024<br>
+                <strong>Description:</strong>Get your hands on the biggest sale this year!
+            </p>
+        </div>
+
+        <!-- Fourth Event -->
+        <div class="event-box">
+            <img src="{% static 'images/events4.jpeg' %}" alt="Event 4 Image">
+            <p class="event-description">
+                <strong>Name:</strong> Hoco Dresses Sale<br>
+                <strong>Date:</strong> January 25, 2024<br>
+                <strong>Description:</strong> Shop over 50 homecoming dresses!
+            </p>
         </div>
     </div>
 </div>
+
+
 
 <div class="viewmore"><a class="viewmore_button" href="{% url 'googleCalendar' %}" type="button">View More</a></div>
 
