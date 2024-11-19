@@ -2,7 +2,6 @@
 
 .payment_page {
     margin: 10px;
-
     align-items: center;
 }
 .paymentPortal {
@@ -45,12 +44,10 @@
     background-color: #F46471;
 }
 
-.digital-payment {
+#digital-payment {
     margin: 10px;
-}
-
-#google-pay {
-    max-width: 40%;
+    display: flex;
+    align-items: center;
 }
 
 .paymentInput {

@@ -2,6 +2,7 @@
 {% block title %}CheckOut{% endblock %}
 <head>
     {% load static %}
+    {% csrf_token %}
     <link rel="stylesheet" href="{% static 'css/checkout.css' %}"/>
 </head>
 {% block content %}
@@ -24,7 +25,7 @@
         <br>
         <p>MoonWalk Threads</p>
         <p>Address: 490 High St, Auburn, CA 95603</p>
-        <a href="{% url 'orderSummary' %}"><button type="submit" class="payment-button">Payment</button></a>
+        <a><button type="submit" class="payment-button" id="payment-proceed" onclick="showPayment()">Payment</button></a>
     </div>
 </div>
 
@@ -32,7 +33,7 @@
 <!--Delivery Method-->
 <div class="tabinfo" id="Delivery">
     <div class="deliver-home">
-        <form action="payment.html" method="POST" class="shipping-form">
+        <form onsubmit="showPayment2();return false" method="POST" class="shipping-form" id="checkout-form">
             {% csrf_token %}
             <!--Shipping Address Information-->
             <h4>Shipping Address</h4>
@@ -102,11 +103,21 @@
             <input type="email" id="customerEmail" name="email" placeholder="Email Address" title="Please enter a valid email address." required><br>
             <input type="text" id="customerPhone" name="phone" placeholder="Phone Number" pattern="^\d{10}$" minlength="10" maxlength="10" required title="Phone number must be exactly 10 digits."><br>
             <input type="hidden" id="delivery-method-items" name="delivery-method-items">
-            <a href="{% url 'orderSummary' %}"><button type="submit" class="payment-button">Payment</button></a>
+
+            <!--<a href="{% url 'payment' %}">-->
+                <button type="button" class="payment-button" id="payment-proceed-2" onclick="showPayment2()">Payment</button>
+            <!-- </a> -->
         </form>
     </div>
+
 </div>
 
+<div class="payment-stuff" id="payment" style="display:none">
+    <div id="card"></div>
+    <a id="payButtonContainer" href="{% url 'orderSummary' %}">
+        <button id="pay" type="button">Pay</button>
+    </a>
+</div>
 
 <!--Script for the Tabs-->
 <script>
@@ -136,9 +147,9 @@
 
 
    //store variables from shipping address
-    document.getElementById('checkout-form').addEventListener('submit', function(event) {
+    document.getElementById('payment-proceed-2').addEventListener('click', function(event) {
 
-
+        console.log("submitting values");
         var firstName = document.getElementById('customerFirstName').value;
         var lastName = document.getElementById('customerLastName').value;
         var streetAddress = document.getElementById('customerStreetAddress').value;
@@ -164,10 +175,77 @@
         localStorage.setItem('customerEmail', email);
         localStorage.setItem('customerPhone', phone);
 
+        //this.submit();
 
-        this.submit();
+        //window.location.href = "{% url 'orderSummary' %}";
     });
     </script>
+
+<!-- script for payment card -->
+<script>
+    function showPayment() {
+        event.preventDefault();
+        var payment = document.getElementById('payment');
+        payment.style.display = '';
+
+        var paymentProceed = document.getElementById('payment-proceed');
+        paymentProceed.style.display = 'none';
+    }
+
+    function showPayment2() {
+        event.preventDefault()
+        var payment = document.getElementById('payment');
+        payment.style.display = '';
+
+        var paymentProceed = document.getElementById('payment-proceed-2');
+        paymentProceed.style.display = 'none';
+    }
+</script>
+
+<script>
+    (async()=>{
+        const payments = Square.payments(
+            'sandbox-sq0idb-8IPgsCCDGo1xxuoCMh0SSQ',
+            'LNG128XEAPR21'
+        );
+        const cardOptions = {
+            style: {
+                input: {
+                    backgroundColor: 'white'
+                },
+            }
+        };
+        try {
+            const card = await payments.card(cardOptions);
+            await card.attach('#card');
+            const payButton = document.getElementById('pay');
+            payButton.addEventListener('click', async ()=>{
+                const result = await card.tokenize();
+                if (result) {
+                    fetch("{% url 'process_payment' %}", {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        body: JSON.stringify({ token: result})
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                alert("Payment successful");
+                            } else {
+                                alert("Payment failed");
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
+                }
+                alert(JSON.stringify(result, null, 2));
+            })
+        } catch (e) {
+            console.error(e);
+        }
+    })()
+</script>
 
 
 {% endblock %}
