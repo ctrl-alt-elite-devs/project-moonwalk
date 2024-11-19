@@ -9,43 +9,18 @@
 </head>
 {% block content %}
 <div class="payment_page">
-    <form class="payment">
-        <h1>Payment</h1>
-        <div id="paymentWrapper">
-            <div id="digitalPayment">
-                <div id="google-pay"></div>
-                <div id="apple-pay"></div>
-            </div>
-
-            <div id="card"></div>
-            <a id="payButtonContainer" href="{% url 'orderSummary' %}">
-                <button id="pay" type="button">Pay</button>
-            </a>
+    <h1>Payment</h1>
+    <div id="paymentWrapper">
+        <div id="digitalPayment">
+            <div id="google-pay-button"></div>
+            <!-- <div id="apple-pay"></div> -->
         </div>
 
-        <!-- Old credit card input code. Simplified code is uptop
-        <input type="tel" inputmode="numeric" minlength="19" maxlength="19" class="paymentInput" id="creditCardNum"
-               placeholder="Credit Card Number" autocomplete="cc-number">
-        <input type="text" class="paymentInput" id="cardExp" placeholder="MM/YY" autocomplete="on">
-        <input type="password" class="paymentInput" id="cvv" placeholder="CVV" autocomplete="on" maximum-scale="1">-->
-
-        <!-- <h1>Billing</h1>
-        <input type="text" class="paymentInput" id="firstName" placeholder="First Name" autocomplete="given-name">
-        <input type="text" class="paymentInput" id="lastName" placeholder="Last Name" autocomplete="on">
-        <input type="text" class="paymentInput" id="address" placeholder="Address" autocomplete="on">
-        <input type="text" class="paymentInput" id="aptNumber" placeholder="Apt. Suite">
-        <input type="text" class="paymentInput" id="city" placeholder="City" autocomplete="on">
-        <input type="text" class="paymentInput" id="state" placeholder="State">
-        <input type="text" class="paymentInput" id="zipcode" placeholder="Zip Code" autocomplete="on">
-        <datalist id="states">
-            <option value="AL"></option>
-            <option value="AK"></option>
-            <option value="AZ"></option>
-            <option value="AR"></option>
-            <option value="AS"></option>
-            <option value="CA"></option>
-        </datalist> -->
-    </form>
+        <div id="card"></div>
+        <a id="payButtonContainer" href="{% url 'orderSummary' %}">
+            <button id="pay" type="button">Pay</button>
+        </a>
+    </div>
 </div>
 
 <!-- credit card payment script -->
@@ -113,9 +88,9 @@
 
         try{
             const googlePay = await payments.googlePay(paymentRequest);
-            await googlePay.attach('#google-pay');
+            await googlePay.attach('#google-pay-button');
 
-            const googlePayButton = document.getElementById('google-pay');
+            const googlePayButton = document.getElementById('google-pay-button');
             googlePayButton.addEventListener('click', async () => {
                 const result = await googlePay.tokenize();
                 alert(JSON.stringify(result, null, 2));

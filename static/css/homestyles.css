@@ -224,7 +224,7 @@ a:hover {
 }
 
 .dropdown.open{
-    height: 220px;
+    min-height: 220px;
 }
 
 .dropdown li {

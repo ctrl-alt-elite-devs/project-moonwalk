@@ -141,6 +141,8 @@ body {
     text-align: center;
     background-color: #F46471;
     padding: 0.625rem;
+
+    align-items: center;
 }
 
 .checkout button {
@@ -152,6 +154,15 @@ body {
     cursor: pointer;
     border-radius: .3125rem;
     font-weight: bold;
+
+    min-width: 240px;
+    min-height: 40px;
+}
+
+.digitalPayment {
+    background-color: #F46471;
+    display: flex;
+    justify-content: center;
 }
 
 
