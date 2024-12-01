@@ -101,8 +101,65 @@ Or if you want to undo changes already commited within your current branch you c
 
 You can get the commit hashes from github's tracking system
 
+# Software Images
+![software-min](https://github.com/user-attachments/assets/484527e3-3f58-4b02-84dc-4e6f93c08576)
+
+# Prototype
+![figmaPrototype-min](https://github.com/user-attachments/assets/d35413ee-6d58-40a3-aadb-1eb9f3c363c8)
+
+# Product
+![demoWebsite-min](https://github.com/user-attachments/assets/83cc6900-0a6c-491a-bf6a-f1795368dede)
+
 # ER Diagram
 
 ![image](https://github.com/user-attachments/assets/9735b085-cd8b-4829-a7fb-260fb5d25627)
 
+# Tentative Timeline
+Sprint 5
+
+* Have the UI look presentable on mobile and web view.
+
+* Readjust the UI to make sure the same components have the same style, to have consistency.
+
+* Finish the shipping and payment front end.
+
+* Start the shipping and payment back end. 
+
+* Finish the detailed view of the product details.
+
+* Decide if we want to use Google Calendar or database for events and get started on the backend. 
+
+* Finalization on the cart. 
+
+Sprint 6
+
+* Begin on admin view. 
+
+* Manage product
+
+* Manage orders
+
+* Manage customers
+
+* Implement the search bar to browse and search for products.
+
+* Create a user profile.
+
+* Implement order confirmation and tracking with Square. 
+
+* Implement discounts codes and view promotions. 
+
+* Implement SEO.
+
+Sprint 7
+
+* Testing
+
+Sprint 8
+
+* Testing
+
+Sprint 9
+
+* Testing
 
