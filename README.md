@@ -101,3 +101,8 @@ Or if you want to undo changes already commited within your current branch you c
 
 You can get the commit hashes from github's tracking system
 
+# ER Diagram
+
+![image](https://github.com/user-attachments/assets/52c7432d-58cb-47de-ad5f-0416ac1aa44f)
+
+
