@@ -103,6 +103,6 @@ You can get the commit hashes from github's tracking system
 
 # ER Diagram
 
-![image](https://github.com/user-attachments/assets/52c7432d-58cb-47de-ad5f-0416ac1aa44f)
+![image](https://github.com/user-attachments/assets/9735b085-cd8b-4829-a7fb-260fb5d25627)
 
 
