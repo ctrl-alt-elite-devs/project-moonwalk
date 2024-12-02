@@ -10,6 +10,22 @@ Contributors:
 * Tyler Judt-Martine
 * Nazar Potapchuk
 
+This is the repository for Moonwalk Threads vintage clothing store website built with Django, showcasing a collection of curated, high-quality vintage apparel. The website provides an e-commerce platform where users can browse, view, and purchase unique, one-of-a-kind clothing items from various eras.
+
+Features:
+* Product Listings: A dynamic page displaying available clothing items, including details like size, price, and photos.
+* Product Categories: Items are categorized by type (e.g., jackets, dresses, accessories) for easy browsing.
+* Shopping Cart: Users can add products to their cart, view their selections, and proceed to checkout.
+* User Authentication: Users can sign up, log in, and manage their accounts.
+* Admin Panel: Admins can manage product listings, update stock, and handle orders through Django's built-in admin interface.
+* Mobile-Friendly Design: The website is fully responsive, prioritizing mobile design first and expanding to desktop view.
+* Integrated Payments: (Future feature) Integration with payment gateways for secure online transactions.
+
+Technologies Used:
+* Django: The backend framework for building and managing the website’s functionality.
+* HTML/CSS/JavaScript: For the frontend design and interactivity.
+* SQLite (or PostgreSQL/MySQL for production): Used for the database to store product and user information.
+
 Ensure python is installed and added to PATH, then in a terminal run:
     
     pip install django
