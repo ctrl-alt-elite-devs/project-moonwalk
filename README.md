@@ -30,6 +30,14 @@ Ensure python is installed and added to PATH, then in a terminal run:
     
     pip install django
 
+In case modules are missing be sure to run these before trying to run the server:
+
+    python -m pip install squareup
+    
+AND
+
+    python -m pip install python-dotenv
+
 To run the server enter the following while in the main directory project-moonwalk:
   
     python manage.py runserver
