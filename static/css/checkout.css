@@ -106,7 +106,7 @@
     justify-content: center;
 }
 
-#pay {
+#pay-checkout {
     margin-top: 5px;
     padding: 10px 0;
 
@@ -126,10 +126,10 @@
     align-self: center;
 }
 
-#pay:hover {
+#pay-checkout:hover {
     background-color: #F46471;
 }
 
-#pay:active {
+#pay-checkout:active {
     background-color: #F46471;
 }

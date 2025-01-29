@@ -1,25 +1,31 @@
 {% extends 'base.html' %}
 {% block title %}Payment{% endblock %}
 <head>
-    <!-- a sandbox script to start for payment stuff -->
-    <!-- <script type="text/javascript" src="https://sandbox.web.squarecdn.com/v1/square.js"></script>-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment</title>
     {% load static %}
     {% csrf_token %}
-    <link rel="stylesheet" href="{% static 'css/payment.css' %}">
 </head>
 {% block content %}
 <div class="payment_page">
-    <h1>Payment</h1>
-    <div id="paymentWrapper">
-        <div id="digitalPayment">
-            <div id="google-pay-button"></div>
-            <!-- <div id="apple-pay"></div> -->
+    <div id="payment-column">
+        <div id="pay-header-container">
+            <h1 id="pay-header">Payment</h1>
         </div>
+        <div id="paymentWrapper">
+            <div class="digitalPayment">
+                <div id="google-pay-button"></div>
+                <!--<div id="apple-pay"></div>      Implement once site is deployed. otherwise, messes with styling and functionality-->
+            </div>
 
-        <div id="card"></div>
-        <a id="payButtonContainer" href="{% url 'orderSummary' %}">
+            <div id="card-container">
+                <div id="card"></div>
+            </div>
             <button id="pay" type="button">Pay</button>
-        </a>
+        </div>
+    </div>
+    <div id-="payment-page-order-summary">
     </div>
 </div>
 

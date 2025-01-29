@@ -7,17 +7,15 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
-    <script type="text/javascript" src="https://sandbox.web.squarecdn.com/v1/square.js"></script>
+    <script src="https://sandbox.web.squarecdn.com/v1/square.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script> 
         var data = "{{ total_time }}";
     </script>
-    <script type="text/javascript" src="static/scripts/countdown_banner.js">
 
-    </script>
     <!-- Load static files -->
     {% load static %}
-
+    <script type="text/javascript" src="static/scripts/countdown_banner.js"></script>
     <!-- Link to your custom CSS file -->
     <link rel="stylesheet" href="{% static 'css/homestyles.css' %}">
     <link rel="stylesheet" href="{% static 'css/shopstyles.css' %}">
@@ -29,6 +27,7 @@
     <link rel="stylesheet" href="{% static 'css/productDetails.css' %}">
     <link rel="stylesheet" href="{% static 'css/about.css' %}">
     <link rel="stylesheet" href="{% static 'css/contact.css' %}">
+    <link rel="stylesheet" href="{% static 'css/payment.css' %}">
 
     <script src="https://kit.fontawesome.com/34f0afb215.js" crossorigin="anonymous"></script>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Edu+AU+VIC+WA+NT+Dots:wght@400..700&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
