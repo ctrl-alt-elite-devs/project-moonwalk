@@ -10,9 +10,33 @@ Contributors:
 * Tyler Judt-Martine
 * Nazar Potapchuk
 
+This is the repository for Moonwalk Threads vintage clothing store website built with Django, showcasing a collection of curated, high-quality vintage apparel. The website provides an e-commerce platform where users can browse, view, and purchase unique, one-of-a-kind clothing items from various eras.
+
+Features:
+* Product Listings: A dynamic page displaying available clothing items, including details like size, price, and photos.
+* Product Categories: Items are categorized by type (e.g., jackets, dresses, accessories) for easy browsing.
+* Shopping Cart: Users can add products to their cart, view their selections, and proceed to checkout.
+* User Authentication: Users can sign up, log in, and manage their accounts.
+* Admin Panel: Admins can manage product listings, update stock, and handle orders through Django's built-in admin interface.
+* Mobile-Friendly Design: The website is fully responsive, prioritizing mobile design first and expanding to desktop view.
+* Integrated Payments: (Future feature) Integration with payment gateways for secure online transactions.
+
+Technologies Used:
+* Django: The backend framework for building and managing the website’s functionality.
+* HTML/CSS/JavaScript: For the frontend design and interactivity.
+* SQLite (or PostgreSQL/MySQL for production): Used for the database to store product and user information.
+
 Ensure python is installed and added to PATH, then in a terminal run:
     
     pip install django
+
+In case modules are missing be sure to run these before trying to run the server:
+
+    python -m pip install squareup
+    
+AND
+
+    python -m pip install python-dotenv
 
 To run the server enter the following while in the main directory project-moonwalk:
   
@@ -100,4 +124,66 @@ Or if you want to undo changes already commited within your current branch you c
     git revert <commit-hash>
 
 You can get the commit hashes from github's tracking system
+
+# Software Images
+![software-min](https://github.com/user-attachments/assets/484527e3-3f58-4b02-84dc-4e6f93c08576)
+
+# Prototype
+![figmaPrototype-min](https://github.com/user-attachments/assets/d35413ee-6d58-40a3-aadb-1eb9f3c363c8)
+
+# Product
+![demoWebsite-min](https://github.com/user-attachments/assets/83cc6900-0a6c-491a-bf6a-f1795368dede)
+
+# ER Diagram
+
+![image](https://github.com/user-attachments/assets/9735b085-cd8b-4829-a7fb-260fb5d25627)
+
+# Tentative Timeline
+Sprint 5
+
+* Have the UI look presentable on mobile and web view.
+
+* Readjust the UI to make sure the same components have the same style, to have consistency.
+
+* Finish the shipping and payment front end.
+
+* Start the shipping and payment back end. 
+
+* Finish the detailed view of the product details.
+
+* Decide if we want to use Google Calendar or database for events and get started on the backend. 
+
+* Finalization on the cart. 
+
+Sprint 6
+
+* Begin on admin view. 
+
+* Manage product
+
+* Manage orders
+
+* Manage customers
+
+* Implement the search bar to browse and search for products.
+
+* Create a user profile.
+
+* Implement order confirmation and tracking with Square. 
+
+* Implement discounts codes and view promotions. 
+
+* Implement SEO.
+
+Sprint 7
+
+* Testing
+
+Sprint 8
+
+* Testing
+
+Sprint 9
+
+* Testing
 

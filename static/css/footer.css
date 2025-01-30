@@ -15,11 +15,12 @@ footer {
     padding: 5px;
 }
 
-#phoneNum {
+/* input boxes for email and phone number */
+.subscribeInput {
     font-family: Roboto, sans-serif;
     font-style: normal;
     font-weight: normal;
-    font-size: 12px;
+    font-size: 16px;
 
     margin: 5px 0;
     background: transparent;
@@ -35,30 +36,19 @@ footer {
     align-self: center;
 }
 
-#emailAddress {
-    font-family: Roboto, sans-serif;
-    font-style: normal;
-    font-weight: normal;
-    font-size: 12px;
-
-    box-sizing: border-box;
-    background: transparent;
-    padding: 5px;
-
-    min-width: 255px;
-    min-height: 29px;
-
-    border: 1px solid #000000;
-    border-radius: 5px;
+.subscribeInput::placeholder {
+    color: black;
 }
 
 /* Subscribe button */
-button {
+.subscribeButton {
     font-family: Roboto, sans-serif;
     font-style: normal;
     font-weight: normal;
-    font-size: 12px;
+    font-size: 16px;
     letter-spacing: 0.5px;
+
+    padding: 5px;
 
     color: #F46471;
 

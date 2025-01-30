@@ -1,0 +1,247 @@
+{% extends 'base.html' %}
+{% block title %}CheckOut{% endblock %}
+<head>
+    {% load static %}
+    {% csrf_token %}
+    <link rel="stylesheet" href="{% static 'css/checkout.css' %}"/>
+</head>
+{% block content %}
+<div class="order-type">
+    <h1>How Would You Like To Get Your Order?</h1>
+</div>
+
+
+<!--Tabs for Delivery and Pick Up: Choose which delivery method-->
+<div class="delivery-selection">
+    <button class="tablinks" onclick="openTab(event, 'Delivery')">Delivery</button>
+    <button class="tablinks" onclick="openTab(event, 'Pickup')">Pick Up at Store</button>
+</div>
+
+
+<!--PickUp Method-->
+<div class="tabinfo" id="Pickup">
+    <div class="store-pickup">
+        <h4>Store Pickup At</h4>
+        <br>
+        <p>MoonWalk Threads</p>
+        <p>Address: 490 High St, Auburn, CA 95603</p>
+        <a><button type="submit" class="payment-button" id="payment-proceed">Payment</button></a>
+    </div>
+</div>
+
+
+<!--Delivery Method-->
+<div class="tabinfo" id="Delivery">
+    <div class="deliver-home">
+        <form method="POST" class="shipping-form" id="checkout-form">
+            {% csrf_token %}
+            <!--Shipping Address Information-->
+            <h4>Shipping Address</h4>
+            <input type="text" id="customerFirstName" name="firstName" placeholder="First Name" pattern="[A-Za-z]+" required title="Please enter a valid first name (letters only)."><br>
+            <input type="text" id="customerLastName" name="lastName" placeholder="Last Name" pattern="[A-Za-z]+" title="Please enter a valid last name (letters only)." required><br>
+            <input type="text" id="customerStreetAddress" name="streetAddress" placeholder="Street Address" title="Please enter your street address." required><br>
+            <input type="text" id="customerAddressOptional" name="addressOptional" placeholder="Apt, Suite, Building (Optional)"><br>
+            <input type="text" id="customerZipCode" name="zipCode" placeholder="Zip Code" pattern="^\d{5}$" minlength="5" maxlength="5" required title="Zip code must be exactly 5 digits."><br>
+            <input type="text" id="customerCity" name="city" placeholder="City" pattern="[A-Za-z]+" title="Please enter a valid city name (letters only)."required><br>
+            <!--Select States from Drop Down-->
+            <select class="states" id="customerState">
+                <option value="AL">Alabama</option>
+                <option value="AK">Alaska</option>
+                <option value="AZ">Arizona</option>
+                <option value="AR">Arkansas</option>
+                <option value="CA">California</option>
+                <option value="CO">Colorado</option>
+                <option value="CT">Connecticut</option>
+                <option value="DE">Delaware</option>
+                <option value="DC">District Of Columbia</option>
+                <option value="FL">Florida</option>
+                <option value="GA">Georgia</option>
+                <option value="HI">Hawaii</option>
+                <option value="ID">Idaho</option>
+                <option value="IL">Illinois</option>
+                <option value="IN">Indiana</option>
+                <option value="IA">Iowa</option>
+                <option value="KS">Kansas</option>
+                <option value="KY">Kentucky</option>
+                <option value="LA">Louisiana</option>
+                <option value="ME">Maine</option>
+                <option value="MD">Maryland</option>
+                <option value="MA">Massachusetts</option>
+                <option value="MI">Michigan</option>
+                <option value="MN">Minnesota</option>
+                <option value="MS">Mississippi</option>
+                <option value="MO">Missouri</option>
+                <option value="MT">Montana</option>
+                <option value="NE">Nebraska</option>
+                <option value="NV">Nevada</option>
+                <option value="NH">New Hampshire</option>
+                <option value="NJ">New Jersey</option>
+                <option value="NM">New Mexico</option>
+                <option value="NY">New York</option>
+                <option value="NC">North Carolina</option>
+                <option value="ND">North Dakota</option>
+                <option value="OH">Ohio</option>
+                <option value="OK">Oklahoma</option>
+                <option value="OR">Oregon</option>
+                <option value="PA">Pennsylvania</option>
+                <option value="RI">Rhode Island</option>
+                <option value="SC">South Carolina</option>
+                <option value="SD">South Dakota</option>
+                <option value="TN">Tennessee</option>
+                <option value="TX">Texas</option>
+                <option value="UT">Utah</option>
+                <option value="VT">Vermont</option>
+                <option value="VA">Virginia</option>
+                <option value="WA">Washington</option>
+                <option value="WV">West Virginia</option>
+                <option value="WI">Wisconsin</option>
+                <option value="WY">Wyoming</option>
+            </select>
+        
+            <!--Contact Information-->
+            <h4>Contact Information</h4>
+            <input type="email" id="customerEmail" name="email" placeholder="Email Address" title="Please enter a valid email address." required><br>
+            <input type="text" id="customerPhone" name="phone" placeholder="Phone Number" pattern="^\d{10}$" minlength="10" maxlength="10" required title="Phone number must be exactly 10 digits."><br>
+            <input type="hidden" id="delivery-method-items" name="delivery-method-items">
+
+
+            <button type="submit" class="payment-button" id="payment-proceed-2" onclick="proceed()">Payment</button>
+
+        </form>
+    </div>
+
+</div>
+
+<!--<div class="payment-stuff" id="payment" style="display:none">
+    <div id="card"></div>
+    <a id="payButtonContainer" href="{% url 'paymentPortal' %}">
+        <button id="pay" type="button">Pay</button>
+    </a>
+</div> -->
+
+<!--Script for the Tabs-->
+<script>
+    var selectedOption = "";
+    function openTab(evt, tabName) {
+        var i, tabinfo, tablinks;
+    
+        tabinfo = document.getElementsByClassName("tabinfo");
+        for (i = 0; i < tabinfo.length; i++) {
+            tabinfo[i].style.display = "none";
+        }
+    
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+    
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.className += " active";
+
+
+        selectedOption = tabName;
+        localStorage.setItem('deliveryMethod', selectedOption);
+    }
+    //Set Delivery to default
+    document.getElementsByClassName("tablinks")[0].click();
+
+
+   //store variables from shipping address
+    document.getElementById('payment-proceed-2').addEventListener('click', function(event) {
+
+        console.log("submitting values");
+        var firstName = document.getElementById('customerFirstName').value;
+        var lastName = document.getElementById('customerLastName').value;
+        var streetAddress = document.getElementById('customerStreetAddress').value;
+        var addressOptional = document.getElementById('customerAddressOptional').value;
+        var zipCode = document.getElementById('customerZipCode').value;
+        var city = document.getElementById('customerCity').value;
+        var state = document.getElementById('customerState').value;
+
+
+        var email = document.getElementById('customerEmail').value;
+        var phone = document.getElementById('customerPhone').value;
+
+
+        localStorage.setItem('customerFirstName', firstName);
+        localStorage.setItem('customerLastName', lastName);
+        localStorage.setItem('customerStreetAddress', streetAddress);
+        localStorage.setItem('customerAddressOptional', addressOptional);
+        localStorage.setItem('customerZipCode', zipCode);
+        localStorage.setItem('customerCity', city);
+        localStorage.setItem('customerState', state);
+
+
+        localStorage.setItem('customerEmail', email);
+        localStorage.setItem('customerPhone', phone);
+
+        this.submit();
+
+        window.location.href = "{% url 'paymentPortal' %}";
+    });
+    </script>
+
+<!-- script for payment card -->
+<script>
+    function showPayment() {
+        event.preventDefault();
+        var payment = document.getElementById('payment');
+        payment.style.display = '';
+
+        var paymentProceed = document.getElementById('payment-proceed');
+        paymentProceed.style.display = 'none';
+    }
+
+    function proceed() {
+        //check if form filled out and send to payment portal
+        window.location.href = "{% url 'paymentPortal' %}";
+    }
+</script>
+
+<script>
+    (async()=>{
+        const payments = Square.payments(
+            'sandbox-sq0idb-8IPgsCCDGo1xxuoCMh0SSQ',
+            'LNG128XEAPR21'
+        );
+        const cardOptions = {
+            style: {
+                input: {
+                    backgroundColor: 'white'
+                },
+            }
+        };
+        try {
+            const card = await payments.card(cardOptions);
+            await card.attach('#card');
+            const payButton = document.getElementById('pay');
+            payButton.addEventListener('click', async ()=>{
+                const result = await card.tokenize();
+                if (result) {
+                    fetch("{% url 'process_payment' %}", {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        body: JSON.stringify({ token: result})
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                alert("Payment successful");
+                            } else {
+                                alert("Payment failed");
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
+                }
+                alert(JSON.stringify(result, null, 2));
+            })
+        } catch (e) {
+            console.error(e);
+        }
+    })()
+</script>
+
+
+{% endblock %}

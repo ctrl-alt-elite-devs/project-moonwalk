@@ -6,6 +6,7 @@
     <title>Cart View</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/cart.css' %}" />
+    {% csrf_token %}
 </head>
 <body>
     <div class="cart-container">
@@ -141,13 +142,83 @@
             <p>Total: ${{ total_price|floatformat:2 }}</p>
         </div>
      {% endif %}
-               <!-- Checkout Button -->
+            <!-- Checkout Button -->
         <div class="checkout">
-            <button>CHECKOUT</button>
-        </div>
-    </div>
+            <a href="{% url 'checkout' %}"><button>CHECKOUT</button></a>
 
         </div>
+            <!-- Digital Payment Options -->
+        <div class="digitalPayment">
+            <div id="google-pay-button"></div>
+            <div id="apple-pay"></div>
+        </div>
+</div>
+
     </div>
 </body>
+
+<!-- google-pay payment option script -->
+<script>
+    (async()=>{
+        const payments = Square.payments(
+            'sandbox-sq0idb-8IPgsCCDGo1xxuoCMh0SSQ',
+            'LNG128XEAPR21'
+        );
+
+        const paymentRequest = payments.paymentRequest({
+            total: {
+                amount: "1.00",
+                label: "Total"
+            },
+            countryCode: "US",
+            currencyCode: "USD"
+        });
+
+        try{
+            const googlePay = await payments.googlePay(paymentRequest);
+            await googlePay.attach('#google-pay-button');
+
+            const googlePayButton = document.getElementById('google-pay-button');
+            googlePayButton.addEventListener('click', async () => {
+                const result = await googlePay.tokenize();
+                alert(JSON.stringify(result, null, 2));
+            })
+        } catch (e) {
+            console.error(e);
+        }
+    })()
+</script>
+
+<!-- apple-pay payment option-->
+<script>
+    (async()=>{
+        const payments = Square.payments(
+            'sandbox-sq0idb-8IPgsCCDGo1xxuoCMh0SSQ',
+            'LNG128XEAPR21'
+        );
+
+        const paymentRequest = payments.paymentRequest({
+            total: {
+                amount: "1.00",
+                label: "Total"
+            },
+            countryCode: "US",
+            currencyCode: "USD"
+        });
+
+        try{
+            const applePay = await payments.applePay(paymentRequest);
+
+            const applePayButton = document.getElementById('apple-pay');
+            applePayButton.style.display = 'inherit';
+            applePayButton.addEventListener('click', async () => {
+                const result = await applePay.tokenize();
+                alert(JSON.stringify(result, null, 2));
+            })
+        } catch (e) {
+            console.error(e);
+        }
+    })()
+</script>
+
 {% endblock %}
