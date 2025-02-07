@@ -59,7 +59,8 @@ window.onclick = function(event) {
   }
 }
 
-// Handle login form submission (for demonstration purposes)
+/* 
+Handle login form submission (for demonstration purposes)
 document.getElementById("login-form").onsubmit = function(event) {
   event.preventDefault();
   alert("Email: " + document.getElementById("email").value + "\nPassword: " + document.getElementById("password").value);
@@ -85,3 +86,4 @@ function handleCredentialResponse(response) {
   alert("Encoded JWT ID token: " + response.credential);
   // Here you could send the ID token to your server for further verification or processing
 }
+  */
