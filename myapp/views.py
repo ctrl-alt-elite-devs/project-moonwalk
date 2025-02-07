@@ -10,6 +10,9 @@ from django.middleware.csrf import get_token
 import json
 import uuid
 
+from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
+
 def home(request):
     # Current date is hard coded
     date = "2024-12-06 17:00:00"
@@ -160,6 +163,7 @@ def listLocations(request):
     if request.method == "GET":
         try:
             result = client.locations.list_locations()
+            print(result.body)
             if result.is_success():
                 locations = result.body['locations']
                 return JsonResponse({"status": "success", "locations": locations})
@@ -213,3 +217,25 @@ def process_payment(request):
         except Exception as e:
             return JsonResponse({"status": "error", "message": str(e)})
     return JsonResponse({"status": "error", "message": "Invalid request method"})
+
+#login
+def login_user(request):
+    if request.method == "POST":
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            messages.success(request, ("YOU LOGGED IN"))
+            return redirect('home')
+        else:
+            messages.success(request, ("ERROR TRY AGAIN"))
+            return redirect('login')
+    else:
+        return render(request, 'login.html', {})
+
+
+def logout_user(request):
+    logout(request)
+    messages.success(request, ("YOU LOGGED OUT"))
+    return redirect('home')
