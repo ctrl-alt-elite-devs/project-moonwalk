@@ -113,6 +113,7 @@
 
 <!-- Load JavaScript -->
 <script src="{% static 'scripts/events.js' %}" defer></script>
+<script src="{% static 'scripts/css_modifications.js' %}" defer></script>
 <script>
     document.getElementById("viewmore_button").addEventListener("click", function () {
         window.location.href = "{% url 'googleCalendar' %}";

@@ -4,7 +4,7 @@
 import datetime
 
 # Define the function that calculates the remaining time
-date = "2024-12-06 09:00:00"
+date = "2025-04-10 09:00:00"
 today = datetime.datetime.now()
 countdown_date = datetime.datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
 
