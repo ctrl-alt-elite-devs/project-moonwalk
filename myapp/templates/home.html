@@ -96,55 +96,27 @@
 </div>
 
 
+<!-- Events Section -->
 <div class="event-section">
-    <!-- Events Subheading -->
     <h2 class="event-subtitle">Upcoming Events</h2>
 
-    <!-- Events Row -->
-    <div class="event-row">
-        <!-- First Event -->
-        <div class="event-box">
-            <img src="{% static 'images/events1.jpg' %}" alt="Event 1 Image">
-            <p class="event-description">
-                <strong>Name:</strong> Auburn's Giveaway<br>
-                <strong>Date:</strong> December 1, 2024<br>
-                <strong>Description:</strong> Get lucky on this giveaway event!
-            </p>
-        </div>
-
-        <!-- Second Event -->
-        <div class="event-box">
-            <img src="{% static 'images/events2.jpg' %}" alt="Event 2 Image">
-            <p class="event-description">
-                <strong>Name:</strong> Not Your Boyfriend's Market<br>
-                <strong>Date:</strong> December 10, 2024<br>
-                <strong>Description:</strong>Vintage Clothes and more!
-            </p>
-        </div>
-
-        <!-- Third Event -->
-        <div class="event-box">
-            <img src="{% static 'images/events3.jpg' %}" alt="Event 3 Image">
-            <p class="event-description">
-                <strong>Name:</strong> Christmas Sale<br>
-                <strong>Date:</strong> December 25, 2024<br>
-                <strong>Description:</strong>Get your hands on the biggest sale this year!
-            </p>
-        </div>
-
-        <!-- Fourth Event -->
-        <div class="event-box">
-            <img src="{% static 'images/events4.jpeg' %}" alt="Event 4 Image">
-            <p class="event-description">
-                <strong>Name:</strong> Hoco Dresses Sale<br>
-                <strong>Date:</strong> January 25, 2024<br>
-                <strong>Description:</strong> Shop over 50 homecoming dresses!
-            </p>
-        </div>
+    <!-- Events Row (JavaScript will fill this) -->
+    <div class="event-row" id="events">
+        <p>Loading events...</p>
     </div>
 </div>
 
+<!-- View More Button -->
 <div class="viewmore-style" style="text-align: center; margin-bottom: 20px;">
-    <button onclick="window.location.href='{% url 'googleCalendar' %}'" type="button" id="viewmore_button">View More</button>
+    <button id="viewmore_button" type="button">View More</button>
 </div>
+
+<!-- Load JavaScript -->
+<script src="{% static 'scripts/events.js' %}" defer></script>
+<script>
+    document.getElementById("viewmore_button").addEventListener("click", function () {
+        window.location.href = "{% url 'googleCalendar' %}";
+    });
+</script>
+
 {% endblock %}
