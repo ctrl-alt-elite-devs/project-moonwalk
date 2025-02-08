@@ -12,7 +12,7 @@ import uuid
 
 def home(request):
     # Current date is hard coded
-    date = "2024-12-06 17:00:00"
+    date = "2025-04-10 17:00:00" # This is the actual date that changes the timer
     today = datetime.datetime.now()
     # Specify the date format being provided
     countdown_date = datetime.datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
