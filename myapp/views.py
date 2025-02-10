@@ -218,7 +218,7 @@ def process_payment(request):
             return JsonResponse({"status": "error", "message": str(e)})
     return JsonResponse({"status": "error", "message": "Invalid request method"})
 
-#login
+#login request
 def login_user(request):
     if request.method == "POST":
         username = request.POST['username']
@@ -230,11 +230,10 @@ def login_user(request):
             return redirect('home')
         else:
             messages.success(request, ("ERROR TRY AGAIN"))
-            return redirect('login')
+            return redirect('home')
     else:
         return render(request, 'login.html', {})
-
-
+#logout request
 def logout_user(request):
     logout(request)
     messages.success(request, ("YOU LOGGED OUT"))

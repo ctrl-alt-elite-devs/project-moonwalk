@@ -77,12 +77,12 @@
             <input type="email" id="email" name="email" required>
             -->
             <label for="username">Username</label>
-            <input type="usernamer" id="username" name="username" required>
+            <input type="username" id="username" name="username" required>
 
             <label for="password">Password</label>
             <input type="password" id="password" name="password" required>
     
-            <button type="submit" class="login-btn" id="login-button">Log In</button>
+            <button type="submit" class="login-btn" >Log In</button>
 
             <ul id="locations-list"></ul>
             
@@ -212,9 +212,9 @@
 
     {% if messages %}
         {% for message in messages %}
-            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <div class="logAlert">
                 {{ message}}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <button class="close-btn" onclick="this.parentElement.style.display='none'">&times;</button>
             </div>
         {% endfor %}
     {% endif %}

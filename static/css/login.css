@@ -145,3 +145,16 @@
 #terms-modal h2 {
     text-align: left;
 }
+
+.logAlert {
+  padding: 15px;
+  background-color: lightblue;
+  color: black;
+  border-radius: 5px;
+  position: relative;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: Arial, sans-serif;
+}
