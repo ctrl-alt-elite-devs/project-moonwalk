@@ -213,3 +213,11 @@ def process_payment(request):
         except Exception as e:
             return JsonResponse({"status": "error", "message": str(e)})
     return JsonResponse({"status": "error", "message": "Invalid request method"})
+
+@csrf_exempt
+def submit_address(request):
+    if request.method == "POST":
+        # Handle the incoming POST request and return a response
+        data = request.POST
+        return JsonResponse({'message': 'Address submitted successfully!'})
+    return JsonResponse({'error': 'Invalid method'}, status=405)

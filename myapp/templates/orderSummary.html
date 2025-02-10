@@ -3,6 +3,7 @@
 <head>
 {% load static %}
 <link rel="stylesheet" href="{% static 'css/orderSummary.css' %}"/>
+{% csrf_token %}
 </head>
 {% block content %}
 <div class="summary">

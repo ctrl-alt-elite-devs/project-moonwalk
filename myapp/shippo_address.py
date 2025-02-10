@@ -62,11 +62,13 @@ def submit_address(request):
             )
         )
 
+        print(transaction)
+        
         if transaction.status == "SUCCESS":
             # Return success response with tracking URL and shipping label URL
             return JsonResponse({
                 'status': 'success',
-                'tracking_url': transaction.tracking_url_provider,
+                'tracking_url': transaction.tracking_number['url'],
                 'label_url': transaction.label_url
             })
         else:
