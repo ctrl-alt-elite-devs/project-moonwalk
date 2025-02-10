@@ -6,7 +6,7 @@ body {
 }
 :root {
     --background_color: #F46471;
-    --font: 'Roboto', sans-serif;
+    --font: 'Roboto';
     --visibile: True;
     --font_color_title: #FFFFFF;
     --font_color_timer: #000000;
