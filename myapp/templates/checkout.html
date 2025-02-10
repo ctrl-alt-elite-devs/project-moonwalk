@@ -13,8 +13,8 @@
 
 <!--Tabs for Delivery and Pick Up: Choose which delivery method-->
 <div class="delivery-selection">
-    <button class="tablinks" onclick="openTab(event, 'Delivery')">Delivery</button>
-    <button class="tablinks" onclick="openTab(event, 'Pickup')">Pick Up at Store</button>
+    <button class="tablinks" onclick="openTab(event, 'Delivery')" id="delivery-tab">Delivery</button>
+    <button class="tablinks" onclick="openTab(event, 'Pickup')" id="pickup-tab">Pick Up at Store</button>
 </div>
 
 
@@ -37,12 +37,17 @@
             {% csrf_token %}
             <!--Shipping Address Information-->
             <h4>Shipping Address</h4>
-            <input type="text" id="customerFirstName" name="firstName" placeholder="First Name" pattern="[A-Za-z]+" required title="Please enter a valid first name (letters only)."><br>
-            <input type="text" id="customerLastName" name="lastName" placeholder="Last Name" pattern="[A-Za-z]+" title="Please enter a valid last name (letters only)." required><br>
-            <input type="text" id="customerStreetAddress" name="streetAddress" placeholder="Street Address" title="Please enter your street address." required><br>
+            <input type="text" id="customerFirstName" name="firstName" placeholder="First Name" onblur="blurFunct()"><br>
+            <div id="fNError"></div>
+            <input type="text" id="customerLastName" name="lastName" placeholder="Last Name" onblur="blurFunct()"><br>
+            <div id="lNError"></div>
+            <input type="text" id="customerStreetAddress" name="streetAddress" placeholder="Street Address" onblur="blurFunct()"><br>
+            <div id="sAError"></div>
             <input type="text" id="customerAddressOptional" name="addressOptional" placeholder="Apt, Suite, Building (Optional)"><br>
-            <input type="text" id="customerZipCode" name="zipCode" placeholder="Zip Code" pattern="^\d{5}$" minlength="5" maxlength="5" required title="Zip code must be exactly 5 digits."><br>
-            <input type="text" id="customerCity" name="city" placeholder="City" pattern="[A-Za-z]+" title="Please enter a valid city name (letters only)."required><br>
+            <input type="text" id="customerZipCode" name="zipCode" placeholder="Zip Code" onblur="blurFunct()"><br>
+            <div id="zError"></div>
+            <input type="text" id="customerCity" name="city" placeholder="City" onblur="blurFunct()"><br>
+            <div id="cError"></div>
             <!--Select States from Drop Down-->
             <select class="states" id="customerState">
                 <option value="AL">Alabama</option>
@@ -100,16 +105,17 @@
         
             <!--Contact Information-->
             <h4>Contact Information</h4>
-            <input type="email" id="customerEmail" name="email" placeholder="Email Address" title="Please enter a valid email address." required><br>
-            <input type="text" id="customerPhone" name="phone" placeholder="Phone Number" pattern="^\d{10}$" minlength="10" maxlength="10" required title="Phone number must be exactly 10 digits."><br>
+            <input type="email" id="customerEmail" name="email" placeholder="Email Address" onblur="blurFunct()"><br>
+            <div id="eError"></div>
+            <input type="text" id="customerPhone" name="phone" placeholder="Phone Number" onblur="blurFunct()"><br>
+            <div id="pError"></div>
             <input type="hidden" id="delivery-method-items" name="delivery-method-items">
+            <br>
 
-
-            <button type="submit" class="payment-button" id="payment-proceed-2" onclick="proceed()">Payment</button>
-
+            <!--<button type="submit" class="payment-button" id="payment-proceed-2" onclick="proceed()">Payment</button>-->
+            <button type="submit" class="payment-button" id="payment-proceed-2">Payment</button>
         </form>
     </div>
-
 </div>
 
 <!--<div class="payment-stuff" id="payment" style="display:none">
@@ -146,7 +152,7 @@
     document.getElementsByClassName("tablinks")[0].click();
 
 
-   //store variables from shipping address
+   //store variables from shipping address into local storage
     document.getElementById('payment-proceed-2').addEventListener('click', function(event) {
 
         console.log("submitting values");
@@ -175,11 +181,58 @@
         localStorage.setItem('customerEmail', email);
         localStorage.setItem('customerPhone', phone);
 
-        this.submit();
+        //this.submit();
 
-        window.location.href = "{% url 'paymentPortal' %}";
+        //window.location.href = "{% url 'paymentPortal' %}";
     });
-    </script>
+</script>
+
+<!--Script for the form to check for input field requirements-->
+<script>
+    const form = document.getElementById('checkout-form');
+
+    form.addEventListener('submit', (e) =>{
+        var err = 0;
+        let fields = [
+            {name: 'First Name', field: 'customerFirstName', error: 'fNError' },
+            {name: 'Last Name', field: 'customerLastName', error: 'lNError' },
+            {name: 'Street Address', field: 'customerStreetAddress', error: 'sAError' },
+            {name: 'Zip Code', field: 'customerZipCode', error: 'zError' },
+            {name: 'City', field: 'customerCity', error: 'cError' },
+            {name: 'Email Address', field: 'customerEmail', error: 'eError' },
+            {name: 'Phone Number', field: 'customerPhone', error: 'pError' }]
+
+        for(let i = 0; i < fields.length; i++){
+            let inputField = document.getElementById(fields[i].field);
+            let errorField = document.getElementById(fields[i].error);
+
+            if(inputField.value == null || inputField.value.trim() === ''){ // if input field is NOT filled in or IS an empty string
+                errorField.innerText = (fields[i].name + " is required.");
+                errorField.style.color = "red";
+                errorField.style.fontSize = "12px";
+                inputField.style.borderColor = "red";
+                err++;
+            }
+
+            /*if(fields[i].field === 'customerFirstName' && ){
+                errorField.innerText = (fields[i].name + " is required.");
+            }*/
+
+            if(fields[i].field === 'customerZipCode' && isNaN(inputField.value.trim()) || inputField.value.trim().length != 5){
+                errorField.innerText = (fields[i].name + " should contain 5 numbers only.");
+                errorField.style.color = "red";
+                errorField.style.fontSize = "12px";
+                inputField.style.borderColor = "red";
+                err++;
+            }
+        }
+
+        // prevent form submission if there are errors
+        if(err > 0) {
+            e.preventDefault();
+        }
+    })
+</script>
 
 <!-- script for payment card -->
 <script>
