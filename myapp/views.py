@@ -10,6 +10,7 @@ from django.middleware.csrf import get_token
 import json
 import uuid
 
+
 def home(request):
     # Current date is hard coded
     date = "2024-12-06 17:00:00"
@@ -70,7 +71,7 @@ def contact(request):
 def cart(request):
     #mock items
         # Current date is hard coded
-    date = "2024-12-06 00:00:00"
+    date = "2025-02-06 00:00:00"
     today = datetime.datetime.now()
     # Specify the date format being provided
     countdown_date = datetime.datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
@@ -93,40 +94,93 @@ def cart(request):
 
 
 def add_to_cart(request, product_id):
-    product = get_object_or_404(Product, id=product_id)
+    if request.method == "POST":
+        try:
+            product = Product.objects.get(id=product_id)
 
-    if request.user.is_authenticated:
-        customer = request.user.customer
-        cart_item, created = Cart.objects.get_or_create(customer=customer, product=product)
-    else:
-        session_key = request.session.session_key
-        if not session_key:
-            request.session.create()
-        cart_item, created = Cart.objects.get_or_create(session_key=request.session.session_key, product=product)
+            # Ensure session key exists for non-logged-in users
+            if not request.user.is_authenticated:
+                if not request.session.session_key:
+                    request.session.create()
 
-    # Handle if the product is already in the cart
-    if not created:
-        return JsonResponse({'message': 'Product is already in the cart!'}, status=400)
+            # Determine whether to store by customer or session
+            if request.user.is_authenticated:
+                cart_item, created = Cart.objects.get_or_create(
+                    product=product,
+                    customer=request.user.customer
+                )
+            else:
+                session_key = request.session.session_key
+                cart_item, created = Cart.objects.get_or_create(
+                    product=product,
+                    session_key=session_key
+                )
 
-    cart_item.save()
-    return JsonResponse({'message': 'Product added to cart successfully!'})
+            # Determine message based on whether the item was newly added
+            if created:
+                message = "Item added to cart successfully."
+            else:
+                message = "Item is already in your cart."
 
-def remove_from_cart(request, cart_item_id):
-    if request.method == 'POST':  # Ensure the method is POST for safety
-        cart_item = get_object_or_404(Cart, id=cart_item_id)
+            # Get updated cart count and total price
+            if request.user.is_authenticated:
+                cart_items = Cart.objects.filter(customer=request.user.customer)
+            else:
+                cart_items = Cart.objects.filter(session_key=session_key)
 
-        # Check if the user is authorized to remove this item
-        if request.user.is_authenticated:
-            if cart_item.customer != request.user.customer:
-                return JsonResponse({'message': 'Unauthorized access.'}, status=403)
-        else:
-            if cart_item.session_key != request.session.session_key:
-                return JsonResponse({'message': 'Unauthorized access.'}, status=403)
+            cart_item_count = cart_items.count()
+            total_price = sum(item.product.price for item in cart_items)
 
-        cart_item.delete()  # Remove the item from the cart
-        return JsonResponse({'message': 'Item removed successfully!'})
+            print(f"Updated cart count: {cart_item_count}")
+
+            return JsonResponse({
+                'message': message,  # Updated message
+                'cart_item_count': cart_item_count,
+                'total_price': total_price,
+            })
+
+        except Product.DoesNotExist:
+            return JsonResponse({'message': 'Product not found.'}, status=404)
 
     return JsonResponse({'message': 'Invalid request method.'}, status=400)
+
+def remove_from_cart(request, cart_item_id):
+    if request.method == "POST":
+        try:
+            cart_item = Cart.objects.get(id=cart_item_id)
+
+            # Check if the item belongs to the current user/session
+            if request.user.is_authenticated:
+                if cart_item.customer == request.user.customer:
+                    cart_item.delete()
+            else:
+                if cart_item.session_key == request.session.session_key:
+                    cart_item.delete()
+
+            # Calculate updated cart item count and total price
+            if request.user.is_authenticated:
+                cart_items = Cart.objects.filter(customer=request.user.customer)
+            else:
+                session_key = request.session.session_key
+                cart_items = Cart.objects.filter(session_key=session_key)
+
+            cart_item_count = cart_items.count()
+            total_price = sum(item.product.price for item in cart_items)
+            print(f"Updated total price: {total_price}")
+
+            return JsonResponse({
+                'message': 'Item removed successfully.',
+                'cart_item_count': cart_item_count,
+                'total_price': total_price,
+            })
+
+        except Cart.DoesNotExist:
+            return JsonResponse({'message': 'Item not found.'}, status=404)
+        
+
+    return JsonResponse({'message': 'Invalid request method.'}, status=400)
+    
+
 
 
 def merge_cart(sender, request, user, **kwargs):
