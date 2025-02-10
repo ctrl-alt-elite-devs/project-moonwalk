@@ -13,8 +13,8 @@
 
 <!--Tabs for Delivery and Pick Up: Choose which delivery method-->
 <div class="delivery-selection">
-    <button class="tablinks" onclick="openTab(event, 'Delivery')" id="delivery-tab">Delivery</button>
-    <button class="tablinks" onclick="openTab(event, 'Pickup')" id="pickup-tab">Pick Up at Store</button>
+    <button class="tablinks" onclick="openTab(event, 'Delivery')">Delivery</button>
+    <button class="tablinks" onclick="openTab(event, 'Pickup')">Pick Up at Store</button>
 </div>
 
 
@@ -25,7 +25,7 @@
         <br>
         <p>MoonWalk Threads</p>
         <p>Address: 490 High St, Auburn, CA 95603</p>
-        <a><button type="submit" class="payment-button" id="payment-proceed">Payment</button></a>
+        <a><button type="submit" class="payment-button" id="payment-proceed" onclick="proceed()">Payment</button></a>
     </div>
 </div>
 
@@ -37,17 +37,12 @@
             {% csrf_token %}
             <!--Shipping Address Information-->
             <h4>Shipping Address</h4>
-            <input type="text" id="customerFirstName" name="firstName" placeholder="First Name" onblur="blurFunct()"><br>
-            <div id="fNError"></div>
-            <input type="text" id="customerLastName" name="lastName" placeholder="Last Name" onblur="blurFunct()"><br>
-            <div id="lNError"></div>
-            <input type="text" id="customerStreetAddress" name="streetAddress" placeholder="Street Address" onblur="blurFunct()"><br>
-            <div id="sAError"></div>
+            <input type="text" id="customerFirstName" name="firstName" placeholder="First Name"><br>
+            <input type="text" id="customerLastName" name="lastName" placeholder="Last Name"><br>
+            <input type="text" id="customerStreetAddress" name="streetAddress" placeholder="Street Address" title="Please enter your street address." required><br>
             <input type="text" id="customerAddressOptional" name="addressOptional" placeholder="Apt, Suite, Building (Optional)"><br>
-            <input type="text" id="customerZipCode" name="zipCode" placeholder="Zip Code" onblur="blurFunct()"><br>
-            <div id="zError"></div>
-            <input type="text" id="customerCity" name="city" placeholder="City" onblur="blurFunct()"><br>
-            <div id="cError"></div>
+            <input type="text" id="customerZipCode" name="zipCode" placeholder="Zip Code"><br>
+            <input type="text" id="customerCity" name="city" placeholder="City"><br>
             <!--Select States from Drop Down-->
             <select class="states" id="customerState">
                 <option value="AL">Alabama</option>
@@ -105,17 +100,16 @@
         
             <!--Contact Information-->
             <h4>Contact Information</h4>
-            <input type="email" id="customerEmail" name="email" placeholder="Email Address" onblur="blurFunct()"><br>
-            <div id="eError"></div>
-            <input type="text" id="customerPhone" name="phone" placeholder="Phone Number" onblur="blurFunct()"><br>
-            <div id="pError"></div>
+            <input type="email" id="customerEmail" name="email" placeholder="Email Address"><br>
+            <input type="text" id="customerPhone" name="phone" placeholder="Phone Number"><br>
             <input type="hidden" id="delivery-method-items" name="delivery-method-items">
-            <br>
 
-            <!--<button type="submit" class="payment-button" id="payment-proceed-2" onclick="proceed()">Payment</button>-->
-            <button type="submit" class="payment-button" id="payment-proceed-2">Payment</button>
+
+            <button type="submit" class="payment-button" id="payment-proceed-2" onclick="proceed()">Payment</button>
+
         </form>
     </div>
+
 </div>
 
 <!--<div class="payment-stuff" id="payment" style="display:none">
@@ -152,7 +146,7 @@
     document.getElementsByClassName("tablinks")[0].click();
 
 
-   //store variables from shipping address into local storage
+   store variables from shipping address
     document.getElementById('payment-proceed-2').addEventListener('click', function(event) {
 
         console.log("submitting values");
@@ -181,58 +175,52 @@
         localStorage.setItem('customerEmail', email);
         localStorage.setItem('customerPhone', phone);
 
-        //this.submit();
+        this.submit();
 
-        //window.location.href = "{% url 'paymentPortal' %}";
+        window.location.href = "{% url 'paymentPortal' %}";
     });
-</script>
 
-<!--Script for the form to check for input field requirements-->
-<script>
-    const form = document.getElementById('checkout-form');
+    /*
+    document.getElementById('checkout-form').addEventListener('submit', function(event) {
+        event.preventDefault(); 
 
-    form.addEventListener('submit', (e) =>{
-        var err = 0;
-        let fields = [
-            {name: 'First Name', field: 'customerFirstName', error: 'fNError' },
-            {name: 'Last Name', field: 'customerLastName', error: 'lNError' },
-            {name: 'Street Address', field: 'customerStreetAddress', error: 'sAError' },
-            {name: 'Zip Code', field: 'customerZipCode', error: 'zError' },
-            {name: 'City', field: 'customerCity', error: 'cError' },
-            {name: 'Email Address', field: 'customerEmail', error: 'eError' },
-            {name: 'Phone Number', field: 'customerPhone', error: 'pError' }]
+        const formData = new FormData(this);
+        
+        const data = {
+            name: formData.get("customerFirstName"),
+            email: formData.get("customerEmail"),
+            phone: formData.get("customerPhone"),
+            address_line_1: formData.get("customerStreetAddress"),
+            city: formData.get("customerCity"),
+            postal_code: formData.get("customerZipCode")
+        };
 
-        for(let i = 0; i < fields.length; i++){
-            let inputField = document.getElementById(fields[i].field);
-            let errorField = document.getElementById(fields[i].error);
-
-            if(inputField.value == null || inputField.value.trim() === ''){ // if input field is NOT filled in or IS an empty string
-                errorField.innerText = (fields[i].name + " is required.");
-                errorField.style.color = "red";
-                errorField.style.fontSize = "12px";
-                inputField.style.borderColor = "red";
-                err++;
+        fetch('/submit-address/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                console.log('Address submitted and processed successfully:', data);
+                // Handle success, show a success message or redirect
+            } else {
+                console.error('Error processing address:', data.message);
+                // Handle errors, show a message
             }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            // Handle network errors or unexpected issues
+        });
+    });*/
 
-            /*if(fields[i].field === 'customerFirstName' && ){
-                errorField.innerText = (fields[i].name + " is required.");
-            }*/
 
-            if(fields[i].field === 'customerZipCode' && isNaN(inputField.value.trim()) || inputField.value.trim().length != 5){
-                errorField.innerText = (fields[i].name + " should contain 5 numbers only.");
-                errorField.style.color = "red";
-                errorField.style.fontSize = "12px";
-                inputField.style.borderColor = "red";
-                err++;
-            }
-        }
-
-        // prevent form submission if there are errors
-        if(err > 0) {
-            e.preventDefault();
-        }
-    })
-</script>
+    </script>
 
 <!-- script for payment card -->
 <script>

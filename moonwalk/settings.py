@@ -125,6 +125,7 @@ STATIC_URL = '/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = ['static/',  # Or wherever your static folder is located
+
 ]
 
 MEDIA_URL = 'media/'
