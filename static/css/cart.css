@@ -161,6 +161,7 @@ body {
 
 .digitalPayment {
     background-color: #F46471;
+    margin: 0;
     display: flex;
     justify-content: center;
 }

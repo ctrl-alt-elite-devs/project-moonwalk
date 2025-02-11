@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     <strong>Name:</strong> ${event.summary}<br>
                     <strong>Date:</strong> ${eventDate.toDateString()}<br>
                     <strong>Time:</strong> ${eventTime}${endTime}<br>
-                    <a href="${event.htmlLink}" target="_blank">View on Google Calendar</a>
+                    <a class="google-calendar-link" href="${event.htmlLink}" target="_blank">View on Google Calendar</a>
                 </p>
             `;
     
