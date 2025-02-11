@@ -12,6 +12,9 @@ import uuid
 import shippo
 from shippo.models import components
 
+from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
+
 def home(request):
     # Current date is hard coded
     date = "2024-12-06 17:00:00"
@@ -161,6 +164,7 @@ def listLocations(request):
     if request.method == "GET":
         try:
             result = client.locations.list_locations()
+            print(result.body)
             if result.is_success():
                 locations = result.body['locations']
                 return JsonResponse({"status": "success", "locations": locations})
@@ -215,89 +219,23 @@ def process_payment(request):
             return JsonResponse({"status": "error", "message": str(e)})
     return JsonResponse({"status": "error", "message": "Invalid request method"})
 
-
-shippo_sdk = shippo.Shippo(api_key_header="shippo_test_f3cb884569acedbe9a0860114d181ec57bed5277")
-
-def submit_address(request):
-    """Handles address submission and creates a shipping label using Shippo API."""
-    if request.method != "POST":
-        return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
-
-    try:
-        data = json.loads(request.body)  
-
-        # Create sender (customer) address
-        address_from = components.AddressCreateRequest(
-            firstname=data.get("customerFirstName"),
-            lastname=data.get("customerLastName"),
-            streetAddress=data.get("customerStreetAddress"),
-            addressOptional=data.get("addressOptional", ""),  # If provided
-            city=data.get("customerCity"),
-            state=data.get("customerState"),
-            zip=data.get("customerZipCode"),
-            country="US",
-            phone=data.get("customerPhone"),
-            email=data.get("customerEmail")
-        )
-
-        # Create recipient (business) address
-        address_to = components.AddressCreateRequest(
-            name="Mr Hippo",
-            company="Shippo Headquarters",
-            street1="Broadway 1",
-            street2="",
-            city="New York",
-            state="NY",
-            zip="10007",
-            country="US",
-            phone="+1 555 341 9393",
-            email="mrhippo@shippo.com",
-            metadata="Hippos dont lie"
-        )
-
-        # Define parcel details
-        parcel = components.ParcelCreateRequest(
-            length="5",
-            width="5",
-            height="5",
-            distance_unit=components.DistanceUnitEnum.IN,
-            weight="2",
-            mass_unit=components.WeightUnitEnum.LB
-        )
-
-        # Create shipment object
-        shipment = components.ShipmentCreateRequest(
-            address_from=address_from,
-            address_to=address_to,
-            parcels=[parcel]
-        )
-
-        # Create transaction (purchase shipping label)
-        transaction = shippo_sdk.transactions.create(
-            components.InstantTransactionCreateRequest(
-                shipment=shipment,
-                carrier_account="49dcfb244b4540bebe1158d41cac4042",  # Replace with your valid carrier account ID
-                servicelevel_token="FedEx FedEx Priority"
-            )
-        )
-
-        # Check if transaction was successful
-        if transaction.status == "SUCCESS":
-            return JsonResponse({
-                'status': 'success',
-                'tracking_number': transaction.tracking_number,
-                'tracking_url': transaction.tracking_url,
-                'label_url': transaction.label_url
-            })
-
+#login request
+def login_user(request):
+    if request.method == "POST":
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            messages.success(request, ("YOU LOGGED IN"))
+            return redirect('home')
         else:
-            return JsonResponse({
-                'status': 'error',
-                'message': transaction.error_message
-            }, status=400)
-
-    except json.JSONDecodeError:
-        return JsonResponse({'status': 'error', 'message': 'Invalid JSON format'}, status=400)
-    except Exception as e:
-        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
-
+            messages.success(request, ("ERROR TRY AGAIN"))
+            return redirect('home')
+    else:
+        return render(request, 'login.html', {})
+#logout request
+def logout_user(request):
+    logout(request)
+    messages.success(request, ("YOU LOGGED OUT"))
+    return redirect('home')
