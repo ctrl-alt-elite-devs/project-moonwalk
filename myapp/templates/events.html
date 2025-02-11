@@ -1,46 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Events</title>
-    <!-- Link to the CSS file -->
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Events{% endblock %}
+
+{% block content %}
+    <p style="color: red;">TEST: This is the new events.html</p>
+
     <div class="header">
-        <h1>EVENTS</h1>
+        <h1>Upcoming Events</h1>
     </div>
-    <div class="event-container">
-        <!-- First Event -->
-        <div class="event-box">
-            <div class="event-image">
-                <img src="image5.png" alt="Event Image">
-            </div>
-            <div class="event-info">
-                <textarea placeholder="First Event Info"></textarea>
-            </div>
-        </div>
 
-        <!-- Second Event -->
-        <div class="event-box">
-            <div class="event-image">
-                <img src="image5.png" alt="Event Image">
-            </div>
-            <div class="event-info">
-                <textarea placeholder="Second Event Info"></textarea>
-            </div>
-        </div>
-
-        <!-- Third Event -->
-        <div class="event-box">
-            <div class="event-image">
-                <img src="image5.png" alt="Event Image">
-            </div>
-            <div class="event-info">
-                <textarea placeholder="Third Event Info"></textarea>
-            </div>
-        </div>
+    <div class="event-container" id="events">
+        <p>Loading events...</p>
     </div>
-</body>
-</html>
+
+    <!-- Link to JavaScript file -->
+    <script src="{% static 'scripts/events.js' %}" defer></script>
+{% endblock %}

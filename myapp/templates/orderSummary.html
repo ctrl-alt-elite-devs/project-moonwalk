@@ -3,10 +3,12 @@
 <head>
 {% load static %}
 <link rel="stylesheet" href="{% static 'css/orderSummary.css' %}"/>
+{% csrf_token %}
 </head>
 {% block content %}
 <div class="summary">
 <h1 class="order-summary-title">Order Summary</h1>
+<h3> Confirmation Number: #123456<h3>
 <h3>Your Order Details</h3>
 <span id="display-method-items"></span>
 <p id="display-details"></p>
@@ -27,9 +29,12 @@
 
 <h4 class="payment-title">Payment</h4>
 <hr>
-<h3>Your Order Total</h3>
-</div>
-
+<h3>Your Order Total Summary</h3>
+<p>Promotions</p>
+<p>Items()</p>
+<p>Shipping and Handling:</p>
+<p>Estimated Tax:</p>
+<h3>Order Total:</h3>
 
 <script>
 window.onload = function() {
