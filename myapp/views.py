@@ -49,6 +49,9 @@ def total_time(request):
     return render(request, 'home.html', 'cart.html', context)
 
 def shop(request, foo=None):
+
+    search_query = request.GET.get('q', '').strip()
+
     # If a category is provided (foo), filter by category, else show all products
     if foo:
         foo = foo.replace('-', ' ')
@@ -63,8 +66,16 @@ def shop(request, foo=None):
         products = Product.objects.all()
         category = None  # No category selected
 
+    if search_query:
+        products = products.filter(name__icontains=search_query)
+
     categories = Category.objects.all()  # Pass all categories to the template
-    return render(request, 'shop.html', {'products': products, 'category': category, 'categories': categories})
+    return render(request, 'shop.html', {
+        'products': products,
+        'category': category,
+        'categories': categories,
+        'search_query': search_query,
+        })
 
 def about(request):
     return render(request, 'about.html')
