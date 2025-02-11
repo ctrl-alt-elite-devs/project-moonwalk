@@ -30,6 +30,8 @@ Ensure python is installed and added to PATH, then install all required modules 
 
     pip install -r requirements.txt
 
+If new modules are needed add them manually to requirements.txt.
+
 To run the server enter the following while in the main directory project-moonwalk:
   
     python manage.py runserver
