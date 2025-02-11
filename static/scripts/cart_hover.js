@@ -7,8 +7,9 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
+
     // Enable hover effect only on the home page
-    if (window.location.pathname === "/" || window.location.pathname === "/base/") {
+    if (window.location.pathname === "/" || window.location.pathname === "/base/" || window.location.pathname  === "/shop/") {
         console.log("Mini cart hover enabled on home page");
 
         if (window.innerWidth > 768) { // Desktop Behavior
@@ -17,6 +18,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 cartDropdown.style.transform = "translateY(0)";
                 cartDropdown.style.visibility = "visible";
             });
+
+            
 
             cartDropdown.addEventListener("mouseenter", function () {
                 cartDropdown.style.opacity = "1";
@@ -28,11 +31,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 setTimeout(() => {
                     if (!cartDropdown.matches(':hover')) {
                         cartDropdown.style.opacity = "0";
-                        cartDropdown.style.transform = "translateY(-10px)";
+                        cartDropdown.style.transform = "translateY(-20px)";
                         cartDropdown.style.visibility = "hidden";
                     }
                 }, 200);
             });
+
+
 
             cartDropdown.addEventListener("mouseleave", function () {
                 cartDropdown.style.opacity = "0";

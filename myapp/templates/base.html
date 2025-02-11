@@ -15,8 +15,7 @@
 
     <!-- Load static files -->
     {% load static %}
-    <script type="text/javascript" src="static/scripts/countdown_banner.js"></script>
-    
+
     <!-- Link to your custom CSS file -->
     <link rel="stylesheet" href="{% static 'css/homestyles.css' %}">
     <link rel="stylesheet" href="{% static 'css/shopstyles.css' %}">
@@ -61,7 +60,7 @@
             <div class="cart-dropdown" id="cart-dropdown">
                 {% if cart_items %}
                     <ul class="cart-items">
-                        {% for item in cart_items%}  <!-- Show first 3 items -->
+                        {% for item in cart_items|slice:":4" %}
                         <li class="cart-item">
                             <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" width="40">
                             <div>
@@ -78,7 +77,7 @@
                     <p class="empty-cart">Your cart is empty.</p>
                 {% endif %}
             </div>
-            <script src="static/scripts/cart_hover.js"></script>
+            
         </div>
         
         <div class="profile_btn open_login">
