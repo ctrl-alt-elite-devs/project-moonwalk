@@ -9,6 +9,8 @@ from django.shortcuts import get_object_or_404
 from django.middleware.csrf import get_token
 import json
 import uuid
+import shippo
+from shippo.models import components
 
 def home(request):
     # Current date is hard coded
@@ -90,7 +92,6 @@ def cart(request):
     # Render the cart page with items and total and timer count down
     return render(request, 'cart.html', {'total_time': total_time,'cart_items': cart_items,
         'total_price': total_price})
-
 
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
@@ -214,10 +215,89 @@ def process_payment(request):
             return JsonResponse({"status": "error", "message": str(e)})
     return JsonResponse({"status": "error", "message": "Invalid request method"})
 
-@csrf_exempt
+
+shippo_sdk = shippo.Shippo(api_key_header="shippo_test_f3cb884569acedbe9a0860114d181ec57bed5277")
+
 def submit_address(request):
-    if request.method == "POST":
-        # Handle the incoming POST request and return a response
-        data = request.POST
-        return JsonResponse({'message': 'Address submitted successfully!'})
-    return JsonResponse({'error': 'Invalid method'}, status=405)
+    """Handles address submission and creates a shipping label using Shippo API."""
+    if request.method != "POST":
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
+
+    try:
+        data = json.loads(request.body)  
+
+        # Create sender (customer) address
+        address_from = components.AddressCreateRequest(
+            firstname=data.get("customerFirstName"),
+            lastname=data.get("customerLastName"),
+            streetAddress=data.get("customerStreetAddress"),
+            addressOptional=data.get("addressOptional", ""),  # If provided
+            city=data.get("customerCity"),
+            state=data.get("customerState"),
+            zip=data.get("customerZipCode"),
+            country="US",
+            phone=data.get("customerPhone"),
+            email=data.get("customerEmail")
+        )
+
+        # Create recipient (business) address
+        address_to = components.AddressCreateRequest(
+            name="Mr Hippo",
+            company="Shippo Headquarters",
+            street1="Broadway 1",
+            street2="",
+            city="New York",
+            state="NY",
+            zip="10007",
+            country="US",
+            phone="+1 555 341 9393",
+            email="mrhippo@shippo.com",
+            metadata="Hippos dont lie"
+        )
+
+        # Define parcel details
+        parcel = components.ParcelCreateRequest(
+            length="5",
+            width="5",
+            height="5",
+            distance_unit=components.DistanceUnitEnum.IN,
+            weight="2",
+            mass_unit=components.WeightUnitEnum.LB
+        )
+
+        # Create shipment object
+        shipment = components.ShipmentCreateRequest(
+            address_from=address_from,
+            address_to=address_to,
+            parcels=[parcel]
+        )
+
+        # Create transaction (purchase shipping label)
+        transaction = shippo_sdk.transactions.create(
+            components.InstantTransactionCreateRequest(
+                shipment=shipment,
+                carrier_account="49dcfb244b4540bebe1158d41cac4042",  # Replace with your valid carrier account ID
+                servicelevel_token="FedEx FedEx Priority"
+            )
+        )
+
+        # Check if transaction was successful
+        if transaction.status == "SUCCESS":
+            return JsonResponse({
+                'status': 'success',
+                'tracking_number': transaction.tracking_number,
+                'tracking_url': transaction.tracking_url,
+                'label_url': transaction.label_url
+            })
+
+        else:
+            return JsonResponse({
+                'status': 'error',
+                'message': transaction.error_message
+            }, status=400)
+
+    except json.JSONDecodeError:
+        return JsonResponse({'status': 'error', 'message': 'Invalid JSON format'}, status=400)
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+

@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+'''from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import shippo
 from shippo.models import components
@@ -78,4 +78,4 @@ def submit_address(request):
                 'message': transaction.error_message
             })
 
-    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})'''

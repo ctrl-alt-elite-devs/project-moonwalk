@@ -19,7 +19,7 @@ urlpatterns = [
     path('checkout/payment.html', views.paymentPortal, name='payment'),
     path('shop/<str:foo>', views.shop, name='shop-category'),
     path('process_payment/', views.process_payment, name='process_payment'),
-    path('submit_address/', views.submit_address, name='submit_address'),
+    path('submit-address/', views.submit_address, name='submit_address'),
     #following path is just to test payment portal
     #must link to checkout process and delete this path
     path('payment/', views.paymentPortal, name='paymentPortal'),

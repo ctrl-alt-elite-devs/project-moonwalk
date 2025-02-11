@@ -146,7 +146,7 @@
     document.getElementsByClassName("tablinks")[0].click();
 
 
-    /*store variables from shipping address
+    //store variables from shipping address
     document.getElementById('payment-proceed-2').addEventListener('click', function(event) {
 
         console.log("submitting values");
@@ -178,23 +178,26 @@
         this.submit();
 
         window.location.href = "{% url 'paymentPortal' %}";
-    });*/
+    });
 
     
     document.getElementById('checkout-form').addEventListener('submit', function(event) {
-        event.preventDefault(); 
-
+        event.preventDefault(); // Prevent default form submission
+    
         const formData = new FormData(this);
-        
+    
         const data = {
-            name: formData.get("customerFirstName"),
-            email: formData.get("customerEmail"),
-            phone: formData.get("customerPhone"),
-            address_line_1: formData.get("customerStreetAddress"),
-            city: formData.get("customerCity"),
-            postal_code: formData.get("customerZipCode")
+            customerFirstName: formData.get('customerFirstName'),
+            customerLastName: formData.get('customerLastName'),
+            customerEmail: formData.get('customerEmail'),
+            customerPhone: formData.get('customerPhone'),
+            customerStreetAddress: formData.get('customerStreetAddress'),
+            customerAddressOptional: formData.get('customerAddressOptional') || "", // Ensure it's not null
+            customerCity: formData.get('customerCity'),
+            customerState: formData.get('customerState'), // Added missing state
+            customerZipCode: formData.get('customerZipCode')
         };
-
+    
         fetch('/submit-address/', {
             method: 'POST',
             headers: {
@@ -206,18 +209,20 @@
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
-                console.log('Address submitted and processed successfully:', data);
-                // Handle success, show a success message or redirect
+                console.log('Address submitted successfully:', data);
+                alert('Your address has been submitted successfully!'); // Show success message
+                window.location.href = '/thank-you/'; // Redirect to a success page (change if needed)
             } else {
                 console.error('Error processing address:', data.message);
-                // Handle errors, show a message
+                alert('Error: ' + data.message); // Show error message
             }
         })
         .catch(error => {
-            console.error('Error:', error);
-            // Handle network errors or unexpected issues
+            console.error('Network error:', error);
+            alert('An unexpected error occurred. Please try again.');
         });
     });
+    
 
 
     </script>
