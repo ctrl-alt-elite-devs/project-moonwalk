@@ -16,6 +16,7 @@
     height: 40px;
     display: flex;
     max-width: 100%;
+    padding: 0;
 }
 
 
@@ -23,12 +24,12 @@
     background-color: transparent;
     color: black;
     width: 100%;
-    height: 40px;
-    padding: 0px;
+    height: 100%;
+    padding: 0;
     border-radius: 5px;
     font-size: 14px;
+    border: 0;
 }
-
 
 .delivery-selection button:hover{
     background-color: #F46471;
@@ -92,5 +93,48 @@
 
 
 .delivery-selection .tablinks.active, .store-pickup .tablinks.active {
+    background-color: #F46471;
+}
+
+.error {
+    color: black;
+}
+
+/* payment button and card input */
+
+.payment-stuff {
+    margin: 20px;
+}
+
+#payButtonContainer {
+    display: flex;
+    justify-content: center;
+}
+
+#pay-checkout {
+    margin-top: 5px;
+    padding: 10px 0;
+
+    min-width: 100%;
+    min-height: 50px;
+
+    font-size: 24px;
+    color: black;
+
+    background-color: white;
+
+    box-sizing: border-box;
+    border: 1px solid black;
+    border-radius: 10px;
+
+    cursor: pointer;
+    align-self: center;
+}
+
+#pay-checkout:hover {
+    background-color: #F46471;
+}
+
+#pay-checkout:active {
     background-color: #F46471;
 }
