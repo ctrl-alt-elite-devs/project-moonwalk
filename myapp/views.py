@@ -239,3 +239,98 @@ def logout_user(request):
     logout(request)
     messages.success(request, ("YOU LOGGED OUT"))
     return redirect('home')
+
+#shippo to create label (accept user address input)
+
+shippo_sdk = shippo.Shippo(api_key_header="shippo_test_f3cb884569acedbe9a0860114d181ec57bed5277")
+@csrf_exempt
+def submit_address(request):
+    if request.method != "POST":
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
+
+    try:
+        data = json.loads(request.body)
+        print(f"Received data: {data}")
+        
+        address_from = components.AddressCreateRequest(
+            name="MoonWalk Threads",
+            company="",
+            street1="490 High St",
+            city="Auburn",
+            state="CA",
+            zip="95603",
+            country="US",
+            phone="(530) 401-1105",
+            email="moonwalkthreads@gmail.com" #Need to get Lili's business email
+        )
+
+        address_to = components.AddressCreateRequest(
+            name=data.get("customerFirstName") + " " + data.get("customerLastName"),
+            company="",  # Optional; can be added if needed
+            street1=data.get("customerStreetAddress"),
+            street2=data.get("customerAddressOptional", ""),  # Optional address field
+            city=data.get("customerCity"),
+            state=data.get("customerState"),
+            zip=data.get("customerZipCode"),
+            country="US",
+            phone=data.get("customerPhone"), 
+            email=data.get("customerEmail"),  
+        )
+        
+        print(f"Address from: {address_from}")
+        print(f"Address to: {address_to}")
+
+        parcel = components.ParcelCreateRequest(
+            length="5",
+            width="5",
+            height="5",
+            distance_unit=components.DistanceUnitEnum.IN,
+            weight="2",
+            mass_unit=components.WeightUnitEnum.LB
+        )
+
+        shipment = components.ShipmentCreateRequest(
+            address_from=address_from,
+            address_to=address_to,
+            parcels=[parcel]
+        )
+
+        print(f"Shipment request: {shipment}") 
+
+        transaction = shippo_sdk.transactions.create(
+            components.InstantTransactionCreateRequest(
+                shipment=shipment,
+                carrier_account="273e3a39e2884adc99f44020d3863b95", #Need Lili's shipping carrier acc for the API to work
+                servicelevel_token="ontrac_ground" #Need Lili's info
+            )
+        )
+        if transaction.status == "SUCCESS":
+            return JsonResponse({
+                'status': 'success',
+                'tracking_number': transaction.tracking_number,
+                'tracking_url': transaction.tracking_url,
+                'label_url': transaction.label_url
+            })
+        else:
+            error_message = ""
+            
+            if hasattr(transaction, 'messages'):
+                try:
+                    if isinstance(transaction.messages, list):
+                        error_message = [str(msg) for msg in transaction.messages] 
+                    else:
+                        error_message = str(transaction.messages) 
+                except Exception as e:
+                    error_message = f"Error processing messages: {str(e)}"
+            else:
+                error_message = "Unknown error"
+
+            return JsonResponse({
+                'status': 'error',
+                'message': error_message
+            }, status=400)
+
+    except json.JSONDecodeError:
+        return JsonResponse({'status': 'error', 'message': 'Invalid JSON format'}, status=400)
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)

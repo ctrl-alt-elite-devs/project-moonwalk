@@ -106,6 +106,7 @@
 
 
             <button type="submit" class="payment-button" id="payment-proceed-2" onclick="proceed()">Payment</button>
+            <!--<button type="submit" class="payment-button">Payment</button>--> <!--For Shippo API Testing purposes-->
 
         </form>
     </div>
@@ -144,9 +145,10 @@
     }
     //Set Delivery to default
     document.getElementsByClassName("tablinks")[0].click();
+</script>
 
-
-    //store variables from shipping address
+<script>
+    //store variables from shipping address into LOCAL STORAGE
     document.getElementById('payment-proceed-2').addEventListener('click', function(event) {
 
         console.log("submitting values");
@@ -179,55 +181,56 @@
 
         window.location.href = "{% url 'paymentPortal' %}";
     });
+</script>
 
-    
+<!-- Shippo Shippment API-->
+<!--<script>
     document.getElementById('checkout-form').addEventListener('submit', function(event) {
-        event.preventDefault(); // Prevent default form submission
-    
+        event.preventDefault();  // Prevent default form submission
+
         const formData = new FormData(this);
-    
+
+        // Ensure you are sending all the necessary fields correctly
         const data = {
-            customerFirstName: formData.get('customerFirstName'),
-            customerLastName: formData.get('customerLastName'),
-            customerEmail: formData.get('customerEmail'),
-            customerPhone: formData.get('customerPhone'),
-            customerStreetAddress: formData.get('customerStreetAddress'),
-            customerAddressOptional: formData.get('customerAddressOptional') || "", // Ensure it's not null
-            customerCity: formData.get('customerCity'),
-            customerState: formData.get('customerState'), // Added missing state
-            customerZipCode: formData.get('customerZipCode')
+            customerFirstName: formData.get('firstName'),
+            customerLastName: formData.get('lastName'),
+            customerStreetAddress: formData.get('streetAddress'),
+            customerAddressOptional: formData.get('addressOptional') || "", // make sure not null
+            customerCity: formData.get('city'),
+            customerState: formData.get('state'),
+            customerZipCode: formData.get('zipCode'),
+            customerEmail: formData.get('email'),
+            customerPhone: formData.get('phone')
         };
-    
+
+        // Send data via fetch
         fetch('/submit-address/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
             },
-            body: JSON.stringify(data)
+            body: JSON.stringify(data),
+            credentials: 'same-origin'
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                console.log('Address submitted successfully:', data);
-                alert('Your address has been submitted successfully!'); // Show success message
-                window.location.href = '/thank-you/'; // Redirect to a success page (change if needed)
-            } else {
-                console.error('Error processing address:', data.message);
-                alert('Error: ' + data.message); // Show error message
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
             }
+            return response.json();  // Parse JSON data if successful
+        })
+        .then(data => {
+            console.log('Success:', data);  // Log success message
+            alert('Your address has been submitted successfully!');
         })
         .catch(error => {
             console.error('Network error:', error);
             alert('An unexpected error occurred. Please try again.');
         });
     });
-    
+</script>-->
 
-
-    </script>
-
-<!-- script for payment card -->
+<!-- script for payment card-->
 <script>
     function showPayment() {
         event.preventDefault();
@@ -288,6 +291,4 @@
         }
     })()
 </script>
-
-
 {% endblock %}
