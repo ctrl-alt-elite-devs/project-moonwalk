@@ -26,17 +26,11 @@ Technologies Used:
 * HTML/CSS/JavaScript: For the frontend design and interactivity.
 * SQLite (or PostgreSQL/MySQL for production): Used for the database to store product and user information.
 
-Ensure python is installed and added to PATH, then in a terminal run:
-    
-    pip install django
+Ensure python is installed and added to PATH, then install all required modules by running:
 
-In case modules are missing be sure to run these before trying to run the server:
+    pip install -r requirements.txt
 
-    python -m pip install squareup
-    
-AND
-
-    python -m pip install python-dotenv
+If new modules are needed add them manually to requirements.txt.
 
 To run the server enter the following while in the main directory project-moonwalk:
   
