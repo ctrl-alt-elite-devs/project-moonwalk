@@ -37,7 +37,7 @@
 <body>
     <header>
         <div class="brand-header">
-            <img src="{% static 'images/logo.png' %}" alt="MoonWalk Threads Logo" class="brand-logo">
+            <a href="{% url 'home' %}"><img src="{% static 'images/logo.png' %}" alt="MoonWalk Threads Logo" class="brand-logo"></a>
         </div>
     </header>
     <!-- NavBar -->
@@ -224,15 +224,21 @@
     {% endblock %}
 
     <footer>
-        <p id="header">SIGN UP FOR MORE</p>
+        <p id="footer-header">SIGN UP FOR MORE</p>
         <label for="phoneNum"></label>
         <label for="emailAddress"></label>
 
-        <input class="subscribeInput" type="text" id="emailAddress" placeholder="Your email address" autocomplete="email">
-        <button class="subscribeButton" type="button">SUBSCRIBE</button>
-        
-        <input class="subscribeInput" type="text" id="phoneNum" placeholder="Your phone number">
-        <button class="subscribeButton" type="button">SUBSCRIBE</button>
+        <div class="subscribe-section">
+            <div class="subscribe-subsection">
+                <input class="subscribeInput" type="text" id="emailAddress" placeholder="Your email address" autocomplete="email">
+                <button class="subscribeButton" type="button">SUBSCRIBE</button>
+            </div>
+
+            <div class="subscribe-subsection">
+                <input class="subscribeInput" type="text" id="phoneNum" placeholder="Your phone number">
+                <button class="subscribeButton" type="button">SUBSCRIBE</button>
+            </div>
+        </div>
 
         <div class="instaIcon">
         <a href="https://www.instagram.com/moonwalkthreads/?hl=en">

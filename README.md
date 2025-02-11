@@ -77,7 +77,7 @@ Run Django with the following command to make it accessible on your local networ
 
 Finally, on your phone's web browser enter:
 
-    http//:192.168.1.10:8000 (replace 192.168.1.10 with your own local IP)
+    http://192.168.1.10:8000 (replace 192.168.1.10 with your own local IP)
 
 now you should be able to see the page on your phone and be able to refresh and see updates as you change code.
 
