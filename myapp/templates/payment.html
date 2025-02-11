@@ -64,7 +64,7 @@
                         headers: {
                             'X-CSRFToken': '{{ csrf_token }}'
                         },
-                        body: JSON.stringify({ token: result})
+                        body: JSON.stringify({ token: result.token})
                     })
                         .then(response => response.json())
                         .then(data => {

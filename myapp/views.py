@@ -195,6 +195,7 @@ def process_payment(request):
         data = json.loads(request.body)
         token = data.get("token")
         amount = 100
+        idem_key = uuid.uuid4()
 
         #getting an uuid (for idempotency) (every payment needs one)
 
@@ -202,7 +203,7 @@ def process_payment(request):
             result = client.payments.create_payment(
                 body = {
                     "source_id": token,
-                    "idempotency_key": "7b0f3ec5-086a-4871-8f13-3c81b3875218",
+                    "idempotency_key": str(idem_key),
                     "amount_money": {
                         "amount": amount,
                         "currency": "USD"
