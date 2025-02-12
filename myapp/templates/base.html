@@ -15,8 +15,7 @@
 
     <!-- Load static files -->
     {% load static %}
-    <script type="text/javascript" src="static/scripts/countdown_banner.js"></script>
-    <script type="text/javascript" src="static/scripts/events.js"></script>
+
     <!-- Link to your custom CSS file -->
     <link rel="stylesheet" href="{% static 'css/homestyles.css' %}">
     <link rel="stylesheet" href="{% static 'css/shopstyles.css' %}">
@@ -51,12 +50,65 @@
         <div class="toggle_btn">
             <i class="fa-solid fa-bars"></i>
         </div>
-        <a href="{% url 'cart' %}" class="cart_btn">
-            <i class="fa-solid fa-cart-shopping"></i>
-        </a>
+        <div class="cart-container">
+            <a href="{% url 'cart' %}" class="cart_btn" id="cart-icon">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <span class="cart-count">{% if cart_item_count > 0 %}{{ cart_item_count }}{% else %}0{% endif %}</span>
+            </a>
+        
+            <!-- Mini Cart Dropdown -->
+            <div class="cart-dropdown" id="cart-dropdown">
+                {% if cart_items %}
+                    <ul class="cart-items">
+                        {% for item in cart_items|slice:":4" %}
+                        <li class="cart-item">
+                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" width="40">
+                            <div>
+                                <p>{{ item.product.name }}</p>
+                                <p>${{ item.product.price|floatformat:2 }}</p>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    <div class="cart-footer">
+                        <a href="{% url 'cart' %}" class="checkout-button">Go to Cart</a>
+                    </div>
+                {% else %}
+                    <p class="empty-cart">Your cart is empty.</p>
+                {% endif %}
+            </div>
+            
+        </div>
+        
         <div class="profile_btn open_login">
             <i class="fa-solid fa-user"></i>
         </div>
+
+        <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                    const cartIcon = document.getElementById("cart-icon");
+                    const profileIcon = document.querySelector(".profile_btn");
+
+                    // Apply flicker effect on refresh
+                    if (cartIcon) {
+                    cartIcon.classList.add("flicker");
+                    setTimeout(() => {
+                    cartIcon.classList.remove("flicker");
+                    }, 500);
+                    }
+
+                    if (profileIcon) {
+                    profileIcon.classList.add("flicker");
+                    setTimeout(() => {
+                    profileIcon.classList.remove("flicker");
+                    }, 500);
+                    }
+                    });
+        </script>
+
+<script src="{% static 'scripts/cart_hover.js' %}"></script>
+
+
     </div>
     <div class="dropdown">
         <li><a href="{% url 'home' %}">Home</a></li>
@@ -219,6 +271,7 @@
             </div>
         {% endfor %}
     {% endif %}
+   
 
     {% block content %}
     {% endblock %}

@@ -33,6 +33,7 @@
             <div class="label_seconds">Secs</div>
         </div>
     </div>
+    <script src="static/scripts/countdown_banner.js"></script>
 </div>
 
 <!-- Product Section -->
@@ -55,34 +56,45 @@
             </div>
             <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
             <script>
-                $(document).ready(function() {
-                    // Attach click event only once per element
-                    $('.add-to-cart-btn').each(function() {
-                        $(this).off('click').on('click', function(event) {
-                            event.preventDefault();
-            
-                            var productId = $(this).data('id');
-            
-                            $.ajax({
-                                url: '/add-to-cart/' + productId + '/',
-                                method: 'POST',
-                                headers: {
-                                    'X-CSRFToken': '{{ csrf_token }}'
-                                },
-                                success: function(response) {
-                                    alert(response.message);
-                                },
-                                error: function(xhr, status, error) {
-                                    if (xhr.status === 400) {
-                                        alert(xhr.responseJSON.message); // "Already in cart" message
-                                    } else {
-                                        alert('Failed to add product to cart. Please try again.');
-                                    }
+                $(document).ready(function () {
+                    $('.add-to-cart-btn').off('click').on('click', function (event) {
+                        event.preventDefault();
+                
+                        const productId = $(this).data('id');
+                
+                        $.ajax({
+                            url: `/add-to-cart/${productId}/`,
+                            method: 'POST',
+                            headers: {
+                                'X-CSRFToken': '{{ csrf_token }}',
+                            },
+                            success: function (response) {
+                                console.log("AJAX Response:", response);
+                
+                                // Display different messages based on response
+                                if (response.message.includes("already in your cart")) {
+                                    alert("⚠️ This item is already in your cart.");
+                                } else {
+                                    alert("✅ Item added to cart successfully.");
                                 }
-                            });
+                
+                                // Ensure cart count is visible and updated
+                                let cartCounter = $('#cart-icon .cart-count');
+                
+                                if (cartCounter.length === 0) {
+                                    $('#cart-icon').append(`<span class="cart-count">${response.cart_item_count}</span>`);
+                                } else {
+                                    cartCounter.text(response.cart_item_count);
+                                }
+                            },
+                            error: function (xhr) {
+                                alert(`Error: ${xhr.responseJSON.message}`);
+                            },
                         });
                     });
                 });
+                
+                </script>
             </script>
         </div>
         {% endfor %}
