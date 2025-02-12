@@ -121,8 +121,8 @@ body {
 }
 
 .fa-cart-shopping, .fa-user {
-    padding-right: 50px;
-    padding-left: 10px;
+    margin-right: 30px;
+    margin-left: 30px;
 }
 
 @media screen and (max-width: 768px) {
@@ -173,6 +173,7 @@ body {
     margin-top: -.8438rem;
     transition: transform 0.3s ease, opacity 0.3s ease;
     opacity: 1; /* Fully visible by default */
+    display: inline-flex;
 }
 
 .navbar .cart_btn.flicker {
@@ -256,12 +257,12 @@ body {
 .cart-count {
     position: absolute;
     top: -5px;
-    right: -10px;
+    right: 20px;
     background-color: red;
     color: white;
     border-radius: 50%;
     padding: 5px 8px;
-    font-size: 9px;
+    font-size: 7px;
     font-weight: bold;
 }
 
@@ -283,6 +284,7 @@ body {
     cursor: pointer;
     position: absolute;
     right: .5rem;
+    display: inline-flex;
 }
 
 .navbar .profile_btn:hover {

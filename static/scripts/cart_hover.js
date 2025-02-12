@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Enable hover effect only on the home page
     if (window.location.pathname === "/" || window.location.pathname === "/base/" || window.location.pathname  === "/shop/") {
-        console.log("Mini cart hover enabled on home page");
+        console.log("Mini cart hover enabled on home page and shop");
 
         if (window.innerWidth > 768) { // Desktop Behavior
             cartIcon.addEventListener("mouseenter", function () {
@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         cartDropdown.style.transform = "translateY(-20px)";
                         cartDropdown.style.visibility = "hidden";
                     }
-                }, 200);
+                }, 400);
             });
 
 

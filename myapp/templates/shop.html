@@ -35,12 +35,59 @@
         </div>
         {% endfor %}
     </div>
+
 </section>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-
 <script>
+$(document).ready(function () {
+    $('.shop-add-to-cart-btn').off('click').on('click', function (event) {
+        event.preventDefault();
+
+        const productId = $(this).data('id');
+
+        $.ajax({
+            url: `/add-to-cart/${productId}/`,
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+            },
+            success: function (response) {
+                console.log("AJAX Response:", response);
+
+                if (response.message.includes("already in your cart")) {
+                    alert("⚠️ This item is already in your cart.");
+                } else {
+                    alert("✅ Item added to cart successfully.");
+                }
+
+                // Update cart count dynamically
+                let cartCounter = $('#cart-icon .cart-count');
+                if (cartCounter.length === 0) {
+                    $('#cart-icon').append(`<span class="cart-count">${response.cart_item_count}</span>`);
+                } else {
+                    cartCounter.text(response.cart_item_count);
+                }
+            },
+            error: function (xhr) {
+                console.error("AJAX Error:", xhr);
+
+                let errorMessage = "An error occurred while adding to the cart.";
+
+                // Handle Safari returning undefined JSON response
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                } else if (xhr.responseText) {
+                    errorMessage = xhr.responseText;
+                }
+
+                alert(`❌ Error: ${errorMessage}`);
+            },
+        });
+    });
+});
+
     // Function to toggle the dropdown menu
     function toggleDropdown() {
         document.getElementById("shop-filter-content").classList.toggle("show");
@@ -60,60 +107,6 @@
     }
 </script>
 
-<script>
-    $(document).ready(function () {
-        $(".shop-add-to-cart-btn").off("click").on("click", function (event) {
-            event.preventDefault();
 
-            const productId = $(this).data("id");  // Get the product ID
-            
-            $.ajax({
-                url: `/add-to-cart/${productId}/`,
-                method: "POST",
-                headers: {
-                    "X-CSRFToken": getCSRFToken(),  // Ensure CSRF token is included
-                },
-                success: function (response) {
-                    console.log("AJAX Response:", response);
-
-                    // Show different messages based on the response
-                    if (response.message.includes("already in your cart")) {
-                        alert("⚠️ This item is already in your cart.");
-                    } else {
-                        alert("✅ Item added to cart successfully.");
-                    }
-
-                    // Ensure cart count is updated
-                    let cartCounter = $("#cart-icon .cart-count");
-
-                    if (cartCounter.length === 0) {
-                        $("#cart-icon").append(`<span class="cart-count">${response.cart_item_count}</span>`);
-                    } else {
-                        cartCounter.text(response.cart_item_count);
-                    }
-                },
-                error: function (xhr) {
-                    alert(`Error: ${xhr.responseJSON.message}`);
-                },
-            });
-        });
-    });
-
-    // Function to get the CSRF token from cookies
-    function getCSRFToken() {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== "") {
-            const cookies = document.cookie.split(";");
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.startsWith("csrftoken=")) {
-                    cookieValue = cookie.substring("csrftoken=".length, cookie.length);
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
-</script>
 
 {% endblock %}
