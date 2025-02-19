@@ -33,18 +33,26 @@
 <!--Delivery Method-->
 <div class="tabinfo" id="Delivery">
     <div class="deliver-home">
+
+        <h4>Shipping Address</h4>
+        <input id="autocomplete" placeholder="Enter an Address" type="text"><br><br>
+
         <form method="POST" class="shipping-form" id="checkout-form">
             {% csrf_token %}
+
+            <input id="customerFirstName" placeholder="First Name" type="text">
+            <input id="customerLastName" placeholder="Last" type="text">
+
             <!--Shipping Address Information-->
-            <h4>Shipping Address</h4>
-            <input type="text" id="customerFirstName" name="firstName" placeholder="First Name"><br>
-            <input type="text" id="customerLastName" name="lastName" placeholder="Last Name"><br>
-            <input type="text" id="customerStreetAddress" name="streetAddress" placeholder="Street Address" title="Please enter your street address." required><br>
-            <input type="text" id="customerAddressOptional" name="addressOptional" placeholder="Apt, Suite, Building (Optional)"><br>
-            <input type="text" id="customerZipCode" name="zipCode" placeholder="Zip Code"><br>
-            <input type="text" id="customerCity" name="city" placeholder="City"><br>
+            <input id="StN" placeholder="Street Address" type="text">
+            <input id="Opt" placeholder="Optional" type="text">
+            <input id="L" placeholder="City" type="text">
+            <input id="P" placeholder="Zip Code" type="text">
+            <input id="C" placeholder="Country" type="text"> <br>
+
             <!--Select States from Drop Down-->
-            <select class="states" id="customerState">
+            <select class="states" id="St">
+                <option value="">Select State</option>
                 <option value="AL">Alabama</option>
                 <option value="AK">Alaska</option>
                 <option value="AZ">Arizona</option>
@@ -104,16 +112,11 @@
             <input type="text" id="customerPhone" name="phone" placeholder="Phone Number"><br>
             <input type="hidden" id="delivery-method-items" name="delivery-method-items">
 
-            <!-- Testing Google Autocomplete API-->
-            <input id="autocomplete" placeholder="Enter a place" type="text">
-            <div id="details"></div>
-
-            <!--<button type="submit" class="payment-button" id="payment-proceed-2" onclick="proceed()">Payment</button>-->
-            <button type="submit" class="payment-button">Payment</button> <!--For Shippo API Testing purposes-->
+            <button type="submit" class="payment-button" id="payment-proceed-2" onclick="proceed()">Payment</button>
+            <!--<button type="submit" class="payment-button">Payment</button>--> <!--For Shippo API Testing purposes-->
 
         </form>
     </div>
-
 </div>
 
 <!--<div class="payment-stuff" id="payment" style="display:none">
@@ -236,13 +239,14 @@
 <!--script for Google Autocomplete API-->
 <script>
     let autocomplete;
+
     function initAutocomplete() {
         autocomplete = new google.maps.places.Autocomplete(
             document.getElementById('autocomplete'),
             {
                 types: ['address'],
                 componentRestrictions: {'country':'US'},
-                fields: ['formatted_address', 'geometry'],
+                fields: ['formatted_address', 'geometry', 'name', 'address_components'],
                 strictBounds: false,
             }
         );
@@ -250,22 +254,83 @@
         autocomplete.addListener('place_changed', onPlaceChanged);
     }
 
-    function onPlaceChanged(){
+    function onPlaceChanged() {
         var place = autocomplete.getPlace();
 
-        if(!place.geometry){
+        if (!place.geometry) {
             document.getElementById('autocomplete').placeholder = 'Enter a place';
-        }
-        else {
-            document.getElementById('details').innerHTML = place.formatted_address;
-            console.log(place.formatted_address.long_name);
-        }
+        } else {
+            const addressComponents = place.address_components;
 
+            const streetNumber = getStreetNumber(addressComponents);
+            const route = getRoute(addressComponents);
+            const localCity = getLocality(addressComponents);
+            const state = getState(addressComponents);
+            const postalC = getPostalCode(addressComponents);
+            const country = getCountry(addressComponents);
+
+
+            if (streetNumber && route) {
+                document.getElementById('StN').value = streetNumber.long_name + " " + route.long_name;
+            } else {
+                document.getElementById('StN').value = "No street address found.";
+            }
+            if (localCity) {
+                document.getElementById('L').value = localCity.long_name;
+            } else {
+                document.getElementById('L').value = "No city found.";
+            }
+            if (state) {
+                let stateDrop = document.getElementById('St');
+                stateDrop.value = state.short_name;
+            } else {
+                document.getElementById('St').innerHTML = `<option value="">Select State</option>`;
+            }
+            if (postalC) {
+                document.getElementById('P').value = postalC.long_name;
+            } else {
+                document.getElementById('P').value = "No zip code found.";
+            }
+            if (country) {
+                document.getElementById('C').value = country.long_name;
+            } else {
+                document.getElementById('C').value = "No country found.";
+            }
+        }
     }
+
+    function getStreetNumber(addressComponents) {
+        return addressComponents.find(component => component.types.includes("street_number"));
+    }
+
+    function getRoute(addressComponents) {
+        return addressComponents.find(component => component.types.includes("route"));
+    }
+
+    function getLocality(addressComponents) {
+        return addressComponents.find(component => component.types.includes("locality"));
+    }
+
+    function getPostalCode(addressComponents) {
+        return addressComponents.find(component => component.types.includes("postal_code"));
+    }
+
+    function getState(addressComponents) {
+        return addressComponents.find(component => component.types.includes("administrative_area_level_1"));
+    }
+
+    function getCountry(addressComponents) {
+        return addressComponents.find(component => component.types.includes("country"));
+    }
+
+    window.onload = function() {
+        document.getElementById('autocomplete').focus();
+    };
+
 </script>
-
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBbRI4-FqDpXwb71COuZZsvi921b6nott8&loading=async&libraries=places&callback=initAutocomplete"></script>
-
+<script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBbRI4-FqDpXwb71COuZZsvi921b6nott8&loading=async&libraries=places&callback=initAutocomplete">
+</script>
 
 <!-- script for payment card-->
 <script>
