@@ -104,9 +104,12 @@
             <input type="text" id="customerPhone" name="phone" placeholder="Phone Number"><br>
             <input type="hidden" id="delivery-method-items" name="delivery-method-items">
 
+            <!-- Testing Google Autocomplete API-->
+            <input id="autocomplete" placeholder="Enter a place" type="text">
+            <div id="details"></div>
 
-            <button type="submit" class="payment-button" id="payment-proceed-2" onclick="proceed()">Payment</button>
-            <!--<button type="submit" class="payment-button">Payment</button>--> <!--For Shippo API Testing purposes-->
+            <!--<button type="submit" class="payment-button" id="payment-proceed-2" onclick="proceed()">Payment</button>-->
+            <button type="submit" class="payment-button">Payment</button> <!--For Shippo API Testing purposes-->
 
         </form>
     </div>
@@ -229,6 +232,40 @@
         });
     });
 </script>-->
+
+<!--script for Google Autocomplete API-->
+<script>
+    let autocomplete;
+    function initAutocomplete() {
+        autocomplete = new google.maps.places.Autocomplete(
+            document.getElementById('autocomplete'),
+            {
+                types: ['address'],
+                componentRestrictions: {'country':'US'},
+                fields: ['formatted_address', 'geometry'],
+                strictBounds: false,
+            }
+        );
+
+        autocomplete.addListener('place_changed', onPlaceChanged);
+    }
+
+    function onPlaceChanged(){
+        var place = autocomplete.getPlace();
+
+        if(!place.geometry){
+            document.getElementById('autocomplete').placeholder = 'Enter a place';
+        }
+        else {
+            document.getElementById('details').innerHTML = place.formatted_address;
+            console.log(place.formatted_address.long_name);
+        }
+
+    }
+</script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBbRI4-FqDpXwb71COuZZsvi921b6nott8&loading=async&libraries=places&callback=initAutocomplete"></script>
+
 
 <!-- script for payment card-->
 <script>
