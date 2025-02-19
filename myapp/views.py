@@ -9,6 +9,9 @@ from django.shortcuts import get_object_or_404
 from django.middleware.csrf import get_token
 import json
 import uuid
+from django import template
+
+register = template.Library()
 
 def home(request):
     # Current date is hard coded
@@ -177,13 +180,21 @@ def productDetails(request,pk):
 
 
 def paymentPortal(request):
+    #info for cart
+    if request.user.is_authenticated:
+        cart_items = Cart.objects.filter(customer=request.user.customer)
+    else:
+        cart_items = Cart.objects.filter(session_key=request.session.session_key)
+
+    total_price = sum(item.product.price for item in cart_items)
+
     square_app_id = 'sandbox-sq0idb-8IPgsCCDGo1xxuoCMh0SSQ'
     square_location_id = 'LNG128XEAPR21'
     context = {
         "square_app_id": square_app_id,
         "square_location_id": square_location_id
     }
-    return render(request, 'payment.html', context)
+    return render(request, 'payment.html', {'cart_items': cart_items, 'total_price': total_price})
 
 def process_payment(request):
     if request.method == 'POST':
@@ -213,3 +224,9 @@ def process_payment(request):
         except Exception as e:
             return JsonResponse({"status": "error", "message": str(e)})
     return JsonResponse({"status": "error", "message": "Invalid request method"})
+
+@register.inclusion_tag('orderCartSummary.html', takes_context=True)
+def orderCartSummary(context):
+    return {
+        'orderCartSummary': context['data'],
+    }

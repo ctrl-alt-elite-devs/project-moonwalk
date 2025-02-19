@@ -87,3 +87,16 @@
     border-radius: 20px;
 }*/
 
+.order-cart-summary {
+    margin: 10px;
+
+    border: 1px solid black;
+    border-radius: 10px;
+
+    align-content: center;
+    justify-content: center;
+
+    text-align: center;
+
+}
+
