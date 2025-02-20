@@ -26,17 +26,11 @@ Technologies Used:
 * HTML/CSS/JavaScript: For the frontend design and interactivity.
 * SQLite (or PostgreSQL/MySQL for production): Used for the database to store product and user information.
 
-Ensure python is installed and added to PATH, then in a terminal run:
-    
-    pip install django
+Ensure python is installed and added to PATH, then install all required modules by running:
 
-In case modules are missing be sure to run these before trying to run the server:
+    pip install -r requirements.txt
 
-    python -m pip install squareup
-    
-AND
-
-    python -m pip install python-dotenv
+If new modules are needed add them manually to requirements.txt.
 
 To run the server enter the following while in the main directory project-moonwalk:
   
@@ -77,7 +71,7 @@ Run Django with the following command to make it accessible on your local networ
 
 Finally, on your phone's web browser enter:
 
-    http//:192.168.1.10:8000 (replace 192.168.1.10 with your own local IP)
+    http://192.168.1.10:8000 (replace 192.168.1.10 with your own local IP)
 
 now you should be able to see the page on your phone and be able to refresh and see updates as you change code.
 

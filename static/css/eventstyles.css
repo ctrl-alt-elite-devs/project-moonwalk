@@ -14,7 +14,8 @@
 /* Container for the events section */
 .event-section {
     max-width: 1000px;
-    margin: 80px auto; /* Centers the section on the page */
+    /* Centers the section on the page */
+    margin: 80px auto 40px;
     padding: 0 1rem; /* Adds padding for smaller screens */
 }
 
@@ -93,4 +94,26 @@
     .event-description {
         font-size: 12px; /* Smaller text for descriptions */
     }
+}
+
+#viewmore_button {
+    appearance: none; -webkit-appearance: none;
+    width: 150px;
+    color: #000000;
+    background-color: #F46471;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+
+    font-size: 18px;
+
+    cursor: pointer;
+}
+
+#viewmore_button:hover {
+    color: #FFFFFF;
+}
+
+.google-calendar-link:hover {
+    color: #F46471;
 }

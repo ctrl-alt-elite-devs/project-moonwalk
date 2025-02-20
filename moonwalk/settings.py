@@ -30,8 +30,8 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "localhost",
     "10.117.75.248",
+    "10.0.0.42",
 ]
-
 
 # Application definition
 
@@ -70,6 +70,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'myapp.context_processors.cart_context',
             ],
         },
     },
@@ -125,6 +126,7 @@ STATIC_URL = '/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = ['static/',  # Or wherever your static folder is located
+
 ]
 
 MEDIA_URL = 'media/'
@@ -138,5 +140,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 #CSRF cookies
-CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = False
 CSRF_USE_SESSIONS = False
+CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SECURE = False
+CSRF_COOKIE_SAMESITE = 'Lax'

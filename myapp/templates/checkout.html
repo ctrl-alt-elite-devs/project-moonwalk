@@ -25,7 +25,7 @@
         <br>
         <p>MoonWalk Threads</p>
         <p>Address: 490 High St, Auburn, CA 95603</p>
-        <a><button type="submit" class="payment-button" id="payment-proceed">Payment</button></a>
+        <a><button type="submit" class="payment-button" id="payment-proceed" onclick="proceed()">Payment</button></a>
     </div>
 </div>
 
@@ -37,12 +37,12 @@
             {% csrf_token %}
             <!--Shipping Address Information-->
             <h4>Shipping Address</h4>
-            <input type="text" id="customerFirstName" name="firstName" placeholder="First Name" pattern="[A-Za-z]+" required title="Please enter a valid first name (letters only)."><br>
-            <input type="text" id="customerLastName" name="lastName" placeholder="Last Name" pattern="[A-Za-z]+" title="Please enter a valid last name (letters only)." required><br>
+            <input type="text" id="customerFirstName" name="firstName" placeholder="First Name"><br>
+            <input type="text" id="customerLastName" name="lastName" placeholder="Last Name"><br>
             <input type="text" id="customerStreetAddress" name="streetAddress" placeholder="Street Address" title="Please enter your street address." required><br>
             <input type="text" id="customerAddressOptional" name="addressOptional" placeholder="Apt, Suite, Building (Optional)"><br>
-            <input type="text" id="customerZipCode" name="zipCode" placeholder="Zip Code" pattern="^\d{5}$" minlength="5" maxlength="5" required title="Zip code must be exactly 5 digits."><br>
-            <input type="text" id="customerCity" name="city" placeholder="City" pattern="[A-Za-z]+" title="Please enter a valid city name (letters only)."required><br>
+            <input type="text" id="customerZipCode" name="zipCode" placeholder="Zip Code"><br>
+            <input type="text" id="customerCity" name="city" placeholder="City"><br>
             <!--Select States from Drop Down-->
             <select class="states" id="customerState">
                 <option value="AL">Alabama</option>
@@ -100,12 +100,13 @@
         
             <!--Contact Information-->
             <h4>Contact Information</h4>
-            <input type="email" id="customerEmail" name="email" placeholder="Email Address" title="Please enter a valid email address." required><br>
-            <input type="text" id="customerPhone" name="phone" placeholder="Phone Number" pattern="^\d{10}$" minlength="10" maxlength="10" required title="Phone number must be exactly 10 digits."><br>
+            <input type="email" id="customerEmail" name="email" placeholder="Email Address"><br>
+            <input type="text" id="customerPhone" name="phone" placeholder="Phone Number"><br>
             <input type="hidden" id="delivery-method-items" name="delivery-method-items">
 
 
             <button type="submit" class="payment-button" id="payment-proceed-2" onclick="proceed()">Payment</button>
+            <!--<button type="submit" class="payment-button">Payment</button>--> <!--For Shippo API Testing purposes-->
 
         </form>
     </div>
@@ -144,9 +145,10 @@
     }
     //Set Delivery to default
     document.getElementsByClassName("tablinks")[0].click();
+</script>
 
-
-   //store variables from shipping address
+<script>
+    //store variables from shipping address into LOCAL STORAGE
     document.getElementById('payment-proceed-2').addEventListener('click', function(event) {
 
         console.log("submitting values");
@@ -179,9 +181,56 @@
 
         window.location.href = "{% url 'paymentPortal' %}";
     });
-    </script>
+</script>
 
-<!-- script for payment card -->
+<!-- Shippo Shippment API-->
+<!--<script>
+    document.getElementById('checkout-form').addEventListener('submit', function(event) {
+        event.preventDefault();  // Prevent default form submission
+
+        const formData = new FormData(this);
+
+        // Ensure you are sending all the necessary fields correctly
+        const data = {
+            customerFirstName: formData.get('firstName'),
+            customerLastName: formData.get('lastName'),
+            customerStreetAddress: formData.get('streetAddress'),
+            customerAddressOptional: formData.get('addressOptional') || "", // make sure not null
+            customerCity: formData.get('city'),
+            customerState: formData.get('state'),
+            customerZipCode: formData.get('zipCode'),
+            customerEmail: formData.get('email'),
+            customerPhone: formData.get('phone')
+        };
+
+        // Send data via fetch
+        fetch('/submit-address/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify(data),
+            credentials: 'same-origin'
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            return response.json();  // Parse JSON data if successful
+        })
+        .then(data => {
+            console.log('Success:', data);  // Log success message
+            alert('Your address has been submitted successfully!');
+        })
+        .catch(error => {
+            console.error('Network error:', error);
+            alert('An unexpected error occurred. Please try again.');
+        });
+    });
+</script>-->
+
+<!-- script for payment card-->
 <script>
     function showPayment() {
         event.preventDefault();
@@ -242,6 +291,4 @@
         }
     })()
 </script>
-
-
 {% endblock %}

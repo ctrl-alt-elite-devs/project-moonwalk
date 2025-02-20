@@ -33,6 +33,7 @@
             <div class="label_seconds">Secs</div>
         </div>
     </div>
+    <script src="static/scripts/countdown_banner.js"></script>
 </div>
 
 <!-- Product Section -->
@@ -55,34 +56,45 @@
             </div>
             <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
             <script>
-                $(document).ready(function() {
-                    // Attach click event only once per element
-                    $('.add-to-cart-btn').each(function() {
-                        $(this).off('click').on('click', function(event) {
-                            event.preventDefault();
-            
-                            var productId = $(this).data('id');
-            
-                            $.ajax({
-                                url: '/add-to-cart/' + productId + '/',
-                                method: 'POST',
-                                headers: {
-                                    'X-CSRFToken': '{{ csrf_token }}'
-                                },
-                                success: function(response) {
-                                    alert(response.message);
-                                },
-                                error: function(xhr, status, error) {
-                                    if (xhr.status === 400) {
-                                        alert(xhr.responseJSON.message); // "Already in cart" message
-                                    } else {
-                                        alert('Failed to add product to cart. Please try again.');
-                                    }
+                $(document).ready(function () {
+                    $('.add-to-cart-btn').off('click').on('click', function (event) {
+                        event.preventDefault();
+                
+                        const productId = $(this).data('id');
+                
+                        $.ajax({
+                            url: `/add-to-cart/${productId}/`,
+                            method: 'POST',
+                            headers: {
+                                'X-CSRFToken': '{{ csrf_token }}',
+                            },
+                            success: function (response) {
+                                console.log("AJAX Response:", response);
+                
+                                // Display different messages based on response
+                                if (response.message.includes("already in your cart")) {
+                                    alert("⚠️ This item is already in your cart.");
+                                } else {
+                                    alert("✅ Item added to cart successfully.");
                                 }
-                            });
+                
+                                // Ensure cart count is visible and updated
+                                let cartCounter = $('#cart-icon .cart-count');
+                
+                                if (cartCounter.length === 0) {
+                                    $('#cart-icon').append(`<span class="cart-count">${response.cart_item_count}</span>`);
+                                } else {
+                                    cartCounter.text(response.cart_item_count);
+                                }
+                            },
+                            error: function (xhr) {
+                                alert(`Error: ${xhr.responseJSON.message}`);
+                            },
                         });
                     });
                 });
+                
+                </script>
             </script>
         </div>
         {% endfor %}
@@ -96,55 +108,27 @@
 </div>
 
 
+<!-- Events Section -->
 <div class="event-section">
-    <!-- Events Subheading -->
     <h2 class="event-subtitle">Upcoming Events</h2>
 
-    <!-- Events Row -->
-    <div class="event-row">
-        <!-- First Event -->
-        <div class="event-box">
-            <img src="{% static 'images/events1.jpg' %}" alt="Event 1 Image">
-            <p class="event-description">
-                <strong>Name:</strong> Auburn's Giveaway<br>
-                <strong>Date:</strong> December 1, 2024<br>
-                <strong>Description:</strong> Get lucky on this giveaway event!
-            </p>
-        </div>
-
-        <!-- Second Event -->
-        <div class="event-box">
-            <img src="{% static 'images/events2.jpg' %}" alt="Event 2 Image">
-            <p class="event-description">
-                <strong>Name:</strong> Not Your Boyfriend's Market<br>
-                <strong>Date:</strong> December 10, 2024<br>
-                <strong>Description:</strong>Vintage Clothes and more!
-            </p>
-        </div>
-
-        <!-- Third Event -->
-        <div class="event-box">
-            <img src="{% static 'images/events3.jpg' %}" alt="Event 3 Image">
-            <p class="event-description">
-                <strong>Name:</strong> Christmas Sale<br>
-                <strong>Date:</strong> December 25, 2024<br>
-                <strong>Description:</strong>Get your hands on the biggest sale this year!
-            </p>
-        </div>
-
-        <!-- Fourth Event -->
-        <div class="event-box">
-            <img src="{% static 'images/events4.jpeg' %}" alt="Event 4 Image">
-            <p class="event-description">
-                <strong>Name:</strong> Hoco Dresses Sale<br>
-                <strong>Date:</strong> January 25, 2024<br>
-                <strong>Description:</strong> Shop over 50 homecoming dresses!
-            </p>
-        </div>
+    <!-- Events Row (JavaScript will fill this) -->
+    <div class="event-row" id="events">
+        <p>Loading events...</p>
     </div>
 </div>
 
+<!-- View More Button -->
 <div class="viewmore-style" style="text-align: center; margin-bottom: 20px;">
-    <button onclick="window.location.href='{% url 'googleCalendar' %}'" type="button" id="viewmore_button">View More</button>
+    <button id="viewmore_button" type="button">View More</button>
 </div>
+
+<!-- Load JavaScript -->
+<script src="{% static 'scripts/events.js' %}" defer></script>
+<script>
+    document.getElementById("viewmore_button").addEventListener("click", function () {
+        window.location.href = "{% url 'googleCalendar' %}";
+    });
+</script>
+
 {% endblock %}

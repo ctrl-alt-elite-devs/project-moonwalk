@@ -15,7 +15,7 @@
 
     <!-- Load static files -->
     {% load static %}
-    <script type="text/javascript" src="static/scripts/countdown_banner.js"></script>
+    <script type="text/javascript" src="static/scripts/events.js"></script>
     <!-- Link to your custom CSS file -->
     <link rel="stylesheet" href="{% static 'css/homestyles.css' %}">
     <link rel="stylesheet" href="{% static 'css/shopstyles.css' %}">
@@ -36,7 +36,7 @@
 <body>
     <header>
         <div class="brand-header">
-            <img src="{% static 'images/logo.png' %}" alt="MoonWalk Threads Logo" class="brand-logo">
+            <a href="{% url 'home' %}"><img src="{% static 'images/logo.png' %}" alt="MoonWalk Threads Logo" class="brand-logo"></a>
         </div>
     </header>
     <!-- NavBar -->
@@ -50,32 +50,92 @@
         <div class="toggle_btn">
             <i class="fa-solid fa-bars"></i>
         </div>
-        <a href="{% url 'cart' %}" class="cart_btn">
-            <i class="fa-solid fa-cart-shopping"></i>
-        </a>
+        <div class="cart-container">
+            <a href="{% url 'cart' %}" class="cart_btn" id="cart-icon">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <span class="cart-count">{% if cart_item_count > 0 %}{{ cart_item_count }}{% else %}0{% endif %}</span>
+            </a>
+        
+            <!-- Mini Cart Dropdown -->
+            <div class="cart-dropdown" id="cart-dropdown">
+                {% if cart_items %}
+                    <ul class="cart-items">
+                        {% for item in cart_items|slice:":4" %}
+                        <li class="cart-item">
+                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" width="40">
+                            <div>
+                                <p>{{ item.product.name }}</p>
+                                <p>${{ item.product.price|floatformat:2 }}</p>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    <div class="cart-footer">
+                        <a href="{% url 'cart' %}" class="checkout-button">Go to Cart</a>
+                    </div>
+                {% else %}
+                    <p class="empty-cart">Your cart is empty.</p>
+                {% endif %}
+            </div>
+            
+        </div>
+        
         <div class="profile_btn open_login">
             <i class="fa-solid fa-user"></i>
         </div>
+
+        <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                    const cartIcon = document.getElementById("cart-icon");
+                    const profileIcon = document.querySelector(".profile_btn");
+
+                    // Apply flicker effect on refresh
+                    if (cartIcon) {
+                    cartIcon.classList.add("flicker");
+                    setTimeout(() => {
+                    cartIcon.classList.remove("flicker");
+                    }, 500);
+                    }
+
+                    if (profileIcon) {
+                    profileIcon.classList.add("flicker");
+                    setTimeout(() => {
+                    profileIcon.classList.remove("flicker");
+                    }, 500);
+                    }
+                    });
+        </script>
+
+<script src="{% static 'scripts/cart_hover.js' %}"></script>
+
+
     </div>
     <div class="dropdown">
         <li><a href="{% url 'home' %}">Home</a></li>
         <li><a href="{% url 'shop' %}">Shop</a></li>
         <li><a href="{% url 'about' %}">About</a></li>
         <li><a href="{% url 'contact' %}">Contact</a></li>
-        <li><a href="#" class="action_btn open_login">Login</a></li>
+        <li><a href="{% url 'login' %}" class="action_btn open_login">Login</a></li>
     </div>
     <!-- The Login Popup -->
     <div id="login-modal" class="login-modal">
+        
         <div class="login-content">
         <span class="login-x login-close">&times;</span>
-        <form id="login-form">
-            <label for="email">Email</label>
+
+        <form id="login-form" method="POST" action="{% url 'login' %}">
+            {% csrf_token %}
+
+            <!--<label for="email">Email</label>
             <input type="email" id="email" name="email" required>
-    
+            -->
+            <label for="username">Username</label>
+            <input type="username" id="username" name="username" required>
+
             <label for="password">Password</label>
             <input type="password" id="password" name="password" required>
     
-            <button type="submit" class="login-btn" id="login-button">Log In</button>
+            <button type="submit" class="login-btn" >Log In</button>
 
             <ul id="locations-list"></ul>
             
@@ -103,6 +163,7 @@
         </div>
     </div>
     <!-- The Create Account Popup -->
+
     <div id="signup-modal" class="signup-modal">
         <div class="signup-content login-content">
             <span class="login-x signup-close">&times;</span>
@@ -202,19 +263,35 @@
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="{% static 'scripts/login-script.js' %}"></script>
 
+    {% if messages %}
+        {% for message in messages %}
+            <div class="logAlert">
+                {{ message}}
+                <button class="close-btn" onclick="this.parentElement.style.display='none'">&times;</button>
+            </div>
+        {% endfor %}
+    {% endif %}
+   
+
     {% block content %}
     {% endblock %}
 
     <footer>
-        <p id="header">SIGN UP FOR MORE</p>
+        <p id="footer-header">SIGN UP FOR MORE</p>
         <label for="phoneNum"></label>
         <label for="emailAddress"></label>
 
-        <input class="subscribeInput" type="text" id="emailAddress" placeholder="Your email address" autocomplete="email">
-        <button class="subscribeButton" type="button">SUBSCRIBE</button>
-        
-        <input class="subscribeInput" type="text" id="phoneNum" placeholder="Your phone number">
-        <button class="subscribeButton" type="button">SUBSCRIBE</button>
+        <div class="subscribe-section">
+            <div class="subscribe-subsection">
+                <input class="subscribeInput" type="text" id="emailAddress" placeholder="Your email address" autocomplete="email">
+                <button class="subscribeButton" type="button">SUBSCRIBE</button>
+            </div>
+
+            <div class="subscribe-subsection">
+                <input class="subscribeInput" type="text" id="phoneNum" placeholder="Your phone number">
+                <button class="subscribeButton" type="button">SUBSCRIBE</button>
+            </div>
+        </div>
 
         <div class="instaIcon">
         <a href="https://www.instagram.com/moonwalkthreads/?hl=en">

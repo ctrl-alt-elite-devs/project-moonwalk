@@ -1,19 +1,34 @@
 {% extends 'base.html' %}
-{% load static %}
 {% block title %}Shop{% endblock %}
 {% block content %}
 <h1>Shop</h1>
-<!-- Dropdown Button for Categories -->
-<div class="shop-filter">
-    <button class="shop-filter-button" onclick="toggleDropdown()">Filter</button>
-    <div class="shop-filter-content" id="shop-filter-content">
-        <a href="{% url 'shop' %}">All Products</a>
-        {% for category in categories %}
-            <a href="{% url 'shop-category' category.name %}">{{ category.name }}</a>
-        {% endfor %}
+
+<div class="shop-search-filter">
+    <!-- Search Form -->
+    <form id="search-form" method="GET" action="{% if category %}{% url 'shop-category' category.name %}{% else %}{% url 'shop' %}{% endif %}">
+        <input type="text" name="q" placeholder="Search for products..." value="{{ search_query }}" class="shop-search-input">
+    </form>
+
+    <!-- Button Container -->
+    <div class="shop-button-container">
+        <button class="shop-button" type="button" onclick="submitSearch()">Search</button>
+
+        <!-- Filter Button Wrapper-->
+        <div class="shop-filter-wrapper">
+            <button class="shop-button" onclick="toggleDropdown()">Filter</button>
+
+            <!-- Filter Dropdown-->
+            <div class="shop-filter-content" id="shop-filter-content">
+                <a href="{% url 'shop' %}">All Products</a>
+                {% for category in categories %}
+                    <a href="{% url 'shop-category' category.name %}?q={{ search_query }}">{{ category.name }}</a>
+                {% endfor %}
+            </div>
+        </div>
     </div>
 </div>
 
+    
 <section class="shop-product-section">
     <div class="shop-product-grid">
         {% for product in products %}
@@ -31,60 +46,95 @@
                 <a class="btn btn-outline-dark" href="{% url 'productDetails' product.id %}">View Product</a>
                 <button class="btn btn-outline-dark shop-add-to-cart-btn" data-id="{{ product.id }}">Add to Cart</button>
             </div>
+
+
         </div>
         {% endfor %}
     </div>
+
 </section>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <script>
+$(document).ready(function () {
+    $('.shop-add-to-cart-btn').off('click').on('click', function (event) {
+        event.preventDefault();
 
-    // Add to Cart Functionality
-    $(document).ready(function() {
-        // Attach click event only once per element
-        $('.shop-add-to-cart-btn').each(function() {
-            $(this).off('click').on('click', function(event) {
-                event.preventDefault();
+        const productId = $(this).data('id');
 
-                var productId = $(this).data('id');
+        $.ajax({
+            url: `/add-to-cart/${productId}/`,
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+            },
+            success: function (response) {
+                console.log("AJAX Response:", response);
 
-                $.ajax({
-                    url: '/add-to-cart/' + productId + '/',
-                    method: 'POST',
-                    headers: {
-                        'X-CSRFToken': '{{ csrf_token }}'
-                    },
-                    success: function(response) {
-                        alert(response.message);
-                    },
-                    error: function(xhr, status, error) {
-                        if (xhr.status === 400) {
-                            alert(xhr.responseJSON.message); // "Already in cart" message
-                        } else {
-                            alert('Failed to add product to cart. Please try again.');
-                        }
-                    }
-                });
-            });
+                if (response.message.includes("already in your cart")) {
+                    alert("⚠️ This item is already in your cart.");
+                } else {
+                    alert("✅ Item added to cart successfully.");
+                }
+
+                // Update cart count dynamically
+                let cartCounter = $('#cart-icon .cart-count');
+                if (cartCounter.length === 0) {
+                    $('#cart-icon').append(`<span class="cart-count">${response.cart_item_count}</span>`);
+                } else {
+                    cartCounter.text(response.cart_item_count);
+                }
+            },
+            error: function (xhr) {
+                console.error("AJAX Error:", xhr);
+
+                let errorMessage = "An error occurred while adding to the cart.";
+
+                // Handle Safari returning undefined JSON response
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                } else if (xhr.responseText) {
+                    errorMessage = xhr.responseText;
+                }
+
+                alert(`❌ Error: ${errorMessage}`);
+            },
         });
     });
+});
+
     // Function to toggle the dropdown menu
     function toggleDropdown() {
-        document.getElementById("shop-filter-content").classList.toggle("show");
+        var dropdown = document.getElementById("shop-filter-content");
+        dropdown.classList.toggle("show");
+
+        // Ensure dropdown is positioned correctly below the button
+        var button = document.querySelector(".shop-button-container");
+        var buttonRect = button.getBoundingClientRect();
+        
+        dropdown.style.top = buttonRect.height + "px"; // Adjust position
+        dropdown.style.left = "0px"; // Align it directly below the button
     }
 
     // Close the dropdown if the user clicks outside of it
     window.onclick = function(event) {
-        if (!event.target.matches('.shop-filter-button')) {
+        if (!event.target.matches('.shop-button')) {
             var dropdowns = document.getElementsByClassName("shop-filter-content");
             for (var i = 0; i < dropdowns.length; i++) {
                 var openDropdown = dropdowns[i];
                 if (openDropdown.classList.contains('show')) {
-                openDropdown.classList.remove('show');
+                    openDropdown.classList.remove('show');
                 }
             }
         }
+    };
+
+    function submitSearch() {
+        document.getElementById("search-form").submit();
     }
 </script>
+
+
 
 {% endblock %}
