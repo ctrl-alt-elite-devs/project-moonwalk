@@ -1,0 +1,61 @@
+<head>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/cart.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/cartSummary.css' %}"/>
+</head>
+
+<!-- Cart items section -->
+<div class="cart-summary-container">
+    <div class="cart-items">
+        <h2><center>Your Cart</center></h2>
+        <!-- Loop through cart items from the context -->
+        {% for item in cart_items %}
+        <div class="cart-item" id="cart-item-{{ item.id }}">
+            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" width="200" height="200">
+            <div class="item-details">
+                <h4>{{ item.product.name }}</h4>
+                <p>Price: ${{ item.product.price|floatformat:2 }} | Size: {{ item.product.size }}</p>
+            </div>
+
+            <script>
+                $(document).ready(function () {
+                    $('.remove-btn').off('click').on('click', function (event) {
+                        event.preventDefault();
+
+                        const cartItemId = $(this).data('id'); // Get the item ID
+
+                        $.ajax({
+                            url: `/remove-from-cart/${cartItemId}/`,
+                            method: 'POST',
+                            headers: {
+                                'X-CSRFToken': '{{ csrf_token }}', // Include CSRF token
+                            },
+                            success: function (response) {
+                                alert(response.message); // Show success message
+
+                                // Reload the page to ensure total price and UI updates
+                                location.reload();
+                            },
+                            error: function (xhr) {
+                                alert(`Error: ${xhr.responseJSON.message}`); // Show error message
+                            },
+                        });
+                    });
+                });
+            </script>
+        </div>
+        {% empty %}
+        <p>Your cart is empty.</p>
+        {% endfor %}
+
+        {% if cart_items %}
+        <div class="total-section">
+            <p>Items: ${{ total_price|floatformat:2 }}</p>
+            <p>Shipping & Taxes Calculated at Checkout</p>
+            <!-- Custom divider -->
+            <div class="divider"></div>
+            <p>Total: ${{ total_price|floatformat:2 }}</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
