@@ -15,6 +15,9 @@ from shippo.models import components
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 
+from django import template
+
+register = template.Library()
 
 def home(request):
     # Current date is hard coded
@@ -50,9 +53,6 @@ def total_time(request):
     return render(request, 'home.html', 'cart.html', context)
 
 def shop(request, foo=None):
-
-    search_query = request.GET.get('q', '').strip()
-
     # If a category is provided (foo), filter by category, else show all products
     if foo:
         foo = foo.replace('-', ' ')
@@ -67,16 +67,8 @@ def shop(request, foo=None):
         products = Product.objects.all()
         category = None  # No category selected
 
-    if search_query:
-        products = products.filter(name__icontains=search_query)
-
     categories = Category.objects.all()  # Pass all categories to the template
-    return render(request, 'shop.html', {
-        'products': products,
-        'category': category,
-        'categories': categories,
-        'search_query': search_query,
-        })
+    return render(request, 'shop.html', {'products': products, 'category': category, 'categories': categories})
 
 def about(request):
     return render(request, 'about.html')
@@ -87,7 +79,7 @@ def contact(request):
 def cart(request):
     #mock items
         # Current date is hard coded
-    date = "2025-02-06 00:00:00"
+    date = "2024-12-06 00:00:00"
     today = datetime.datetime.now()
     # Specify the date format being provided
     countdown_date = datetime.datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
@@ -108,94 +100,42 @@ def cart(request):
     return render(request, 'cart.html', {'total_time': total_time,'cart_items': cart_items,
         'total_price': total_price})
 
+
 def add_to_cart(request, product_id):
-    if request.method == "POST":
-        try:
-            product = Product.objects.get(id=product_id)
+    product = get_object_or_404(Product, id=product_id)
 
-            # Ensure session key exists for non-logged-in users
-            if not request.user.is_authenticated:
-                if not request.session.session_key:
-                    request.session.create()
+    if request.user.is_authenticated:
+        customer = request.user.customer
+        cart_item, created = Cart.objects.get_or_create(customer=customer, product=product)
+    else:
+        session_key = request.session.session_key
+        if not session_key:
+            request.session.create()
+        cart_item, created = Cart.objects.get_or_create(session_key=request.session.session_key, product=product)
 
-            # Determine whether to store by customer or session
-            if request.user.is_authenticated:
-                cart_item, created = Cart.objects.get_or_create(
-                    product=product,
-                    customer=request.user.customer
-                )
-            else:
-                session_key = request.session.session_key
-                cart_item, created = Cart.objects.get_or_create(
-                    product=product,
-                    session_key=session_key
-                )
+    # Handle if the product is already in the cart
+    if not created:
+        return JsonResponse({'message': 'Product is already in the cart!'}, status=400)
 
-            # Determine message based on whether the item was newly added
-            if created:
-                message = "Item added to cart successfully."
-            else:
-                message = "Item is already in your cart."
-
-            # Get updated cart count and total price
-            if request.user.is_authenticated:
-                cart_items = Cart.objects.filter(customer=request.user.customer)
-            else:
-                cart_items = Cart.objects.filter(session_key=session_key)
-
-            cart_item_count = cart_items.count()
-            total_price = sum(item.product.price for item in cart_items)
-
-            print(f"Updated cart count: {cart_item_count}")
-
-            return JsonResponse({
-                'message': message,  # Updated message
-                'cart_item_count': cart_item_count,
-                'total_price': total_price,
-            })
-
-        except Product.DoesNotExist:
-            return JsonResponse({'message': 'Product not found.'}, status=404)
-
-    return JsonResponse({'message': 'Invalid request method.'}, status=400)
+    cart_item.save()
+    return JsonResponse({'message': 'Product added to cart successfully!'})
 
 def remove_from_cart(request, cart_item_id):
-    if request.method == "POST":
-        try:
-            cart_item = Cart.objects.get(id=cart_item_id)
+    if request.method == 'POST':  # Ensure the method is POST for safety
+        cart_item = get_object_or_404(Cart, id=cart_item_id)
 
-            # Check if the item belongs to the current user/session
-            if request.user.is_authenticated:
-                if cart_item.customer == request.user.customer:
-                    cart_item.delete()
-            else:
-                if cart_item.session_key == request.session.session_key:
-                    cart_item.delete()
+        # Check if the user is authorized to remove this item
+        if request.user.is_authenticated:
+            if cart_item.customer != request.user.customer:
+                return JsonResponse({'message': 'Unauthorized access.'}, status=403)
+        else:
+            if cart_item.session_key != request.session.session_key:
+                return JsonResponse({'message': 'Unauthorized access.'}, status=403)
 
-            # Calculate updated cart item count and total price
-            if request.user.is_authenticated:
-                cart_items = Cart.objects.filter(customer=request.user.customer)
-            else:
-                session_key = request.session.session_key
-                cart_items = Cart.objects.filter(session_key=session_key)
-
-            cart_item_count = cart_items.count()
-            total_price = sum(item.product.price for item in cart_items)
-            print(f"Updated total price: {total_price}")
-
-            return JsonResponse({
-                'message': 'Item removed successfully.',
-                'cart_item_count': cart_item_count,
-                'total_price': total_price,
-            })
-
-        except Cart.DoesNotExist:
-            return JsonResponse({'message': 'Item not found.'}, status=404)
-        
+        cart_item.delete()  # Remove the item from the cart
+        return JsonResponse({'message': 'Item removed successfully!'})
 
     return JsonResponse({'message': 'Invalid request method.'}, status=400)
-    
-
 
 
 def merge_cart(sender, request, user, **kwargs):
@@ -229,7 +169,6 @@ def listLocations(request):
     if request.method == "GET":
         try:
             result = client.locations.list_locations()
-            print(result.body)
             if result.is_success():
                 locations = result.body['locations']
                 return JsonResponse({"status": "success", "locations": locations})
@@ -260,7 +199,6 @@ def process_payment(request):
         data = json.loads(request.body)
         token = data.get("token")
         amount = 100
-        idem_key = uuid.uuid4()
 
         #getting an uuid (for idempotency) (every payment needs one)
 
@@ -268,7 +206,7 @@ def process_payment(request):
             result = client.payments.create_payment(
                 body = {
                     "source_id": token,
-                    "idempotency_key": str(idem_key),
+                    "idempotency_key": "7b0f3ec5-086a-4871-8f13-3c81b3875218",
                     "amount_money": {
                         "amount": amount,
                         "currency": "USD"
@@ -317,7 +255,7 @@ def submit_address(request):
     try:
         data = json.loads(request.body)
         print(f"Received data: {data}")
-        
+
         address_from = components.AddressCreateRequest(
             name="MoonWalk Threads",
             company="",
@@ -339,10 +277,10 @@ def submit_address(request):
             state=data.get("customerState"),
             zip=data.get("customerZipCode"),
             country="US",
-            phone=data.get("customerPhone"), 
-            email=data.get("customerEmail"),  
+            phone=data.get("customerPhone"),
+            email=data.get("customerEmail"),
         )
-        
+
         print(f"Address from: {address_from}")
         print(f"Address to: {address_to}")
 
@@ -361,7 +299,7 @@ def submit_address(request):
             parcels=[parcel]
         )
 
-        print(f"Shipment request: {shipment}") 
+        print(f"Shipment request: {shipment}")
 
         transaction = shippo_sdk.transactions.create(
             components.InstantTransactionCreateRequest(
@@ -379,13 +317,13 @@ def submit_address(request):
             })
         else:
             error_message = ""
-            
+
             if hasattr(transaction, 'messages'):
                 try:
                     if isinstance(transaction.messages, list):
-                        error_message = [str(msg) for msg in transaction.messages] 
+                        error_message = [str(msg) for msg in transaction.messages]
                     else:
-                        error_message = str(transaction.messages) 
+                        error_message = str(transaction.messages)
                 except Exception as e:
                     error_message = f"Error processing messages: {str(e)}"
             else:
@@ -400,3 +338,9 @@ def submit_address(request):
         return JsonResponse({'status': 'error', 'message': 'Invalid JSON format'}, status=400)
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+@register.inclusion_tag('orderCartSummary.html', takes_context=True)
+def orderCartSummary(context):
+    return {
+        'orderCartSummary': context['data'],
+    }
