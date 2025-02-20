@@ -1,14 +1,46 @@
 /* styling for payment.css */
 
-.payment_page {
-    margin: 15px;
+.payment-page {
+    margin: 10px;
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
 }
 
 #payment-column {
+    min-width: 50%;
+    margin: 10px;
     text-align: center;
     align-content: center;
-
     justify-content: center;
+}
+
+#order-column-payment-page {
+    min-width: 50%;
+    margin: 10px;
+}
+
+@media screen and (max-width: 768px) {
+    .payment-page {
+        margin: 10px;
+        display: inline;
+
+        align-content: center;
+        justify-content: center;
+    }
+
+    #payment-column {
+        text-align: center;
+        align-content: center;
+        justify-content: center;
+    }
+
+    #order-column-payment-page {
+        text-align: center;
+        align-content: center;
+        justify-content: center;
+    }
 
 }
 

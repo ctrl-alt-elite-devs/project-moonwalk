@@ -3,4 +3,15 @@
     border-radius: 10px;
 
     margin: 15px;
+    min-height: 390px;
+}
+
+@media screen and (max-width: 786px) {
+    .cart-summary-container {
+        border: 1px solid black;
+        border-radius: 10px;
+
+        margin: 15px;
+        min-height: auto;
+    }
 }

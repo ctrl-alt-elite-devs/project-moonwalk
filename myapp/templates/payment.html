@@ -6,8 +6,10 @@
     {% csrf_token %}
 </head>
 {% block content %}
-{% include 'cartSummary.html' %}
-<div class="payment_page">
+<div class="payment-page">
+    <div id="order-column-payment-page">
+        {% include 'cartSummary.html' %}
+    </div>
     <div id="payment-column">
         <div id="pay-header-container">
             <h1 id="pay-header">Payment</h1>
@@ -24,8 +26,7 @@
             <button id="pay" type="button">Pay</button>
         </div>
     </div>
-    <div id-="payment-page-order-summary">
-    </div>
+
 </div>
 
 <!-- For testing Shippo API purposes-->
