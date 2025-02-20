@@ -16,7 +16,7 @@
     text-align: center;
 }
 
-.digitalPayment {
+.digital-payment-container {
     margin: 5px;
 
     display: flex;
@@ -86,4 +86,3 @@
     border-color: black;
     border-radius: 20px;
 }*/
-

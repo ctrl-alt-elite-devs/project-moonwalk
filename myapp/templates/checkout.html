@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="{% static 'css/checkout.css' %}"/>
 </head>
 {% block content %}
+{% include 'cartSummary.html' %}
 <div class="order-type">
     <h1>How Would You Like To Get Your Order?</h1>
 </div>
@@ -245,50 +246,5 @@
         //check if form filled out and send to payment portal
         window.location.href = "{% url 'paymentPortal' %}";
     }
-</script>
-
-<script>
-    (async()=>{
-        const payments = Square.payments(
-            'sandbox-sq0idb-8IPgsCCDGo1xxuoCMh0SSQ',
-            'LNG128XEAPR21'
-        );
-        const cardOptions = {
-            style: {
-                input: {
-                    backgroundColor: 'white'
-                },
-            }
-        };
-        try {
-            const card = await payments.card(cardOptions);
-            await card.attach('#card');
-            const payButton = document.getElementById('pay');
-            payButton.addEventListener('click', async ()=>{
-                const result = await card.tokenize();
-                if (result) {
-                    fetch("{% url 'process_payment' %}", {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRFToken': '{{ csrf_token }}'
-                        },
-                        body: JSON.stringify({ token: result})
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.status === 'success') {
-                                alert("Payment successful");
-                            } else {
-                                alert("Payment failed");
-                            }
-                        })
-                        .catch(error => console.error('Error:', error));
-                }
-                alert(JSON.stringify(result, null, 2));
-            })
-        } catch (e) {
-            console.error(e);
-        }
-    })()
 </script>
 {% endblock %}

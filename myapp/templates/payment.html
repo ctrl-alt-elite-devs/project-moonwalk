@@ -1,20 +1,19 @@
 {% extends 'base.html' %}
-{% block title %}Payment{% endblock %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment</title>
     {% load static %}
     {% csrf_token %}
 </head>
 {% block content %}
+{% include 'cartSummary.html' %}
 <div class="payment_page">
     <div id="payment-column">
         <div id="pay-header-container">
             <h1 id="pay-header">Payment</h1>
         </div>
         <div id="paymentWrapper">
-            <div class="digitalPayment">
+            <div class="digital-payment-container">
                 <div id="google-pay-button"></div>
                 <!--<div id="apple-pay"></div>      Implement once site is deployed. otherwise, messes with styling and functionality-->
             </div>
