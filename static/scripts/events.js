@@ -24,59 +24,114 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const data = await response.json();
             console.log("Fetched Events:", data); // Debugging log
-            displayEvents(data.items);
+
+            const uniqueEvents = removeDuplicateEvents(data.items); // Ensure no duplicates
+            displayEvents(uniqueEvents);
         } catch (error) {
             console.error("Error fetching events:", error);
-            eventSection.innerHTML = `<p> Error loading events: ${error.message}</p>`;
+            eventSection.innerHTML = `<p>Error loading events: ${error.message}</p>`;
         }
+    }
+
+    function removeDuplicateEvents(events) {
+        const uniqueEvents = [];
+        const seenEvents = new Set();
+
+        for (const event of events) {
+            // Unique key: Combine ID, event name, and start date-time
+            const eventKey = `${event.id}-${event.summary}-${event.start?.dateTime || event.start?.date}`;
+            
+            if (!seenEvents.has(eventKey)) {
+                seenEvents.add(eventKey);
+                uniqueEvents.push(event);
+            } else {
+                console.warn(`⚠ Duplicate event skipped: ${event.summary} on ${event.start?.dateTime || event.start?.date}`);
+            }
+        }
+
+        return uniqueEvents;
+    }
+
+    function extractImgurImageLink(description) {
+        if (!description) {
+            console.warn("⚠ Event description is empty.");
+            return null;
+        }
+    
+        console.log(`Extracting image from description: ${description}`); // Debugging log
+    
+        // Updated regex to match Imgur links including .jpeg
+        const imgurRegex = /(https?:\/\/i\.imgur\.com\/[a-zA-Z0-9]+\.jpg|https?:\/\/i\.imgur\.com\/[a-zA-Z0-9]+\.jpeg|https?:\/\/i\.imgur\.com\/[a-zA-Z0-9]+\.png|https?:\/\/i\.imgur\.com\/[a-zA-Z0-9]+\.gif)/;
+        const match = description.match(imgurRegex);
+    
+        if (match && match[1]) {
+            const extractedUrl = match[1];
+            console.log(`✅ Extracted Imgur Image URL: ${extractedUrl}`); // Debugging log
+            return extractedUrl;
+        }
+    
+        console.warn("⚠ No valid Imgur image URL found in event description.");
+        return null;
     }
 
     function displayEvents(events) {
         eventSection.innerHTML = ""; // Clear previous content
-    
+
         if (!events || events.length === 0) {
             eventSection.innerHTML = "<p>No upcoming events.</p>";
             return;
         }
-    
-        events.slice(0, 4).forEach(event => {
-            let eventDate;
-            let eventTime;
-            let endTime = ""; // Default to empty in case there's no end time
-    
+
+        for (const event of events.slice(0, 4)) {
+            console.log(`Processing event: ${event.summary}`); // Debugging log
+
+            if (!event.description) {
+                console.warn(`⚠ Event "${event.summary}" has no description.`);
+                continue;
+            }
+
+            console.log(`Event Description: ${event.description}`); // Debugging log
+
+            const imgurImageLink = extractImgurImageLink(event.description);
+            console.log(`Extracted Image URL: ${imgurImageLink}`); // Debugging log
+
+            let eventDate, eventTime = "Unknown Time", endTime = "";
+
             if (event.start.dateTime) {
-                // If it's a timed event, use start and end time
+                // If it's a timed event
                 eventDate = new Date(event.start.dateTime);
-                const endDate = event.end.dateTime ? new Date(event.end.dateTime) : null;
-    
-                eventTime = eventDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    
+                const endDate = event.end?.dateTime ? new Date(event.end.dateTime) : null;
+
+                eventTime = eventDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+
                 if (endDate) {
-                    endTime = ` - ${endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+                    endTime = ` - ${endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}`;
                 }
             } else {
-                // If it's an all-day event, fix the timezone shift issue
+                // If it's an all-day event
                 eventDate = new Date(event.start.date + "T00:00:00");
                 eventDate.setMinutes(eventDate.getMinutes() + eventDate.getTimezoneOffset());
                 eventTime = "All Day";
             }
-    
-            const eventElement = document.createElement("div");
+
+            let eventElement = document.createElement("div");
             eventElement.classList.add("event-box");
-    
+
+            const imageTag = imgurImageLink ? `<img src="${imgurImageLink}" alt="Event Image" style="max-width:100%; height:auto; margin-bottom: 10px;">` : "";
+
             eventElement.innerHTML = `
+                ${imageTag}
                 <p class="event-description">
                     <strong>Name:</strong> ${event.summary}<br>
                     <strong>Date:</strong> ${eventDate.toDateString()}<br>
                     <strong>Time:</strong> ${eventTime}${endTime}<br>
-                    <a class="google-calendar-link" href="${event.htmlLink}" target="_blank">View on Google Calendar</a>
+                    <a href="${event.htmlLink}" target="_blank" class="calendar-link">View on Google Calendar</a>
                 </p>
             `;
-    
+
             eventSection.appendChild(eventElement);
-        });
+        }
     }
-    
 
     // Fetch events when the page loads
     fetchEvents();
