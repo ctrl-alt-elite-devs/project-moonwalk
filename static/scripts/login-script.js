@@ -59,6 +59,30 @@ window.onclick = function(event) {
   }
 }
 
+<<<<<<< HEAD
+=======
+/* 
+Handle login form submission (for demonstration purposes)
+document.getElementById("login-form").onsubmit = function(event) {
+  event.preventDefault();
+  alert("Email: " + document.getElementById("email").value + "\nPassword: " + document.getElementById("password").value);
+  loginModal.style.display = "none";
+};
+
+// Handle signup form submission (for demonstration purposes)
+document.getElementById("signup-form").onsubmit = function(event) {
+  event.preventDefault();
+  alert("Email: " + document.getElementById("signup-email").value + 
+        "\nFirst Name: " + document.getElementById("first-name").value + 
+        "\nLast Name: " + document.getElementById("last-name").value + 
+        "\nPassword: " + document.getElementById("signup-password").value +
+        "\nPhone #: " + document.getElementById("signup-phone").value +
+        "\nText: " + (document.getElementById("text-checkbox").checked ? "Yes" : "No") +
+        "\nEmail: " + (document.getElementById("email-checkbox").checked ? "Yes" : "No")+
+        "\nTerms:" + (document.getElementById("agreement-checkbox").checked ? "Yes" : "No"));
+  signupModal.style.display = "none";
+};
+>>>>>>> main
 
 /*
 function handleCredentialResponse(response) {
@@ -66,4 +90,8 @@ function handleCredentialResponse(response) {
   alert("Encoded JWT ID token: " + response.credential);
   // Here you could send the ID token to your server for further verification or processing
 }
+<<<<<<< HEAD
 */
+=======
+  */
+>>>>>>> main
