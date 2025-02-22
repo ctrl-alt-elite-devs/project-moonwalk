@@ -262,6 +262,7 @@
     </script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="{% static 'scripts/login-script.js' %}"></script>
+    <script src="{% static 'scripts/subscribe.js' %}" defer></script>
 
     {% if messages %}
         {% for message in messages %}
@@ -283,9 +284,11 @@
 
         <div class="subscribe-section">
             <div class="subscribe-subsection">
-                <input class="subscribeInput" type="text" id="emailAddress" placeholder="Your email address" autocomplete="email">
-                <button class="subscribeButton" type="button">SUBSCRIBE</button>
+                <input class="subscribeInput" type="email" id="emailAddress" placeholder="Your email address" autocomplete="email">
+                <button class="subscribeButton" type="button" id="subscribeButton">SUBSCRIBE</button>
             </div>
+            <p id="subscribeMessage" style="color: green; display: none;"></p> <!-- Success/Error Message -->
+        </div>
 
             <div class="subscribe-subsection">
                 <input class="subscribeInput" type="text" id="phoneNum" placeholder="Your phone number">

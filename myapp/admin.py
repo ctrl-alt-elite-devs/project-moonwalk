@@ -6,3 +6,9 @@ admin.site.register(Category)
 admin.site.register(Customer)
 admin.site.register(Product)
 admin.site.register(Order)
+
+
+from .models import Subscriber
+
+
+admin.site.register(Subscriber)
