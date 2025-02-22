@@ -1,16 +1,21 @@
 from django.shortcuts import render, redirect
 import datetime
 from django.contrib import messages
-from .models import Cart, Product, Category
+from .models import Cart, Customer, Product, Category
 from .square_service import client
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 from django.middleware.csrf import get_token
+from django.core.mail import send_mail
+from .models import Subscriber
 import json
 import uuid
 import shippo
 from shippo.models import components
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -98,7 +103,7 @@ def cart(request):
     total_time = total_time.total_seconds()
 
     if request.user.is_authenticated:
-        cart_items = Cart.objects.filter(customer=request.user.customer)
+        cart_items = Cart.objects.filter(customer = Customer.objects.filter(user=request.user).first())
     else:
         cart_items = Cart.objects.filter(session_key=request.session.session_key)
 
@@ -122,7 +127,7 @@ def add_to_cart(request, product_id):
             if request.user.is_authenticated:
                 cart_item, created = Cart.objects.get_or_create(
                     product=product,
-                    customer=request.user.customer
+                    customer = Customer.objects.filter(user=request.user).first()
                 )
             else:
                 session_key = request.session.session_key
@@ -139,7 +144,7 @@ def add_to_cart(request, product_id):
 
             # Get updated cart count and total price
             if request.user.is_authenticated:
-                cart_items = Cart.objects.filter(customer=request.user.customer)
+                cart_items = Cart.objects.filter(customer = Customer.objects.filter(user=request.user).first())
             else:
                 cart_items = Cart.objects.filter(session_key=session_key)
 
@@ -166,7 +171,7 @@ def remove_from_cart(request, cart_item_id):
 
             # Check if the item belongs to the current user/session
             if request.user.is_authenticated:
-                if cart_item.customer == request.user.customer:
+                if cart_item.customer == Customer.objects.filter(user=request.user).first():
                     cart_item.delete()
             else:
                 if cart_item.session_key == request.session.session_key:
@@ -174,7 +179,7 @@ def remove_from_cart(request, cart_item_id):
 
             # Calculate updated cart item count and total price
             if request.user.is_authenticated:
-                cart_items = Cart.objects.filter(customer=request.user.customer)
+                cart_items = Cart.objects.filter(customer = Customer.objects.filter(user=request.user).first())
             else:
                 session_key = request.session.session_key
                 cart_items = Cart.objects.filter(session_key=session_key)
@@ -201,11 +206,11 @@ def remove_from_cart(request, cart_item_id):
 def merge_cart(sender, request, user, **kwargs):
     session_key = request.session.session_key
     session_cart = Cart.objects.filter(session_key=session_key)
-    customer_cart = Cart.objects.filter(customer=user.customer)
+    customer_cart = Cart.objects.filter(customer = Customer.objects.filter(user=request.user).first())
 
     for item in session_cart:
         cart_item, created = Cart.objects.get_or_create(
-            customer=user.customer, product=item.product,
+            customer = Customer.objects.filter(user=request.user).first(), product=item.product,
         )
         if not created:
             cart_item.save()
@@ -400,3 +405,39 @@ def submit_address(request):
         return JsonResponse({'status': 'error', 'message': 'Invalid JSON format'}, status=400)
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+    
+
+@csrf_exempt  # Only use this for local testing, remove it if using CSRF middleware
+def subscribe(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            email = data.get("email")
+
+            if not email:
+                return JsonResponse({"success": False, "message": "Invalid email address."}, status=400)
+
+            subscriber, created = Subscriber.objects.get_or_create(email=email)
+
+            if not created:
+                return JsonResponse({"success": False, "message": "You are already subscribed."})
+
+            # Render HTML Email Content
+            html_content = render_to_string("subscription.html", {"email": email})
+            text_content = strip_tags(html_content)  # Convert HTML to plain text
+
+            # Create Email with HTML and Plain Text
+            subject = "🎉 Welcome to MoonWalk Threads!"
+            from_email = "info@yourdomain.com"
+            recipient_list = [email]
+
+            email_message = EmailMultiAlternatives(subject, text_content, from_email, recipient_list)
+            email_message.attach_alternative(html_content, "text/html")
+            email_message.send()
+
+            return JsonResponse({"success": True, "message": "Subscription successful."})
+
+        except json.JSONDecodeError:
+            return JsonResponse({"success": False, "message": "Invalid data format."}, status=400)
+
+    return JsonResponse({"success": False, "message": "Invalid request."}, status=405)
