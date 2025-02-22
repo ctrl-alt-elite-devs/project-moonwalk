@@ -8,8 +8,8 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
-    const calendarId = "900fdf650b579a007feb6e7f8ac879190337d00eac8e62aeffbbb6cd9ff10df3@group.calendar.google.com";
-    const apiKey = "AIzaSyD6F5dmxpASXeAYbaRIHZvymFVu4AluzWA";
+    const calendarId = "e29b2d8a1f4a5d35f43f09f9fd7eecdb55b3c0ab9d66e16a8a76b54bb2772337@group.calendar.google.com";
+    const apiKey = "AIzaSyDCC7xdWW8qCHxTULW5yAZSss5_AzcTj28";
 
     async function fetchEvents() {
         try {
