@@ -1,7 +1,31 @@
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
 from django.db import models
 import datetime
 
 # Create your models here.
+
+#Profile
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    data_modified = models.DateTimeField(user, auto_now=True)
+    phone = models.CharField(max_length=20, blank=True)
+    text_messages = models.BooleanField(default = False)
+    email_messages = models.BooleanField(default = False)
+
+    def __str__(self):
+        return self.user.username
+
+def create_profile(sender, instance, created, **kwargs):
+    if created:
+        phone = instance.profile.phone if hasattr(instance, 'profile') else ''
+        user_profile = Profile(user=instance)
+        user_profile.save()
+
+post_save.connect(create_profile, sender=User)
+
+
+
 
 #Categories of products
 class Category(models.Model):

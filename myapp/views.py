@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 import datetime
 from django.contrib import messages
-from .models import Cart, Product, Category
+from .models import Cart, Product, Category, Profile
 from .square_service import client
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -12,6 +12,10 @@ import uuid
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
+from django import forms
+
 
 def home(request):
     # Current date is hard coded
@@ -218,14 +222,10 @@ def process_payment(request):
             return JsonResponse({"status": "error", "message": str(e)})
     return JsonResponse({"status": "error", "message": "Invalid request method"})
 
-<<<<<<< HEAD
 #login request
-=======
-#login
->>>>>>> main
 def login_user(request):
     if request.method == "POST":
-        username = request.POST['username']
+        username = request.POST['email']
         password = request.POST['password']
         user = authenticate(request, username=username, password=password)
         if user is not None:
@@ -234,19 +234,50 @@ def login_user(request):
             return redirect('home')
         else:
             messages.success(request, ("ERROR TRY AGAIN"))
-<<<<<<< HEAD
             return redirect('home')
-    else:
-        return render(request, 'login.html', {})
 #logout request
-=======
-            return redirect('login')
-    else:
-        return render(request, 'login.html', {})
-
-
->>>>>>> main
 def logout_user(request):
     logout(request)
     messages.success(request, ("YOU LOGGED OUT"))
+    return redirect('home')
+
+def register_user(request):
+    if request.method == "POST":
+        username = request.POST.get("email")
+        email = request.POST.get("email")
+        password = request.POST.get("password")
+        confirm_password = request.POST.get("confirm-password")
+        first_name = request.POST.get("first-name")
+        last_name = request.POST.get("last-name")
+        phone = request.POST.get("phone")
+        text_messages = request.POST.get("text-checkbox") == "on"
+        email_messages = request.POST.get("email-checkbox") == "on"
+
+        # Check if username already exists
+        if User.objects.filter(username=username).exists():
+            messages.success(request, "Email is already in use. Try Logging in.")
+            return redirect('home')
+        
+        # Check if passwords match
+        if password != confirm_password:
+            messages.error(request, f"Passwords do not match. Entered: {password} and {confirm_password}")
+            return redirect('home')
+          
+        try:
+            user = User.objects.create_user(username=username, password=password, email=email, first_name=first_name, last_name=last_name)
+            user.save()
+
+            # Get or create profile, then update phone number
+            profile, created = Profile.objects.get_or_create(user=user)
+            profile.phone = phone  # Update phone field
+            profile.text_messages = text_messages
+            profile.email_messages = email_messages
+            profile.save()
+
+            messages.success(request, "Registration successful! You can now log in.")
+            return redirect('home')
+        except Exception as e:
+            messages.success(request, f"Error creating account: {e}")
+            return redirect('home')
+
     return redirect('home')
