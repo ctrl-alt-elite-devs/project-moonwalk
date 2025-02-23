@@ -15,8 +15,7 @@
 
     <!-- Load static files -->
     {% load static %}
-    <script type="text/javascript" src="static/scripts/countdown_banner.js"></script>
-    <script type="text/javascript" src="static/scripts/events.js"></script>
+    <script type="text/javascript" src="{% static 'scripts/events.js' %}"></script>
     <!-- Link to your custom CSS file -->
     <link rel="stylesheet" href="{% static 'css/homestyles.css' %}">
     <link rel="stylesheet" href="{% static 'css/shopstyles.css' %}">
@@ -29,6 +28,7 @@
     <link rel="stylesheet" href="{% static 'css/about.css' %}">
     <link rel="stylesheet" href="{% static 'css/contact.css' %}">
     <link rel="stylesheet" href="{% static 'css/payment.css' %}">
+    <link rel="stylesheet" href="{% static 'css/order-summary.css' %}">
 
     <script src="https://kit.fontawesome.com/34f0afb215.js" crossorigin="anonymous"></script>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Edu+AU+VIC+WA+NT+Dots:wght@400..700&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
@@ -37,7 +37,7 @@
 <body>
     <header>
         <div class="brand-header">
-            <img src="{% static 'images/logo.png' %}" alt="MoonWalk Threads Logo" class="brand-logo">
+            <a href="{% url 'home' %}"><img src="{% static 'images/logo.png' %}" alt="MoonWalk Threads Logo" class="brand-logo"></a>
         </div>
     </header>
     <!-- NavBar -->
@@ -51,12 +51,65 @@
         <div class="toggle_btn">
             <i class="fa-solid fa-bars"></i>
         </div>
-        <a href="{% url 'cart' %}" class="cart_btn">
-            <i class="fa-solid fa-cart-shopping"></i>
-        </a>
+        <div class="cart-container">
+            <a href="{% url 'cart' %}" class="cart_btn" id="cart-icon">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <span class="cart-count">{% if cart_item_count > 0 %}{{ cart_item_count }}{% else %}0{% endif %}</span>
+            </a>
+        
+            <!-- Mini Cart Dropdown -->
+            <div class="cart-dropdown" id="cart-dropdown">
+                {% if cart_items %}
+                    <ul class="cart-items">
+                        {% for item in cart_items|slice:":4" %}
+                        <li class="cart-item">
+                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" width="40">
+                            <div>
+                                <p>{{ item.product.name }}</p>
+                                <p>${{ item.product.price|floatformat:2 }}</p>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    <div class="cart-footer">
+                        <a href="{% url 'cart' %}" class="checkout-button">Go to Cart</a>
+                    </div>
+                {% else %}
+                    <p class="empty-cart">Your cart is empty.</p>
+                {% endif %}
+            </div>
+            
+        </div>
+        
         <div class="profile_btn open_login">
             <i class="fa-solid fa-user"></i>
         </div>
+
+        <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                    const cartIcon = document.getElementById("cart-icon");
+                    const profileIcon = document.querySelector(".profile_btn");
+
+                    // Apply flicker effect on refresh
+                    if (cartIcon) {
+                    cartIcon.classList.add("flicker");
+                    setTimeout(() => {
+                    cartIcon.classList.remove("flicker");
+                    }, 500);
+                    }
+
+                    if (profileIcon) {
+                    profileIcon.classList.add("flicker");
+                    setTimeout(() => {
+                    profileIcon.classList.remove("flicker");
+                    }, 500);
+                    }
+                    });
+        </script>
+
+<script src="{% static 'scripts/cart_hover.js' %}"></script>
+
+
     </div>
     <div class="dropdown">
         <li><a href="{% url 'home' %}">Home</a></li>
@@ -238,20 +291,27 @@
             </div>
         {% endfor %}
     {% endif %}
+   
 
     {% block content %}
     {% endblock %}
 
     <footer>
-        <p id="header">SIGN UP FOR MORE</p>
+        <p id="footer-header">SIGN UP FOR MORE</p>
         <label for="phoneNum"></label>
         <label for="emailAddress"></label>
 
-        <input class="subscribeInput" type="text" id="emailAddress" placeholder="Your email address" autocomplete="email">
-        <button class="subscribeButton" type="button">SUBSCRIBE</button>
-        
-        <input class="subscribeInput" type="text" id="phoneNum" placeholder="Your phone number">
-        <button class="subscribeButton" type="button">SUBSCRIBE</button>
+        <div class="subscribe-section">
+            <div class="subscribe-subsection">
+                <input class="subscribeInput" type="text" id="emailAddress" placeholder="Your email address" autocomplete="email">
+                <button class="subscribeButton" type="button">SUBSCRIBE</button>
+            </div>
+
+            <div class="subscribe-subsection">
+                <input class="subscribeInput" type="text" id="phoneNum" placeholder="Your phone number">
+                <button class="subscribeButton" type="button">SUBSCRIBE</button>
+            </div>
+        </div>
 
         <div class="instaIcon">
         <a href="https://www.instagram.com/moonwalkthreads/?hl=en">

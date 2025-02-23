@@ -1,35 +1,45 @@
 {% extends 'base.html' %}
-{% block title %}OrderSummary{% endblock %}
 <head>
-{% load static %}
-<link rel="stylesheet" href="{% static 'css/orderSummary.css' %}"/>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/order-summary.css' %}"/>
+    {% csrf_token %}
 </head>
 {% block content %}
 <div class="summary">
-<h1 class="order-summary-title">Order Summary</h1>
-<h3>Your Order Details</h3>
-<span id="display-method-items"></span>
-<p id="display-details"></p>
+    <div class="cart-summary-column">
+        {% include 'cartSummary.html' %}
+    </div>
+    <div class="order-summary-column">
+        <h1 class="order-summary-title">Order Summary</h1>
+        <h3> Confirmation Number: #123456</h3>
+        <h3>Your Order Details</h3>
+        <span id="display-method-items"></span>
+        <p id="display-details"></p>
 
 
-<div id="delivery-details" style="display:none;">
-    <h4>Contact Information:</h4>
-    <p id="display-email"></p>
-    <p id="display-phone"></p>
+        <div id="delivery-details" style="display:none;">
+            <h4>Contact Information:</h4>
+            <p id="display-email"></p>
+            <p id="display-phone"></p>
+        </div>
+
+
+        <div id="pickup-details" style="display:none;">
+            <h4>MoonWalk Threads</h4>
+            <p>490 High St, Auburn, CA 95603</p>
+        </div>
+
+
+        <h4 class="payment-title">Payment</h4>
+        <hr>
+        <h3>Your Order Total Summary</h3>
+        <p>Promotions</p>
+        <p>Items()</p>
+        <p>Shipping and Handling:</p>
+        <p>Estimated Tax:</p>
+        <h3>Order Total:</h3>
+    </div>
 </div>
-
-
-<div id="pickup-details" style="display:none;">
-    <h4>MoonWalk Threads</h4>
-    <p>490 High St, Auburn, CA 95603</p>
-</div>
-
-
-<h4 class="payment-title">Payment</h4>
-<hr>
-<h3>Your Order Total</h3>
-</div>
-
 
 <script>
 window.onload = function() {
