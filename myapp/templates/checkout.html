@@ -43,6 +43,7 @@
                     {% csrf_token %}
                     <!--Shipping Address Information-->
                     <h4>Shipping Address</h4>
+                    <input type="text" id="autocomplete" class="typeAddress" name="autocomplete" placeholder="Search for your address here"><br>
                     <input type="text" id="customerFirstName" name="firstName" placeholder="First Name"><br>
                     <input type="text" id="customerLastName" name="lastName" placeholder="Last Name"><br>
                     <input type="text" id="customerStreetAddress" name="streetAddress" placeholder="Street Address" title="Please enter your street address." required><br>
@@ -103,6 +104,7 @@
                         <option value="WI">Wisconsin</option>
                         <option value="WY">Wyoming</option>
                     </select>
+                    <input type="text" id="customerCountry" name="country" placeholder="Country"><br>
 
                     <!--Contact Information-->
                     <h4>Contact Information</h4>
@@ -274,30 +276,30 @@
 
 
             if (streetNumber && route) {
-                document.getElementById('StN').value = streetNumber.long_name + " " + route.long_name;
+                document.getElementById('customerStreetAddress').value = streetNumber.long_name + " " + route.long_name;
             } else {
-                document.getElementById('StN').value = "No street address found.";
+                document.getElementById('customerStreetAddress').value = "No street address found.";
             }
             if (localCity) {
-                document.getElementById('L').value = localCity.long_name;
+                document.getElementById('customerCity').value = localCity.long_name;
             } else {
-                document.getElementById('L').value = "No city found.";
+                document.getElementById('customerCity').value = "No city found.";
             }
             if (state) {
-                let stateDrop = document.getElementById('St');
+                let stateDrop = document.getElementById('customerState');
                 stateDrop.value = state.short_name;
             } else {
-                document.getElementById('St').innerHTML = `<option value="">Select State</option>`;
+                document.getElementById('customerState').innerHTML = `<option value="">Select State</option>`;
             }
             if (postalC) {
-                document.getElementById('P').value = postalC.long_name;
+                document.getElementById('customerZipCode').value = postalC.long_name;
             } else {
-                document.getElementById('P').value = "No zip code found.";
+                document.getElementById('customerZipCode').value = "No zip code found.";
             }
             if (country) {
-                document.getElementById('C').value = country.long_name;
+                document.getElementById('customerCountry').value = country.long_name;
             } else {
-                document.getElementById('C').value = "No country found.";
+                document.getElementById('customerCountry').value = "No country found.";
             }
         }
     }

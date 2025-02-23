@@ -63,7 +63,7 @@
 }
 
 
-.deliver-home select, .deliver-home input {
+.deliver-home input {
     padding: 10px;
     font-size: 16px;
     width: 100%;
@@ -73,6 +73,45 @@
     border-radius: 5px;
     margin-bottom: 10px;
 }
+
+.deliver-home select{
+    padding: 10px;
+    font-size: 16px;
+    width: 100%;
+    height: 40px;
+    background-color: white;
+    color: gray;
+    border: solid 1px grey;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.deliver-home input:focus {
+    outline: solid 2px #F46471;
+    box-shadow: 0 0 5px #F46471;
+    border-color: grey; 
+}
+
+.deliver-home .typeAddress{
+    padding: 10px;
+    font-size: 16px;
+    width: 100%;
+    height: 40px;
+    background-color: transparent;
+    color: black;
+    border: none;
+    border-bottom: solid 2px grey;
+    margin-bottom: 10px;
+    border-radius: 0;
+}
+
+.deliver-home .typeAddress:focus {
+    outline: none;
+    box-shadow: none;
+    border-color: grey;
+    border-bottom: 2px solid #F46471;
+}
+
 
 .deliver-home button, .store-pickup button {
     background-color: #F46471;
