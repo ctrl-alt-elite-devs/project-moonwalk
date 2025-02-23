@@ -137,3 +137,45 @@
 #pay-checkout:active {
     background-color: #F46471;
 }
+
+.checkout-page {
+    margin: 10px;
+    display: flex;
+
+}
+
+#cart-summary-column {
+    min-width: 49%;
+    margin: 10px;
+
+}
+
+#checkout-column {
+    min-width: 49%;
+    margin: 10px;
+    text-align: center;
+    align-content: center;
+    justify-content: center;
+}
+
+@media screen and (max-width: 768px) {
+    .checkout-page {
+        margin: 10px;
+        display: inline;
+
+        align-content: center;
+        justify-content: center;
+    }
+
+    #cart-summary-column {
+        text-align: center;
+        align-content: center;
+        justify-content: center;
+    }
+
+    #checkout-column {
+        text-align: center;
+        align-content: center;
+        justify-content: center;
+    }
+}
