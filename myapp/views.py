@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 import datetime
 from django.contrib import messages
-from .models import Cart, Product, Category
+from .models import Cart, Product, Category, Customer
 from .square_service import client
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -13,6 +13,7 @@ import shippo
 from shippo.models import components
 
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 from django.contrib import messages
 
 from django import template
@@ -226,7 +227,7 @@ def process_payment(request):
 #login request
 def login_user(request):
     if request.method == "POST":
-        username = request.POST['username']
+        username = request.POST['email']
         password = request.POST['password']
         user = authenticate(request, username=username, password=password)
         if user is not None:
@@ -242,6 +243,50 @@ def login_user(request):
 def logout_user(request):
     logout(request)
     messages.success(request, ("YOU LOGGED OUT"))
+    return redirect('home')
+
+#register user account
+def register_user(request):
+    if request.method == "POST":
+        username = request.POST.get("email")
+        email = request.POST.get("email")
+        password = request.POST.get("password")
+        confirm_password = request.POST.get("confirm-password")
+        first_name = request.POST.get("first-name")
+        last_name = request.POST.get("last-name")
+        phone = request.POST.get("phone")
+        text_messages = request.POST.get("text-checkbox") == "on"
+        email_messages = request.POST.get("email-checkbox") == "on"
+
+        # Check if username already exists
+        if User.objects.filter(username=username).exists():
+            messages.success(request, "Email is already in use. Try Logging in.")
+            return redirect('home')
+        
+        # Check if passwords match
+        if password != confirm_password:
+            messages.success(request, f"Passwords do not match. Entered: {password} and {confirm_password}")
+            return redirect('home')
+          
+        try:
+            user = User.objects.create_user(username=username, password=password, email=email, first_name=first_name, last_name=last_name)
+            user.save()
+
+            # Get or create customer, then update phone number
+            customer, created = Customer.objects.get_or_create(user=user)
+            customer.phone = phone  # Update phone field
+            customer.text_messages = text_messages
+            customer.email_messages = email_messages
+            customer.save()
+
+            user = authenticate(request, username=username, password=password)
+            login(request, user)
+            messages.success(request, "Registration successful! You are now logged in.")
+            return redirect('home')
+        except Exception as e:
+            messages.success(request, f"Error creating account: {e}")
+            return redirect('home')
+
     return redirect('home')
 
 #shippo to create label (accept user address input)

@@ -127,11 +127,8 @@
         <form id="login-form" method="POST" action="{% url 'login' %}">
             {% csrf_token %}
 
-            <!--<label for="email">Email</label>
+            <label for="email">Email</label>
             <input type="email" id="email" name="email" required>
-            -->
-            <label for="username">Username</label>
-            <input type="username" id="username" name="username" required>
 
             <label for="password">Password</label>
             <input type="password" id="password" name="password" required>
@@ -141,7 +138,7 @@
             <ul id="locations-list"></ul>
             
             <div class="forgot-create-container">
-                <a href="#" class="forgot-password">Forgot Password</a>
+                <a href="#" class="forgot-password open_forgot">Forgot Password</a>
                 <a href="#" class="create-account open_signup">Create Account</a>
             </div>
 
@@ -168,7 +165,9 @@
     <div id="signup-modal" class="signup-modal">
         <div class="signup-content login-content">
             <span class="login-x signup-close">&times;</span>
-            <form id="signup-form">
+            <form id="signup-form" method="POST" action="{% url 'register' %}">
+                {% csrf_token %}
+
                 <label for="signup-email">Email</label>
                 <input type="email" id="signup-email" name="email" required>
 
@@ -187,20 +186,37 @@
                 <input type="password" id="signup-password" name="password" required>
 
                 <label for="password">Confirm Password</label>
-                <input type="password" id="confirm-password" name="password" required>
+                <input type="password" id="confirm-password" name="confirm-password" required>
 
                 <label for="phoneNum">(Optional) Phone Number</label>
                 <input type="tel" id="signup-phone" name="phone" >
 
                 <div class="checkbox-container">
-                    <label class="checkbox-label"><input type="checkbox" id="text-checkbox"> Would you like to receive updates via text message?</label><br>
-                    <label class="checkbox-label"><input type="checkbox" id="email-checkbox"> Would you like to receive updates via email?</label><br>
-                    <label class="checkbox-label"><input type="checkbox" id="agreement-checkbox"> Do you agree to the <a href="#" class="terms-link">Terms of Service</a></label><br>
+                    <label class="checkbox-label"><input type="checkbox" id="text-checkbox" name="text-checkbox"> Would you like to receive updates via text message?</label><br>
+                    <label class="checkbox-label"><input type="checkbox" id="email-checkbox" name="email-checkbox"> Would you like to receive updates via email?</label><br>
+                    <label class="checkbox-label"><input type="checkbox" id="agreement-checkbox" required> Do you agree to the <a href="#" class="terms-link">Terms of Service</a></label><br>
                 </div>
                 <button type="submit" class="create-account-btn login-btn">Create Account</button>
             </form>
             </div>
     </div>
+
+    <!-- The Forgot Password Popup -->
+    <div id="forgot-modal" class="login-modal">
+            
+        <div class="login-content">
+            <span class="login-x forgot-close">&times;</span>
+            <form id="forgot-form" >
+
+                <label for="email">Enter email to recover password</label>
+                <input type="email" id="email" name="email" required>
+        
+                <button type="submit" class="login-btn" >Submit</button>
+
+            </form>
+        </div>
+    </div>
+
     <div id="terms-modal" class="login-modal">
         <div class="login-content">
         <span class="login-x terms-close">&times;</span>
