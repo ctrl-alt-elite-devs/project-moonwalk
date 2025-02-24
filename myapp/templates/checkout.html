@@ -12,6 +12,17 @@
     </div>
 
     <div id="checkout-column">
+        <div class="contact-information">
+            <h4>Contact Information</h4>
+            <form action="{% url 'paymentPortal' %}" method="post">
+                <input type="text" id="customerFirstName" name="firstName" placeholder="First Name"><br>
+                <input type="text" id="customerLastName" name="lastName" placeholder="Last Name"><br>
+                <input type="email" id="customerEmail" name="email" placeholder="Email Address"><br>
+                <input type="text" id="customerPhone" name="phone" placeholder="Phone Number"><br>
+                <input type="hidden" id="delivery-method-items" name="delivery-method-items">
+            </form>
+
+        </div>
         <div class="order-type">
             <h1>How Would You Like To Get Your Order?</h1>
         </div>
@@ -31,7 +42,7 @@
                 <br>
                 <p>MoonWalk Threads</p>
                 <p>Address: 490 High St, Auburn, CA 95603</p>
-                <a><button type="submit" class="payment-button" id="payment-proceed" onclick="proceed()">Payment</button></a>
+                <a><button type="submit" class="payment-checkout-button" id="payment-proceed" onclick="proceed()">Payment</button></a>
             </div>
         </div>
 
@@ -43,8 +54,6 @@
                     {% csrf_token %}
                     <!--Shipping Address Information-->
                     <h4>Shipping Address</h4>
-                    <input type="text" id="customerFirstName" name="firstName" placeholder="First Name"><br>
-                    <input type="text" id="customerLastName" name="lastName" placeholder="Last Name"><br>
                     <input type="text" id="customerStreetAddress" name="streetAddress" placeholder="Street Address" title="Please enter your street address." required><br>
                     <input type="text" id="customerAddressOptional" name="addressOptional" placeholder="Apt, Suite, Building (Optional)"><br>
                     <input type="text" id="customerZipCode" name="zipCode" placeholder="Zip Code"><br>
@@ -55,7 +64,7 @@
                         <option value="AK">Alaska</option>
                         <option value="AZ">Arizona</option>
                         <option value="AR">Arkansas</option>
-                        <option value="CA">California</option>
+                        <option value="CA" selected="selected">California</option>
                         <option value="CO">Colorado</option>
                         <option value="CT">Connecticut</option>
                         <option value="DE">Delaware</option>
@@ -105,13 +114,16 @@
                     </select>
 
                     <!--Contact Information-->
-                    <h4>Contact Information</h4>
+                    <!--<h4>Contact Information</h4>
+                    <input type="text" id="customerFirstName" name="firstName" placeholder="First Name"><br>
+                    <input type="text" id="customerLastName" name="lastName" placeholder="Last Name"><br>
                     <input type="email" id="customerEmail" name="email" placeholder="Email Address"><br>
                     <input type="text" id="customerPhone" name="phone" placeholder="Phone Number"><br>
-                    <input type="hidden" id="delivery-method-items" name="delivery-method-items">
+                    <input type="hidden" id="delivery-method-items" name="delivery-method-items">-->
 
 
-                    <button type="submit" class="payment-button" id="payment-proceed-2" onclick="proceed()">Payment</button>
+                    <button type="submit" class="payment-checkout-button" id="payment-proceed-2" onclick="proceed()">
+                        PROCEED TO PAYMENT</button>
                     <!--<button type="submit" class="payment-button">Payment</button>--> <!--For Shippo API Testing purposes-->
 
                 </form>

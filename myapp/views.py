@@ -161,6 +161,9 @@ def googleCalendar(request):
 def checkout(request):
     return render(request, 'checkout.html')
 
+def process_checkout(request):
+    return
+
 def orderSummary(request):
     return render(request, 'orderSummary.html')
 

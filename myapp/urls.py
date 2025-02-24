@@ -27,6 +27,7 @@ urlpatterns = [
 
     # Checkout & Orders
     path('checkout/', views.checkout, name='checkout'),
+    path('checkout/process', views.process_checkout, name='process_checkout'),
     path('checkout/payment.html', views.paymentPortal, name='payment'),
     path('orderSummary/', views.orderSummary, name='orderSummary'),
     path('process_payment/', views.process_payment, name='process_payment'),
