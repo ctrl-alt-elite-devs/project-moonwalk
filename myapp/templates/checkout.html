@@ -42,7 +42,7 @@
                 <br>
                 <p>MoonWalk Threads</p>
                 <p>Address: 490 High St, Auburn, CA 95603</p>
-                <a><button type="submit" class="payment-checkout-button" id="payment-proceed" onclick="proceed()">Payment</button></a>
+                <a><button type="submit" class="payment-button" id="payment-proceed" onclick="proceed()">Payment</button></a>
             </div>
         </div>
 
@@ -112,6 +112,7 @@
                         <option value="WI">Wisconsin</option>
                         <option value="WY">Wyoming</option>
                     </select>
+                    <input type="text" id="customerCountry" name="country" placeholder="Country"><br>
 
                     <!--Contact Information-->
                     <!--<h4>Contact Information</h4>
@@ -250,6 +251,102 @@
         });
     });
 </script>-->
+
+<!--script for Google Autocomplete API-->
+<script>
+    let autocomplete;
+
+    function initAutocomplete() {
+        autocomplete = new google.maps.places.Autocomplete(
+            document.getElementById('autocomplete'),
+            {
+                types: ['address'],
+                componentRestrictions: {'country':'US'},
+                fields: ['formatted_address', 'geometry', 'name', 'address_components'],
+                strictBounds: false,
+            }
+        );
+
+        autocomplete.addListener('place_changed', onPlaceChanged);
+    }
+
+    function onPlaceChanged() {
+        var place = autocomplete.getPlace();
+
+        if (!place.geometry) {
+            document.getElementById('autocomplete').placeholder = 'Enter a place';
+        } else {
+            const addressComponents = place.address_components;
+
+            const streetNumber = getStreetNumber(addressComponents);
+            const route = getRoute(addressComponents);
+            const localCity = getLocality(addressComponents);
+            const state = getState(addressComponents);
+            const postalC = getPostalCode(addressComponents);
+            const country = getCountry(addressComponents);
+
+
+            if (streetNumber && route) {
+                document.getElementById('customerStreetAddress').value = streetNumber.long_name + " " + route.long_name;
+            } else {
+                document.getElementById('customerStreetAddress').value = "No street address found.";
+            }
+            if (localCity) {
+                document.getElementById('customerCity').value = localCity.long_name;
+            } else {
+                document.getElementById('customerCity').value = "No city found.";
+            }
+            if (state) {
+                let stateDrop = document.getElementById('customerState');
+                stateDrop.value = state.short_name;
+            } else {
+                document.getElementById('customerState').innerHTML = `<option value="">Select State</option>`;
+            }
+            if (postalC) {
+                document.getElementById('customerZipCode').value = postalC.long_name;
+            } else {
+                document.getElementById('customerZipCode').value = "No zip code found.";
+            }
+            if (country) {
+                document.getElementById('customerCountry').value = country.long_name;
+            } else {
+                document.getElementById('customerCountry').value = "No country found.";
+            }
+        }
+    }
+
+    function getStreetNumber(addressComponents) {
+        return addressComponents.find(component => component.types.includes("street_number"));
+    }
+
+    function getRoute(addressComponents) {
+        return addressComponents.find(component => component.types.includes("route"));
+    }
+
+    function getLocality(addressComponents) {
+        return addressComponents.find(component => component.types.includes("locality"));
+    }
+
+    function getPostalCode(addressComponents) {
+        return addressComponents.find(component => component.types.includes("postal_code"));
+    }
+
+    function getState(addressComponents) {
+        return addressComponents.find(component => component.types.includes("administrative_area_level_1"));
+    }
+
+    function getCountry(addressComponents) {
+        return addressComponents.find(component => component.types.includes("country"));
+    }
+
+    window.onload = function() {
+        document.getElementById('autocomplete').focus();
+    };
+
+</script>
+<script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBbRI4-FqDpXwb71COuZZsvi921b6nott8&loading=async&libraries=places&callback=initAutocomplete">
+</script>
 
 <!-- script for payment card-->
 <script>
