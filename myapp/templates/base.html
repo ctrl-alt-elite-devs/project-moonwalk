@@ -29,10 +29,10 @@
     <link rel="stylesheet" href="{% static 'css/contact.css' %}">
     <link rel="stylesheet" href="{% static 'css/payment.css' %}">
     <link rel="stylesheet" href="{% static 'css/order-summary.css' %}">
-
+    <link rel="stylesheet" href="{% static 'css/subscribe.css' %}">
     <script src="https://kit.fontawesome.com/34f0afb215.js" crossorigin="anonymous"></script>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Edu+AU+VIC+WA+NT+Dots:wght@400..700&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
-    
+
 </head>
 <body>
     <header>
@@ -263,7 +263,7 @@
     </script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="{% static 'scripts/login-script.js' %}"></script>
-    <script src="{% static 'scripts/subscribe.js' %}" defer></script>
+
 
     {% if messages %}
         {% for message in messages %}
@@ -288,7 +288,6 @@
                 <input class="subscribeInput" type="email" id="emailAddress" placeholder="Your email address" autocomplete="email">
                 <button class="subscribeButton" type="button" id="subscribeButton">SUBSCRIBE</button>
             </div>
-            <p id="subscribeMessage" style="color: green; display: none;"></p> <!-- Success/Error Message -->
         </div>
 
             <div class="subscribe-subsection">
@@ -296,6 +295,7 @@
                 <button class="subscribeButton" type="button">SUBSCRIBE</button>
             </div>
         </div>
+
 
         <div class="instaIcon">
         <a href="https://www.instagram.com/moonwalkthreads/?hl=en">
@@ -330,6 +330,16 @@
             dropDownMenu.classList.toggle('open')
         }
     </script>
+
+<!-- Subscription Confirmation Modal -->
+<div id="subscription-modal" class="modal-overlay">
+    <div class="modal-content">
+        <p id="modal-message">✅ Thank you! A confirmation email has been sent.</p>
+        <button id="close-modal">OK</button>
+    </div>
+</div>
+
+<script src="{% static 'scripts/subscribe.js' %}" defer></script>
 
 </body>
 </html>

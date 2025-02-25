@@ -385,3 +385,49 @@ def subscribe(request):
             return JsonResponse({"success": False, "message": "Invalid data format."}, status=400)
 
     return JsonResponse({"success": False, "message": "Invalid request."}, status=405)
+
+def send_order_email(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            customer_email = data.get("email", "guest@moonwalkthreads.com")  # Default for guests
+            user_first_name = request.user.first_name if request.user.is_authenticated else "Guest"
+
+            # Fetch cart items for the user (or guest session)
+            if request.user.is_authenticated:
+                cart_items = Cart.objects.filter(customer=request.user.customer)
+            else:
+                session_key = request.session.session_key
+                cart_items = Cart.objects.filter(session_key=session_key)
+
+            # Format order details
+            order_items = []
+            total_price = 0
+            for item in cart_items:
+                order_items.append(f"{item.product.name} - ${item.product.price}")
+                total_price += item.product.price
+
+            # Render the email template
+            html_content = render_to_string("order_confirmation_email.html", {
+                "first_name": user_first_name,
+                "email": customer_email,
+                "order_items": order_items,
+                "total_price": total_price,
+            })
+            text_content = strip_tags(html_content)
+
+            # Send email
+            subject = "🛍️ Your MoonWalk Threads Order Confirmation"
+            from_email = "orders@moonwalkthreads.com"
+            recipient_list = [customer_email]
+
+            email_message = EmailMultiAlternatives(subject, text_content, from_email, recipient_list)
+            email_message.attach_alternative(html_content, "text/html")
+            email_message.send()
+
+            return JsonResponse({"success": True, "message": "Order confirmation email sent."})
+
+        except json.JSONDecodeError:
+            return JsonResponse({"success": False, "message": "Invalid data format."}, status=400)
+
+    return JsonResponse({"success": False, "message": "Invalid request."}, status=405)

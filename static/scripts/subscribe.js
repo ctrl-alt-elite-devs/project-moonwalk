@@ -1,57 +1,59 @@
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("✅ subscribe.js is loaded!"); // Debugging check
+
     const subscribeButton = document.getElementById("subscribeButton");
+    const emailInput = document.getElementById("emailAddress");
+    const modal = document.getElementById("subscription-modal");
+    const closeModal = document.getElementById("close-modal");
+    const modalMessage = document.getElementById("modal-message");
 
-    if (subscribeButton) {
-        subscribeButton.addEventListener("click", function() {
-            const emailInput = document.getElementById("emailAddress");
-            const email = emailInput.value.trim();
-            const messageBox = document.getElementById("subscribeMessage");
+    if (!subscribeButton || !emailInput || !modal || !closeModal || !modalMessage) {
+        console.error("❌ Subscription elements not found.");
+        return;
+    }
 
-            if (!email) {
-                messageBox.textContent = "⚠️ Please enter a valid email address.";
-                messageBox.style.color = "red";
-                messageBox.style.display = "block";
-                return;
+    subscribeButton.addEventListener("click", function () {
+        const email = emailInput.value.trim();
+
+        if (!email) {
+            alert("⚠️ Please enter a valid email.");
+            return;
+        }
+
+        console.log("📨 Sending Subscription Request...");
+
+        // Send AJAX request to subscribe user
+        fetch("/subscribe/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({ email: email }),
+            credentials: "same-origin"
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("✅ Server Response:", data);
+
+            if (data.success) {
+                modalMessage.innerText = "✅ Thank you! A confirmation email has been sent.";
+            } else {
+                modalMessage.innerText = "⚠️ " + data.message;
             }
 
-            fetch("/subscribe/", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": getCSRFToken(),
-                },
-                body: JSON.stringify({ email: email })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    messageBox.textContent = "✅ Thank you for subscribing!";
-                    messageBox.style.color = "green";
-                    emailInput.value = ""; // Clear input after successful subscription
-                } else {
-                    messageBox.textContent = `⚠️ ${data.message}`;
-                    messageBox.style.color = "red";
-                }
-                messageBox.style.display = "block";
-            })
-            .catch(error => {
-                console.error("Subscription Error:", error);
-                messageBox.textContent = "❌ Error subscribing. Please try again.";
-                messageBox.style.color = "red";
-                messageBox.style.display = "block";
-            });
+            modal.style.display = "flex";  // Show modal
+            document.body.classList.add("darken-bg");
+        })
+        .catch(error => {
+            console.error("❌ Error:", error);
+            modalMessage.innerText = "⚠️ Subscription failed. Please try again.";
+            modal.style.display = "flex";
         });
-    }
-});
+    });
 
-// Function to get CSRF token from cookies
-function getCSRFToken() {
-    const cookies = document.cookie.split("; ");
-    for (const cookie of cookies) {
-        const [name, value] = cookie.split("=");
-        if (name === "csrftoken") {
-            return value;
-        }
-    }
-    return "";
-}
+    closeModal.addEventListener("click", function () {
+        modal.style.display = "none";
+        document.body.classList.remove("darken-bg");
+    });
+});

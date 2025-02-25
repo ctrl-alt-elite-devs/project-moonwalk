@@ -24,6 +24,10 @@ urlpatterns = [
     #subsribe
     path("subscribe/", views.subscribe, name="subscribe"),
 
+    #send order
+    path("send-order-email/", views.send_order_email, name="send_order_email"),
+
+
     # Google Calendar
     path('googleCalendar/', views.googleCalendar, name='googleCalendar'),
 
