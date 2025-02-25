@@ -1,10 +1,18 @@
+:root {
+    --background_color: #F46471;
+    --font: 'Roboto', sans-serif;
+    --visibile: True;
+    --font_color_title: #FFFFFF;
+    --font_color_timer: #000000;
+    --drop_title: "Spooky Halloween Apparel";
+}
 /* Styling for the event subsection title */
 .event-subtitle {
     text-align: center;
     font-size: 24px;
     font-weight: bold;
     color: #000;
-    background-color: #F46471; /* Light pink background */
+    background-color: var(--background_color); /* Light pink background */
     padding: 15px 0; /* Vertical padding only */
     margin: 0 auto 20px auto; /* Center the title with space below */
     width: 100%; /* Full width for responsiveness */
@@ -100,7 +108,7 @@
     appearance: none; -webkit-appearance: none;
     width: 150px;
     color: #000000;
-    background-color: #F46471;
+    background-color: var(--background_color);
     padding: 10px;
     border-radius: 5px;
     border: none;

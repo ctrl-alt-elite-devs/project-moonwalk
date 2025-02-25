@@ -1,7 +1,16 @@
+:root {
+    --background_color: #F46471;
+    --font: 'Roboto', sans-serif;
+    --visibile: True;
+    --font_color_title: #FFFFFF;
+    --font_color_timer: #000000;
+    --drop_title: "Spooky Halloween Apparel";
+}
+
 footer {
     margin: auto;
     height: 100%;
-    background-color: #F46471;
+    background-color: var(--background_color);
     padding: 10px;
     text-align: center;
 }

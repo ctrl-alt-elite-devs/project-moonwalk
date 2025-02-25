@@ -5,6 +5,9 @@ urlpatterns = [
     path('', views.home, name='home'),
 
     # path('', views.total_time, name='total_time'),
+
+    # Adding the path used to create adminCSS
+    path('adminCSS/', views.adminCSS, name='adminCSS'),
     
     # Shop and Filtering
     path('shop/<str:foo>/', views.shop, name='shop-category'),

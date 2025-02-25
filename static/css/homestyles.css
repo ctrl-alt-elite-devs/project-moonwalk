@@ -4,14 +4,41 @@ body {
     margin: 0;
     font-family: var(--font);
 }
-* {
+:root {
     --background_color: #F46471;
     --font: 'Roboto', sans-serif;
     --visibile: True;
     --font_color_title: #FFFFFF;
     --font_color_timer: #000000;
+    --font_border_thickness: 0.8px;
+    --font_border_color: #000000;
     --drop_title: "Spooky Halloween Apparel";
 }
+
+/********************************************************************************************************************************************/
+/* CSS for admin editor */
+
+.webpage {
+    display: flex;
+}
+
+.editor {
+    width: 25%;
+    display: flex;
+    flex-direction: column;
+    padding-left: 2rem;
+}
+
+.demo {
+    width: 75%;
+}
+
+.color-editor {
+    padding-left: 5rem;
+}
+
+/* End of CSS for admin editor */
+/********************************************************************************************************************************************/
 
 .img_banner {
     display: flex;
@@ -47,8 +74,8 @@ body {
     display: flex;
     justify-content: center;
     font-weight: bold;
-    -webkit-text-stroke-color: #000000;
-    -webkit-text-stroke-width: 0.8px;
+    -webkit-text-stroke-color: var(--font_border_color);
+    -webkit-text-stroke-width: calc(var(--font_border_thickness) * 1px);
     transform: translateY(-20px);
 }
 
@@ -110,7 +137,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #F46471;
+    background-color: var(--background_color);
 }
 
 .brand-logo {
@@ -141,7 +168,7 @@ body {
     padding-right: 20px;
     display: flex;
     justify-content: space-between;
-    background-color: #F46471;
+    background-color: var(--background_color);
     font-family: 'Cobito', monospace;
     align-items: center;
     position: relative;
@@ -483,4 +510,8 @@ iframe {
     .instagram-media {
         height: 440px;
     }
+}
+
+.outline {
+    paint-order: fill stroke;
 }
