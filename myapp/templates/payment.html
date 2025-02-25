@@ -8,6 +8,7 @@
     {% csrf_token %}
 </head>
 {% block content %}
+
 <div class="payment-page">
     <div id="order-column-payment-page">
         {% include 'cartSummary.html' %}
@@ -149,5 +150,6 @@
         }
     })()
 </script>
+
 
 {% endblock %}
