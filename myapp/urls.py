@@ -1,6 +1,8 @@
 from django.urls import path
 from . import views
 
+
+
 urlpatterns = [
     path('', views.home, name='home'),
 
@@ -18,6 +20,13 @@ urlpatterns = [
     path('cart/', views.cart, name='cart'),
     path('add-to-cart/<int:product_id>/', views.add_to_cart, name='add_to_cart'),
     path('remove-from-cart/<int:cart_item_id>/', views.remove_from_cart, name='remove_from_cart'),
+
+    #subsribe
+    path("subscribe/", views.subscribe, name="subscribe"),
+
+    #send order
+    path("send-order-email/", views.send_order_email, name="send_order_email"),
+
 
     # Google Calendar
     path('googleCalendar/', views.googleCalendar, name='googleCalendar'),
@@ -41,6 +50,7 @@ urlpatterns = [
     # Authentication
     path('login/', views.login_user, name='login'),
     path('logout/', views.logout_user, name='logout'),
+    path('register/', views.register_user, name='register'),
 
     # Payment Portal (Testing)
     path('payment/', views.paymentPortal, name='paymentPortal')

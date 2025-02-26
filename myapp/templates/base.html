@@ -30,10 +30,10 @@
     <link rel="stylesheet" href="{% static 'css/contact.css' %}">
     <link rel="stylesheet" href="{% static 'css/payment.css' %}">
     <link rel="stylesheet" href="{% static 'css/order-summary.css' %}">
-
+    <link rel="stylesheet" href="{% static 'css/subscribe.css' %}">
     <script src="https://kit.fontawesome.com/34f0afb215.js" crossorigin="anonymous"></script>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Edu+AU+VIC+WA+NT+Dots:wght@400..700&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
-    
+
 </head>
 <body>
     <header>
@@ -128,11 +128,8 @@
         <form id="login-form" method="POST" action="{% url 'login' %}">
             {% csrf_token %}
 
-            <!--<label for="email">Email</label>
+            <label for="email">Email</label>
             <input type="email" id="email" name="email" required>
-            -->
-            <label for="username">Username</label>
-            <input type="username" id="username" name="username" required>
 
             <label for="password">Password</label>
             <input type="password" id="password" name="password" required>
@@ -142,7 +139,7 @@
             <ul id="locations-list"></ul>
             
             <div class="forgot-create-container">
-                <a href="#" class="forgot-password">Forgot Password</a>
+                <a href="#" class="forgot-password open_forgot">Forgot Password</a>
                 <a href="#" class="create-account open_signup">Create Account</a>
             </div>
 
@@ -169,7 +166,9 @@
     <div id="signup-modal" class="signup-modal">
         <div class="signup-content login-content">
             <span class="login-x signup-close">&times;</span>
-            <form id="signup-form">
+            <form id="signup-form" method="POST" action="{% url 'register' %}">
+                {% csrf_token %}
+
                 <label for="signup-email">Email</label>
                 <input type="email" id="signup-email" name="email" required>
 
@@ -188,20 +187,37 @@
                 <input type="password" id="signup-password" name="password" required>
 
                 <label for="password">Confirm Password</label>
-                <input type="password" id="confirm-password" name="password" required>
+                <input type="password" id="confirm-password" name="confirm-password" required>
 
                 <label for="phoneNum">(Optional) Phone Number</label>
                 <input type="tel" id="signup-phone" name="phone" >
 
                 <div class="checkbox-container">
-                    <label class="checkbox-label"><input type="checkbox" id="text-checkbox"> Would you like to receive updates via text message?</label><br>
-                    <label class="checkbox-label"><input type="checkbox" id="email-checkbox"> Would you like to receive updates via email?</label><br>
-                    <label class="checkbox-label"><input type="checkbox" id="agreement-checkbox"> Do you agree to the <a href="#" class="terms-link">Terms of Service</a></label><br>
+                    <label class="checkbox-label"><input type="checkbox" id="text-checkbox" name="text-checkbox"> Would you like to receive updates via text message?</label><br>
+                    <label class="checkbox-label"><input type="checkbox" id="email-checkbox" name="email-checkbox"> Would you like to receive updates via email?</label><br>
+                    <label class="checkbox-label"><input type="checkbox" id="agreement-checkbox" required> Do you agree to the <a href="#" class="terms-link">Terms of Service</a></label><br>
                 </div>
                 <button type="submit" class="create-account-btn login-btn">Create Account</button>
             </form>
             </div>
     </div>
+
+    <!-- The Forgot Password Popup -->
+    <div id="forgot-modal" class="login-modal">
+            
+        <div class="login-content">
+            <span class="login-x forgot-close">&times;</span>
+            <form id="forgot-form" >
+
+                <label for="email">Enter email to recover password</label>
+                <input type="email" id="email" name="email" required>
+        
+                <button type="submit" class="login-btn" >Submit</button>
+
+            </form>
+        </div>
+    </div>
+
     <div id="terms-modal" class="login-modal">
         <div class="login-content">
         <span class="login-x terms-close">&times;</span>
@@ -265,6 +281,7 @@
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="{% static 'scripts/login-script.js' %}"></script>
 
+
     {% if messages %}
         {% for message in messages %}
             <div class="logAlert">
@@ -285,15 +302,17 @@
 
         <div class="subscribe-section">
             <div class="subscribe-subsection">
-                <input class="subscribeInput" type="text" id="emailAddress" placeholder="Your email address" autocomplete="email">
-                <button class="subscribeButton" type="button">SUBSCRIBE</button>
+                <input class="subscribeInput" type="email" id="emailAddress" placeholder="Your email address" autocomplete="email">
+                <button class="subscribeButton" type="button" id="subscribeButton">SUBSCRIBE</button>
             </div>
+        </div>
 
             <div class="subscribe-subsection">
                 <input class="subscribeInput" type="text" id="phoneNum" placeholder="Your phone number">
                 <button class="subscribeButton" type="button">SUBSCRIBE</button>
             </div>
         </div>
+
 
         <div class="instaIcon">
         <a href="https://www.instagram.com/moonwalkthreads/?hl=en">
@@ -328,6 +347,16 @@
             dropDownMenu.classList.toggle('open')
         }
     </script>
+
+<!-- Subscription Confirmation Modal -->
+<div id="subscription-modal" class="modal-overlay">
+    <div class="modal-content">
+        <p id="modal-message">✅ Thank you! A confirmation email has been sent.</p>
+        <button id="close-modal">OK</button>
+    </div>
+</div>
+
+<script src="{% static 'scripts/subscribe.js' %}" defer></script>
 
 </body>
 </html>

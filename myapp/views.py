@@ -1,18 +1,24 @@
 from django.shortcuts import render, redirect
 import datetime
 from django.contrib import messages
-from .models import Cart, Product, Category
+from .models import Cart, Customer, Product, Category
 from .square_service import client
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 from django.middleware.csrf import get_token
+from django.core.mail import send_mail
+from .models import Subscriber
 import json
 import uuid
 import shippo
 from shippo.models import components
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 from django.contrib import messages
 
 from django import template
@@ -90,7 +96,7 @@ def cart(request):
     total_time = total_time.total_seconds()
 
     if request.user.is_authenticated:
-        cart_items = Cart.objects.filter(customer=request.user.customer)
+        cart_items = Cart.objects.filter(customer = Customer.objects.filter(user=request.user).first())
     else:
         cart_items = Cart.objects.filter(session_key=request.session.session_key)
 
@@ -141,11 +147,11 @@ def remove_from_cart(request, cart_item_id):
 def merge_cart(sender, request, user, **kwargs):
     session_key = request.session.session_key
     session_cart = Cart.objects.filter(session_key=session_key)
-    customer_cart = Cart.objects.filter(customer=user.customer)
+    customer_cart = Cart.objects.filter(customer = Customer.objects.filter(user=request.user).first())
 
     for item in session_cart:
         cart_item, created = Cart.objects.get_or_create(
-            customer=user.customer, product=item.product,
+            customer = Customer.objects.filter(user=request.user).first(), product=item.product,
         )
         if not created:
             cart_item.save()
@@ -229,7 +235,7 @@ def process_payment(request):
 #login request
 def login_user(request):
     if request.method == "POST":
-        username = request.POST['username']
+        username = request.POST['email']
         password = request.POST['password']
         user = authenticate(request, username=username, password=password)
         if user is not None:
@@ -245,6 +251,50 @@ def login_user(request):
 def logout_user(request):
     logout(request)
     messages.success(request, ("YOU LOGGED OUT"))
+    return redirect('home')
+
+#register user account
+def register_user(request):
+    if request.method == "POST":
+        username = request.POST.get("email")
+        email = request.POST.get("email")
+        password = request.POST.get("password")
+        confirm_password = request.POST.get("confirm-password")
+        first_name = request.POST.get("first-name")
+        last_name = request.POST.get("last-name")
+        phone = request.POST.get("phone")
+        text_messages = request.POST.get("text-checkbox") == "on"
+        email_messages = request.POST.get("email-checkbox") == "on"
+
+        # Check if username already exists
+        if User.objects.filter(username=username).exists():
+            messages.success(request, "Email is already in use. Try Logging in.")
+            return redirect('home')
+        
+        # Check if passwords match
+        if password != confirm_password:
+            messages.success(request, f"Passwords do not match. Entered: {password} and {confirm_password}")
+            return redirect('home')
+          
+        try:
+            user = User.objects.create_user(username=username, password=password, email=email, first_name=first_name, last_name=last_name)
+            user.save()
+
+            # Get or create customer, then update phone number
+            customer, created = Customer.objects.get_or_create(user=user)
+            customer.phone = phone  # Update phone field
+            customer.text_messages = text_messages
+            customer.email_messages = email_messages
+            customer.save()
+
+            user = authenticate(request, username=username, password=password)
+            login(request, user)
+            messages.success(request, "Registration successful! You are now logged in.")
+            return redirect('home')
+        except Exception as e:
+            messages.success(request, f"Error creating account: {e}")
+            return redirect('home')
+
     return redirect('home')
 
 #shippo to create label (accept user address input)
@@ -347,3 +397,85 @@ def orderCartSummary(context):
     return {
         'orderCartSummary': context['data'],
     }
+    
+
+@csrf_exempt  # Only use this for local testing, remove it if using CSRF middleware
+def subscribe(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            email = data.get("email")
+
+            if not email:
+                return JsonResponse({"success": False, "message": "Invalid email address."}, status=400)
+
+            subscriber, created = Subscriber.objects.get_or_create(email=email)
+
+            if not created:
+                return JsonResponse({"success": False, "message": "You are already subscribed."})
+
+            # Render HTML Email Content
+            html_content = render_to_string("subscription.html", {"email": email})
+            text_content = strip_tags(html_content)  # Convert HTML to plain text
+
+            # Create Email with HTML and Plain Text
+            subject = "🎉 Welcome to MoonWalk Threads!"
+            from_email = "info@yourdomain.com"
+            recipient_list = [email]
+
+            email_message = EmailMultiAlternatives(subject, text_content, from_email, recipient_list)
+            email_message.attach_alternative(html_content, "text/html")
+            email_message.send()
+
+            return JsonResponse({"success": True, "message": "Subscription successful."})
+
+        except json.JSONDecodeError:
+            return JsonResponse({"success": False, "message": "Invalid data format."}, status=400)
+
+    return JsonResponse({"success": False, "message": "Invalid request."}, status=405)
+
+def send_order_email(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            customer_email = data.get("email", "guest@moonwalkthreads.com")  # Default for guests
+            user_first_name = request.user.first_name if request.user.is_authenticated else "Guest"
+
+            # Fetch cart items for the user (or guest session)
+            if request.user.is_authenticated:
+                cart_items = Cart.objects.filter(customer=request.user.customer)
+            else:
+                session_key = request.session.session_key
+                cart_items = Cart.objects.filter(session_key=session_key)
+
+            # Format order details
+            order_items = []
+            total_price = 0
+            for item in cart_items:
+                order_items.append(f"{item.product.name} - ${item.product.price}")
+                total_price += item.product.price
+
+            # Render the email template
+            html_content = render_to_string("order_confirmation_email.html", {
+                "first_name": user_first_name,
+                "email": customer_email,
+                "order_items": order_items,
+                "total_price": total_price,
+            })
+            text_content = strip_tags(html_content)
+
+            # Send email
+            subject = "🛍️ Your MoonWalk Threads Order Confirmation"
+            from_email = "orders@moonwalkthreads.com"
+            recipient_list = [customer_email]
+
+            email_message = EmailMultiAlternatives(subject, text_content, from_email, recipient_list)
+            email_message.attach_alternative(html_content, "text/html")
+            email_message.send()
+
+            return JsonResponse({"success": True, "message": "Order confirmation email sent."})
+
+        except json.JSONDecodeError:
+            return JsonResponse({"success": False, "message": "Invalid data format."}, status=400)
+
+    return JsonResponse({"success": False, "message": "Invalid request."}, status=405)
