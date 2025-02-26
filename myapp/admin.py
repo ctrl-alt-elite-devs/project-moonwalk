@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category,Customer,Product,Order, Subscriber
+from .models import Category,Customer,Product,Order,Subscriber
 from django.contrib.auth.models import User
 
 # Register your models here.
