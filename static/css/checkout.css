@@ -86,7 +86,7 @@
     margin-bottom: 10px;
 }
 
-.deliver-home input:focus {
+.deliver-home input:focus, .contact-information input:focus {
     outline: solid 2px #F46471;
     box-shadow: 0 0 5px #F46471;
     border-color: grey;
