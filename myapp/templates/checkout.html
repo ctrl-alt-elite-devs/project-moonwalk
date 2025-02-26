@@ -7,59 +7,53 @@
 </head>
 {% block content %}
 <div class="checkout-page">
+
     <div id="cart-summary-column">
         {% include 'cartSummary.html' %}
     </div>
 
     <div id="checkout-column">
-        <div class="contact-information">
-            <h4>Contact Information</h4>
-            <form action="{% url 'paymentPortal' %}" method="post">
-                <input type="text" id="customerFirstName" name="firstName" placeholder="First Name"><br>
-                <input type="text" id="customerLastName" name="lastName" placeholder="Last Name"><br>
-                <input type="email" id="customerEmail" name="email" placeholder="Email Address"><br>
-                <input type="text" id="customerPhone" name="phone" placeholder="Phone Number"><br>
-                <input type="hidden" id="delivery-method-items" name="delivery-method-items">
-            </form>
-
-        </div>
-        <div class="order-type">
-            <h1>How Would You Like To Get Your Order?</h1>
-        </div>
-
-
-        <!--Tabs for Delivery and Pick Up: Choose which delivery method-->
-        <div class="delivery-selection">
-            <button class="tablinks" onclick="openTab(event, 'Delivery')">Delivery</button>
-            <button class="tablinks" onclick="openTab(event, 'Pickup')">Pick Up at Store</button>
-        </div>
-
-
-        <!--PickUp Method-->
-        <div class="tabinfo" id="Pickup">
-            <div class="store-pickup">
-                <h4>Store Pickup At</h4>
-                <br>
-                <p>MoonWalk Threads</p>
-                <p>Address: 490 High St, Auburn, CA 95603</p>
-                <a><button type="submit" class="payment-button" id="payment-proceed" onclick="proceed()">Payment</button></a>
+        {% for field in form %}
+        {{ field.as_hidden }}
+        {% endfor %}
+        <form id="checkout-form" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="order-type">
+                <h1>How Would You Like To Get Your Order?</h1>
             </div>
-        </div>
 
 
-        <!--Delivery Method-->
-        <div class="tabinfo" id="Delivery">
-            <div class="deliver-home">
-                <form method="POST" class="shipping-form" id="checkout-form">
+            <!--Tabs for Delivery and Pick Up: Choose which delivery method-->
+            <div class="delivery-selection">
+                <button class="tablinks" onclick="openTab(event, 'Delivery')">Delivery</button>
+                <button class="tablinks" onclick="openTab(event, 'Pickup')">Pick Up at Store</button>
+            </div>
+
+
+            <!--PickUp Method-->
+            <div class="tabinfo" id="Pickup">
+                <div class="store-pickup">
+                    <h4>Store Pickup At</h4>
+                    <br>
+                    <p>MoonWalk Threads</p>
+                    <p>Address: 490 High St, Auburn, CA 95603</p>
+                </div>
+            </div>
+
+
+            <!--Delivery Method-->
+            <div class="tabinfo" id="Delivery">
+                <div class="deliver-home">
                     {% csrf_token %}
                     <!--Shipping Address Information-->
                     <h4>Shipping Address</h4>
-                    <input type="text" id="customerStreetAddress" name="streetAddress" placeholder="Street Address" title="Please enter your street address." required><br>
+                    <input type="text" id="autocomplete" class="typeAddress" name="autocomplete" placeholder="Search for your address here"><br>
+                    <input type="text" id="customerStreetAddress" name="streetAddress" placeholder="Street Address" title="Please enter your street address."><br>
                     <input type="text" id="customerAddressOptional" name="addressOptional" placeholder="Apt, Suite, Building (Optional)"><br>
                     <input type="text" id="customerZipCode" name="zipCode" placeholder="Zip Code"><br>
                     <input type="text" id="customerCity" name="city" placeholder="City"><br>
                     <!--Select States from Drop Down-->
-                    <select class="states" id="customerState">
+                    <select class="states" id="customerState" required>
                         <option value="AL">Alabama</option>
                         <option value="AK">Alaska</option>
                         <option value="AZ">Arizona</option>
@@ -123,17 +117,25 @@
                     <input type="hidden" id="delivery-method-items" name="delivery-method-items">-->
 
 
-                    <button type="submit" class="payment-checkout-button" id="payment-proceed-2" onclick="proceed()">
-                        PROCEED TO PAYMENT</button>
+                    <!--<button type="submit" class="payment-checkout-button" id="payment-proceed-2" onclick="proceed()">
+                        PROCEED TO PAYMENT</button> -->
                     <!--<button type="submit" class="payment-button">Payment</button>--> <!--For Shippo API Testing purposes-->
-
-                </form>
+                </div>
             </div>
 
-        </div>
-
+            <div class="contact-information">
+                <h4>Contact Information</h4>
+                <input type="text" id="customerFirstName" name="firstName" placeholder="First Name" required><br>
+                <input type="text" id="customerLastName" name="lastName" placeholder="Last Name" required><br>
+                <input type="email" id="customerEmail" name="email" placeholder="Email Address" required><br>
+                <input type="tel" id="customerPhone" name="phone" placeholder="Phone Number" required pattern="[0-9]{10}"><br>
+                <input type="hidden" id="delivery-method-items" name="delivery-method-items" required>
+            </div>
+            <input type="submit" value="Proceed to Payment" class="payment-checkout-button">
+        </form>
     </div>
 </div>
+
 
 <!--<div class="payment-stuff" id="payment" style="display:none">
     <div id="card"></div>
@@ -199,7 +201,7 @@
         localStorage.setItem('customerEmail', email);
         localStorage.setItem('customerPhone', phone);
 
-        this.submit();
+        //this.submit();
 
         window.location.href = "{% url 'paymentPortal' %}";
     });
@@ -350,20 +352,9 @@
 
 <!-- script for payment card-->
 <script>
-    function showPayment() {
-        event.preventDefault();
-        var payment = document.getElementById('payment');
-        payment.style.display = '';
-
-        var paymentProceed = document.getElementById('payment-proceed');
-        paymentProceed.style.display = 'none';
-    }
-
     function proceed() {
         //check if form filled out and send to payment portal
         window.location.href = "{% url 'paymentPortal' %}";
     }
 </script>
-
-<script src="{% static 'scripts/sendOrder.js' %}"></script>
 {% endblock %}
