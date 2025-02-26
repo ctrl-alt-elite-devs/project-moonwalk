@@ -1,24 +1,21 @@
 from django.shortcuts import render, redirect
 import datetime
 from django.contrib import messages
-from .models import Cart, Customer, Product, Category
+
+from .forms import CheckoutForm
+from .models import Cart, Product, Category, Order
 from .square_service import client
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 from django.middleware.csrf import get_token
-from django.core.mail import send_mail
-from .models import Subscriber
 import json
 import uuid
 import shippo
 from shippo.models import components
-from django.core.mail import EmailMultiAlternatives
-from django.template.loader import render_to_string
-from django.utils.html import strip_tags
+from django.http import HttpResponse
 
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import User
 from django.contrib import messages
 
 from django import template
@@ -40,7 +37,6 @@ def home(request):
     featured = Product.objects.filter(featured=True)
     return render(request, 'home.html', {'total_time': total_time, 'products':products, 'featured':featured})
     # return render(request, 'home.html')
-
 
 def total_time(request):
     # Current date is hard coded
@@ -96,7 +92,7 @@ def cart(request):
     total_time = total_time.total_seconds()
 
     if request.user.is_authenticated:
-        cart_items = Cart.objects.filter(customer = Customer.objects.filter(user=request.user).first())
+        cart_items = Cart.objects.filter(customer=request.user.customer)
     else:
         cart_items = Cart.objects.filter(session_key=request.session.session_key)
 
@@ -147,11 +143,11 @@ def remove_from_cart(request, cart_item_id):
 def merge_cart(sender, request, user, **kwargs):
     session_key = request.session.session_key
     session_cart = Cart.objects.filter(session_key=session_key)
-    customer_cart = Cart.objects.filter(customer = Customer.objects.filter(user=request.user).first())
+    customer_cart = Cart.objects.filter(customer=user.customer)
 
     for item in session_cart:
         cart_item, created = Cart.objects.get_or_create(
-            customer = Customer.objects.filter(user=request.user).first(), product=item.product,
+            customer=user.customer, product=item.product,
         )
         if not created:
             cart_item.save()
@@ -163,12 +159,43 @@ def googleCalendar(request):
     '''
     return render(request, 'googleCalendar.html', {'iframe_code': iframe_code})
 
-@csrf_exempt
 def checkout(request):
-    return render(request, 'checkout.html')
+    if request.method == 'POST':
+        form = CheckoutForm()
+    else:
+        form = CheckoutForm()
+    return render(request, 'checkout.html', {'form' : form})
 
 def process_checkout(request):
     return
+
+def store_checkout_data(request):
+    request.session['checkout_data'] = {
+        'email': request.POST.get('email'),
+        'phone': request.POST.get('phone'),
+        'address': request.POST.get('address') if 'address' in request.POST else None,
+    }
+
+def create_order(request):
+    if 'checkout_data' not in request.session or 'cart' not in request.session:
+        print('checkout unsuccessful')
+        return redirect('cart.html')
+
+    checkout_data = request.session['checkout_data']
+    cart_data = request.session['cart_data']
+
+    order = Order.objects.create(
+        customer=request.user if request.user.is_authenticated else None,
+        email=checkout_data['email'],
+        phone=checkout_data['phone'],
+        address=checkout_data.get('address'),
+        cart_data=json.loads(cart_data),  # Assuming cart is stored as JSON
+    )
+
+    request.session['order_id'] = order.id
+
+    print("checkout successful")
+    return render(request, 'payment.html')
 
 def orderSummary(request):
     return render(request, 'orderSummary.html')
@@ -204,10 +231,12 @@ def paymentPortal(request):
     return render(request, 'payment.html', context)
 
 def process_payment(request):
+
+    order = Order.objects.get(id=request.session['order_id'])
     if request.method == 'POST':
         data = json.loads(request.body)
         token = data.get("token")
-        amount = 100
+        amount = int(order.cart_data['total'] * 100)
 
         #getting an uuid (for idempotency) (every payment needs one)
 
@@ -215,7 +244,7 @@ def process_payment(request):
             result = client.payments.create_payment(
                 body = {
                     "source_id": token,
-                    "idempotency_key": "7b0f3ec5-086a-4871-8f13-3c81b3875218",
+                    "idempotency_key": str(order.idempotency_key),
                     "amount_money": {
                         "amount": amount,
                         "currency": "USD"
@@ -225,6 +254,7 @@ def process_payment(request):
                     "note": "Brief description"
                 })
             if result.is_success:
+                return redirect('orderSummary.html')
                 return JsonResponse({"status": "success", "payment_id}": result.body['payment']['id']})
             else:
                 return JsonResponse({"status": "error", "errors": result.errors})
@@ -235,7 +265,7 @@ def process_payment(request):
 #login request
 def login_user(request):
     if request.method == "POST":
-        username = request.POST['email']
+        username = request.POST['username']
         password = request.POST['password']
         user = authenticate(request, username=username, password=password)
         if user is not None:
@@ -251,50 +281,6 @@ def login_user(request):
 def logout_user(request):
     logout(request)
     messages.success(request, ("YOU LOGGED OUT"))
-    return redirect('home')
-
-#register user account
-def register_user(request):
-    if request.method == "POST":
-        username = request.POST.get("email")
-        email = request.POST.get("email")
-        password = request.POST.get("password")
-        confirm_password = request.POST.get("confirm-password")
-        first_name = request.POST.get("first-name")
-        last_name = request.POST.get("last-name")
-        phone = request.POST.get("phone")
-        text_messages = request.POST.get("text-checkbox") == "on"
-        email_messages = request.POST.get("email-checkbox") == "on"
-
-        # Check if username already exists
-        if User.objects.filter(username=username).exists():
-            messages.success(request, "Email is already in use. Try Logging in.")
-            return redirect('home')
-        
-        # Check if passwords match
-        if password != confirm_password:
-            messages.success(request, f"Passwords do not match. Entered: {password} and {confirm_password}")
-            return redirect('home')
-          
-        try:
-            user = User.objects.create_user(username=username, password=password, email=email, first_name=first_name, last_name=last_name)
-            user.save()
-
-            # Get or create customer, then update phone number
-            customer, created = Customer.objects.get_or_create(user=user)
-            customer.phone = phone  # Update phone field
-            customer.text_messages = text_messages
-            customer.email_messages = email_messages
-            customer.save()
-
-            user = authenticate(request, username=username, password=password)
-            login(request, user)
-            messages.success(request, "Registration successful! You are now logged in.")
-            return redirect('home')
-        except Exception as e:
-            messages.success(request, f"Error creating account: {e}")
-            return redirect('home')
-
     return redirect('home')
 
 #shippo to create label (accept user address input)
@@ -392,90 +378,16 @@ def submit_address(request):
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
-@register.inclusion_tag('orderCartSummary.html', takes_context=True)
-def orderCartSummary(context):
-    return {
-        'orderCartSummary': context['data'],
-    }
-    
+#for handling input data in checkout
+def process_checkout_data(request):
 
-@csrf_exempt  # Only use this for local testing, remove it if using CSRF middleware
-def subscribe(request):
-    if request.method == "POST":
-        try:
-            data = json.loads(request.body)
-            email = data.get("email")
+    form = CheckoutForm(request.POST)
+    if request.method == 'POST':
+        customerFirstName = request.POST.custoemrFirstName
+        customerLastName = request.POST.customerLastName
+        customerEmail = request.POST.customerEmail
+        customerPhone = request.POSTcustomerPhone
+        return HttpResponse("Data received Successfully!")
+    return render(request, paymentPortal, {'form' : form})
 
-            if not email:
-                return JsonResponse({"success": False, "message": "Invalid email address."}, status=400)
 
-            subscriber, created = Subscriber.objects.get_or_create(email=email)
-
-            if not created:
-                return JsonResponse({"success": False, "message": "You are already subscribed."})
-
-            # Render HTML Email Content
-            html_content = render_to_string("subscription.html", {"email": email})
-            text_content = strip_tags(html_content)  # Convert HTML to plain text
-
-            # Create Email with HTML and Plain Text
-            subject = "🎉 Welcome to MoonWalk Threads!"
-            from_email = "info@yourdomain.com"
-            recipient_list = [email]
-
-            email_message = EmailMultiAlternatives(subject, text_content, from_email, recipient_list)
-            email_message.attach_alternative(html_content, "text/html")
-            email_message.send()
-
-            return JsonResponse({"success": True, "message": "Subscription successful."})
-
-        except json.JSONDecodeError:
-            return JsonResponse({"success": False, "message": "Invalid data format."}, status=400)
-
-    return JsonResponse({"success": False, "message": "Invalid request."}, status=405)
-
-def send_order_email(request):
-    if request.method == "POST":
-        try:
-            data = json.loads(request.body)
-            customer_email = data.get("email", "guest@moonwalkthreads.com")  # Default for guests
-            user_first_name = request.user.first_name if request.user.is_authenticated else "Guest"
-
-            # Fetch cart items for the user (or guest session)
-            if request.user.is_authenticated:
-                cart_items = Cart.objects.filter(customer=request.user.customer)
-            else:
-                session_key = request.session.session_key
-                cart_items = Cart.objects.filter(session_key=session_key)
-
-            # Format order details
-            order_items = []
-            total_price = 0
-            for item in cart_items:
-                order_items.append(f"{item.product.name} - ${item.product.price}")
-                total_price += item.product.price
-
-            # Render the email template
-            html_content = render_to_string("order_confirmation_email.html", {
-                "first_name": user_first_name,
-                "email": customer_email,
-                "order_items": order_items,
-                "total_price": total_price,
-            })
-            text_content = strip_tags(html_content)
-
-            # Send email
-            subject = "🛍️ Your MoonWalk Threads Order Confirmation"
-            from_email = "orders@moonwalkthreads.com"
-            recipient_list = [customer_email]
-
-            email_message = EmailMultiAlternatives(subject, text_content, from_email, recipient_list)
-            email_message.attach_alternative(html_content, "text/html")
-            email_message.send()
-
-            return JsonResponse({"success": True, "message": "Order confirmation email sent."})
-
-        except json.JSONDecodeError:
-            return JsonResponse({"success": False, "message": "Invalid data format."}, status=400)
-
-    return JsonResponse({"success": False, "message": "Invalid request."}, status=405)
