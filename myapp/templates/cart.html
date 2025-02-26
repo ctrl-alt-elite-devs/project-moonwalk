@@ -8,153 +8,124 @@
     <link rel="stylesheet" href="{% static 'css/cart.css' %}" />
     {% csrf_token %}
 </head>
-<body>
-    <div class="cart-container">
+<body class="font-sans bg-gray-100">
 
-        <!-- Timer Section -->
- <div class="countdown-container">
-        <div class="countdown-title">Time Left to Buy Items</div>
-        <div class="countdown-timer">
-            <div class="time-box">
-                <span id="number_Days">00</span>
-                <p>Days</p>
+<div class="cart-container max-w-7xl mx-auto my-5 bg-white shadow-lg overflow-hidden rounded-md">
+
+    <!-- Timer Section -->
+    <div class="countdown-container bg-[#f45b69] text-black text-center py-3 font-roboto leading-[0.7]">
+        <div class="countdown-title text-white text-xl font-bold mb-2">Time Left to Buy Items</div>
+        <div class="countdown-timer flex justify-center gap-3 text-xs">
+            <div class="time-box flex flex-col items-center">
+                <span id="number_Days" class="font-bold text-2xl">00</span>
+                <p class="text-xs">Days</p>
             </div>
-            <div class="colon">:</div>
-            <div class="time-box">
-                <span id="number_Hours">00</span>
-                <p>Hrs</p>
+            <div class="colon text-black text-xl font-bold mx-1">:</div>
+            <div class="time-box flex flex-col items-center">
+                <span id="number_Hours" class="font-bold text-2xl">00</span>
+                <p class="text-xs">Hrs</p>
             </div>
-            <div class="colon">:</div>
-            <div class="time-box">
-                <span id="number_Minutes">00</span>
-                <p>Mins</p>
+            <div class="colon text-black text-xl font-bold mx-1">:</div>
+            <div class="time-box flex flex-col items-center">
+                <span id="number_Minutes" class="font-bold text-2xl">00</span>
+                <p class="text-xs">Mins</p>
             </div>
-            <div class="colon">:</div>
-            <div class="time-box">
-                <span id="number_Seconds">00</span>
-                <p>Secs</p>
+            <div class="colon text-black text-xl font-bold mx-1">:</div>
+            <div class="time-box flex flex-col items-center">
+                <span id="number_Seconds" class="font-bold text-2xl">00</span>
+                <p class="text-xs">Secs</p>
             </div>
         </div>
-         
-        <script>
-            // Get the time from python using django
-            var remainingTime_str = "{{ total_time }}";
-            var remainingTime = parseFloat(remainingTime_str);
-            console.log(remainingTime);
-            
-        
-            // Define the function that will update the html values
-            function updateCountdown(){
-                console.log("Entered the function");
-                // Get each time units values
-                var days = Math.floor(remainingTime / 86400);
-                var hours = Math.floor((remainingTime % 86400) / 3600);
-                var minutes = Math.floor((remainingTime % 3600) / 60);
-                var seconds = Math.floor(remainingTime % 60);
-        
-                console.log(days)
-                console.log(hours)
-                
-                // Format each unit
-                //days_str = String.format("%02d", days);
-                //hours_str = String.format("%02d", hours);
-                //minutes_str = String.format("%02d", minutes);
-                //seconds_str = String.format("%02d", seconds);
-        
-                // Update the values here
-                document.getElementById("number_Days").innerHTML = days;
-                document.getElementById("number_Hours").innerHTML = hours;
-                document.getElementById("number_Minutes").innerHTML = minutes;
-                document.getElementById("number_Seconds").innerHTML = seconds;
-        
-                // Check to see if no time remains
-                if (remainingTime <= 0) {
-                        // Set values to 00
-                        clearInterval(update);
-                        document.getElementById("number_Days").innerHTML = "00";
-                        document.getElementById("number_Hours").innerHTML = "00";
-                        document.getElementById("number_Minutes").innerHTML = "00";
-                        document.getElementById("number_Seconds").innerHTML = "00";
-        
-                } else {
-                        remainingTime--;
-                }
+    </div>
+
+    <script>
+        // Get the time from python using django
+        var remainingTime_str = "{{ total_time }}";
+        var remainingTime = parseFloat(remainingTime_str);
+        console.log(remainingTime);
+
+        // Define the function that will update the html values
+        function updateCountdown(){
+            console.log("Entered the function");
+            // Get each time units values
+            var days = Math.floor(remainingTime / 86400);
+            var hours = Math.floor((remainingTime % 86400) / 3600);
+            var minutes = Math.floor((remainingTime % 3600) / 60);
+            var seconds = Math.floor(remainingTime % 60);
+
+            console.log(days)
+            console.log(hours)
+
+            // Update the values here
+            document.getElementById("number_Days").innerHTML = days;
+            document.getElementById("number_Hours").innerHTML = hours;
+            document.getElementById("number_Minutes").innerHTML = minutes;
+            document.getElementById("number_Seconds").innerHTML = seconds;
+
+            // Check to see if no time remains
+            if (remainingTime <= 0) {
+                    // Set values to 00
+                    clearInterval(update);
+                    document.getElementById("number_Days").innerHTML = "00";
+                    document.getElementById("number_Hours").innerHTML = "00";
+                    document.getElementById("number_Minutes").innerHTML = "00";
+                    document.getElementById("number_Seconds").innerHTML = "00";
+
+            } else {
+                    remainingTime--;
             }
-            
-            // Update the timer every second
-            var update = setInterval(updateCountdown, 1000);
-        </script>
-    </div>
-<!-- Cart items section -->
-<div class="cart-items">
-    <h2><center>Your Cart</center></h2>
-    <!-- Loop through cart items from the context -->
-    {% for item in cart_items %}
-    <div class="cart-item" id="cart-item-{{ item.id }}">
-        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" width="200" height="200">
-        <div class="item-details">
-            <h4>{{ item.product.name }}</h4>
-            <p>Price: ${{ item.product.price|floatformat:2 }} | Size: {{ item.product.size }}</p>
+        }
+
+        // Update the timer every second
+        var update = setInterval(updateCountdown, 1000);
+    </script>
+
+    <!-- Cart items section -->
+    <div class="cart-items p-6">
+        <h2 class="text-center text-2xl font-bold mb-5">Your Cart</h2>
+        <!-- Loop through cart items from the context -->
+        {% for item in cart_items %}
+        <div class="cart-item flex justify-between items-center bg-[#ff6f72] mb-6 p-2 rounded-md border-2 border-black">
+            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="w-12 h-12 object-cover rounded-md">
+            <div class="item-details flex-grow pl-2">
+                <h4 class="text-white text-lg">{{ item.product.name }}</h4>
+                <p class="text-white text-sm">Price: ${{ item.product.price|floatformat:2 }} | Size: {{ item.product.size }}</p>
+            </div>
+            <div class="remove-item">
+                <button class="remove-btn bg-transparent border-none text-white cursor-pointer w-11">
+                    <img src="{% static 'icons/Trash1.svg' %}" alt="Remove" class="trash-icon">
+                </button>
+            </div>
         </div>
+        {% empty %}
+        <p class="text-center">Your cart is empty.</p>
+        {% endfor %}
 
-        <div class="remove-item">
-            <button class="remove-btn" data-id="{{ item.id }}">
-                <img src="{% static 'icons/Trash1.svg' %}" alt="Remove" class="trash-icon">
-            </button>
-        </div>
-        <script>
-            $(document).ready(function () {
-                $('.remove-btn').off('click').on('click', function (event) {
-                    event.preventDefault();
-
-                    const cartItemId = $(this).data('id'); // Get the item ID
-
-                    $.ajax({
-                        url: `/remove-from-cart/${cartItemId}/`,
-                        method: 'POST',
-                        headers: {
-                            'X-CSRFToken': '{{ csrf_token }}', // Include CSRF token
-                        },
-                        success: function (response) {
-                            alert(response.message); // Show success message
-
-                            // Reload the page to ensure total price and UI updates
-                            location.reload();
-                        },
-                        error: function (xhr) {
-                            alert(`Error: ${xhr.responseJSON.message}`); // Show error message
-                        },
-                    });
-                });
-            });
-        </script>
-    </div>
-    {% empty %}
-        <p>Your cart is empty.</p>
-    {% endfor %}
-
-    {% if cart_items %}
-        <div class="total-section">
-            <p>Items: ${{ total_price|floatformat:2 }}</p>
-            <p>Shipping & Taxes Calculated at Checkout</p>
+        {% if cart_items %}
+        <div class="total-section p-6 border-t border-gray-300 bg-white shadow-md">
+            <p class="flex justify-between mb-1 text-lg">Items: ${{ total_price|floatformat:2 }}</p>
+            <p class="text-sm">Shipping & Taxes Calculated at Checkout</p>
             <!-- Custom divider -->
-            <div class="divider"></div>
-            <p>Total: ${{ total_price|floatformat:2 }}</p>
+            <div class="divider border-t border-gray-300 my-2"></div>
+            <p class="flex justify-between text-xl font-semibold">Total: ${{ total_price|floatformat:2 }}</p>
         </div>
-     {% endif %}
-            <!-- Checkout Button -->
-        <div class="checkout">
-            <a href="{% url 'checkout' %}"><button>CHECKOUT</button></a>
-
+        {% endif %}
+        <!-- Checkout Button -->
+        <div class="checkout text-center bg-[#F46471] py-3">
+            <a href="{% url 'checkout' %}">
+                <button class="bg-[#F46471] text-white border-2 border-[#d6334a] py-3 px-8 text-lg font-bold rounded-md w-full sm:w-auto">
+                    CHECKOUT
+                </button>
+            </a>
         </div>
-            <!-- Digital Payment Options -->
-        <div class="digitalPayment">
+        <!-- Digital Payment Options -->
+        <div class="digitalPayment flex justify-center space-x-4">
             <div id="google-pay-button"></div>
             <div id="apple-pay"></div>
         </div>
-</div>
-
     </div>
+
+</div>
 </body>
 
 <!-- google-pay payment option script -->

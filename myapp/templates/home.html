@@ -59,9 +59,9 @@
                 $(document).ready(function () {
                     $('.add-to-cart-btn').off('click').on('click', function (event) {
                         event.preventDefault();
-                
+
                         const productId = $(this).data('id');
-                
+
                         $.ajax({
                             url: `/add-to-cart/${productId}/`,
                             method: 'POST',
@@ -70,17 +70,17 @@
                             },
                             success: function (response) {
                                 console.log("AJAX Response:", response);
-                
+
                                 // Display different messages based on response
                                 if (response.message.includes("already in your cart")) {
                                     alert("⚠️ This item is already in your cart.");
                                 } else {
                                     alert("✅ Item added to cart successfully.");
                                 }
-                
+
                                 // Ensure cart count is visible and updated
                                 let cartCounter = $('#cart-icon .cart-count');
-                
+
                                 if (cartCounter.length === 0) {
                                     $('#cart-icon').append(`<span class="cart-count">${response.cart_item_count}</span>`);
                                 } else {
@@ -93,7 +93,7 @@
                         });
                     });
                 });
-                
+
                 </script>
             </script>
         </div>

@@ -3,24 +3,20 @@
 
 {% block title %}About Us{% endblock %}
 
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/about.css' %}">
-{% endblock %}
-
 {% block content %}
-<div class="about-us">
+<div class="text-center p-5">
     <!-- About Us Section -->
-    <div class="about-image">
-        <img src="{% static 'images/about-us.jpg' %}" alt="Store front Image">
+    <div class="mb-5">
+        <img src="{% static 'images/about-us.jpg' %}" alt="Store front Image" class="w-full max-w-xs h-auto rounded-lg mb-5 mx-auto">
     </div>
-    
-    <div class="about-info">
-        <h1>About Moonwalk Threads</h1>
-        <p>
-            Moonwalk Threads is a specialty, curated vintage store located in the heart of Downtown Auburn, CA. Founded in 2020, Moonwalk was built on the love of vintage clothes and sustainable fashion. We are proud to be a  local woman owned small business.
+
+    <div class="w-full max-w-4xl mx-auto px-5">
+        <h1 class="text-4xl text-center mb-5">About Moonwalk Threads</h1>
+        <p class="text-lg leading-7 mb-4">
+            Moonwalk Threads is a specialty, curated vintage store located in the heart of Downtown Auburn, CA. Founded in 2020, Moonwalk was built on the love of vintage clothes and sustainable fashion. We are proud to be a local woman-owned small business.
         </p>
-        <p>
-            Shop with us in store and browse our 90’s and early 2000’s vintage clothing. You can also find us at our yearly events, operating during the spring and summer. Our mission is to serve the community with high quality, affordable, vintage fashion! We can’t wait to see you at Moonwalk! 
+        <p class="text-lg leading-7 mb-4">
+            Shop with us in store and browse our 90’s and early 2000’s vintage clothing. You can also find us at our yearly events, operating during the spring and summer. Our mission is to serve the community with high quality, affordable, vintage fashion! We can’t wait to see you at Moonwalk!
         </p>
     </div>
 </div>
