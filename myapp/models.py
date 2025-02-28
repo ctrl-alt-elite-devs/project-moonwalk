@@ -3,6 +3,7 @@ from django.db.models.signals import post_save
 from django.db import models
 from django.contrib.auth.models import User
 import datetime
+from storages.backends.s3boto3 import S3Boto3Storage
 # Create your models here.
 
 
@@ -49,7 +50,7 @@ class Product(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, default=1)
     size = models.CharField(max_length=20)
     description = models.CharField(max_length=250, default='', blank=True, null=True)
-    image = models.ImageField(upload_to='uploads/product/')
+    image = models.ImageField(storage=S3Boto3Storage(), upload_to='products/')
     featured = models.BooleanField(default=False)
 
     def __str__(self):

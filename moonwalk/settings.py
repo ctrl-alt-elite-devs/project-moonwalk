@@ -146,8 +146,16 @@ STATICFILES_DIRS = ['static/',  # Or wherever your static folder is located
 
 ]
 
-MEDIA_URL = 'media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+AWS_STORAGE_BUCKET_NAME = 'bucket-hdw1z5'
+AWS_S3_REGION_NAME = 'us-west-2'
+AWS_S3_ENDPOINT_URL = f'https://s3.{AWS_S3_REGION_NAME}.amazonaws.com'
+
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+MEDIA_URL = f'{AWS_S3_ENDPOINT_URL}/'
+
 
 
 # Default primary key field type
