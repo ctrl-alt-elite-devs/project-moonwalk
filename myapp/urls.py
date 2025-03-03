@@ -52,5 +52,9 @@ urlpatterns = [
     path('register/', views.register_user, name='register'),
 
     # Payment Portal (Testing)
-    path('payment/', views.paymentPortal, name='paymentPortal')
+    path('payment/', views.paymentPortal, name='paymentPortal'),
+
+    # User Profile
+    path('profile/', views.profile, name='profile')
+
 ]

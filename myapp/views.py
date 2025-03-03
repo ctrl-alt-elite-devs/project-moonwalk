@@ -476,3 +476,25 @@ def send_order_email(request):
             return JsonResponse({"success": False, "message": "Invalid data format."}, status=400)
 
     return JsonResponse({"success": False, "message": "Invalid request."}, status=405)
+def profile(request):
+    # Check if a user is logged in
+    if request.user.is_authenticated:
+        user_data = {
+            "email": request.user.email,
+            "password": "********",  # Hidden for security
+            "address": request.user.customer.address if hasattr(request.user, "customer") else "No address available",
+            "orders": [],  # Placeholder for future order retrieval
+        }
+    else:
+        # Hardcoded data for non-logged-in users
+        user_data = {
+            "email": "guest@example.com",
+            "password": "********",
+            "address": "No address available",
+            "orders": [
+                {"id": 1, "status": "Shipped", "total": 59.99},
+                {"id": 2, "status": "Processing", "total": 120.50},
+            ],
+        }
+
+    return render(request, "profile.html", {"user": user_data})
