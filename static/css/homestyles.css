@@ -195,9 +195,26 @@ body {
     visibility: hidden; /* Hidden but still present in the DOM */
     transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
     padding: 10px;
-    z-index: 100;
+    z-index: 1000;
 }
 
+.cart-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: white !important;  /* Force white background */
+    color: black !important;  /* Change text to black for readability */
+    padding: 10px 15px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 5px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    transform: translateY(-10px);
+    z-index: 9999;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
 /* Ensure smooth animation when showing */
 .cart-dropdown.show {
     opacity: 1;
@@ -285,6 +302,7 @@ body {
     position: absolute;
     right: .5rem;
     display: inline-flex;
+    pointer-events: auto;
 }
 
 .navbar .profile_btn:hover {

@@ -111,20 +111,46 @@ def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
 
     if request.user.is_authenticated:
-        customer = request.user.customer
+        customer, created = Customer.objects.get_or_create(user=request.user)
         cart_item, created = Cart.objects.get_or_create(customer=customer, product=product)
+        cart_items = Cart.objects.filter(customer=customer)  # Only count current user's cart
     else:
         session_key = request.session.session_key
         if not session_key:
             request.session.create()
         cart_item, created = Cart.objects.get_or_create(session_key=request.session.session_key, product=product)
+        cart_items = Cart.objects.filter(session_key=request.session.session_key)  # Only count session cart
 
-    # Handle if the product is already in the cart
     if not created:
-        return JsonResponse({'message': 'Product is already in the cart!'}, status=400)
+        return JsonResponse({
+            'message': 'Product is already in the cart!',
+            'cart_item_count': cart_items.count(),  # Fix: Count only the user's/session cart items
+            'cart_items': []
+        }, status=400)
 
     cart_item.save()
-    return JsonResponse({'message': 'Product added to cart successfully!'})
+
+    # Fetch the latest cart items
+    cart_items_data = [
+        {
+            "product": {
+                "image_url": item.product.image.url if item.product.image else "",
+                "name": item.product.name,
+                "price": float(item.product.price),
+            }
+        }
+        for item in cart_items[:4]  # Limit to first 4 for mini cart
+    ]
+
+    print("📦 Updated Cart Count:", cart_items.count())  # Debugging
+
+    return JsonResponse({
+        'message': 'Product added to cart successfully!',
+        'cart_item_count': cart_items.count(),  # Fix: Return correct count
+        'cart_items': cart_items_data
+    })
+
+
 
 def remove_from_cart(request, cart_item_id):
     if request.method == 'POST':  # Ensure the method is POST for safety
