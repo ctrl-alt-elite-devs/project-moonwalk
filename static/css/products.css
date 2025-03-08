@@ -10,40 +10,30 @@
 
 /* Section Styling */
 .product-section {
-    padding: 1.5rem 0;
+    padding: 1rem 0;
     overflow-x: hidden; /* Prevent horizontal overflow */
 }
 
-/* Default: Hide Scrollbar */
+/* Scrollable Row Layout */
 .product-grid {
     display: flex;
-    gap: 24px;
-    overflow-x: auto;
-    padding: 1rem 1rem;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE and Edge */
+    gap: 24px; /* Space between product cards */
+    overflow-x: auto; /* Allow horizontal scrolling */
+    padding: 0 1rem; /* Add padding on left and right */
+    scroll-snap-type: x mandatory; /* Smooth snap scrolling */
 }
 
-/* Hide scrollbar for WebKit browsers */
 .product-grid::-webkit-scrollbar {
-    height: 8px; /* Keep the scrollbar height */
-    background: transparent; /* Make it invisible */
+    height: 8px; /* Customize scrollbar height */
 }
 
-/* Show scrollbar only when hovering */
-.product-grid:hover {
-    scrollbar-width: thin; /* Make scrollbar appear on hover (Firefox) */
-}
-
-.product-grid:hover::-webkit-scrollbar {
-    height: 8px;
-    background: rgba(0, 0, 0, 0.1); /* Light background when hovered */
-}
-
-.product-grid:hover::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.5); /* Darker scrollbar thumb */
+.product-grid::-webkit-scrollbar-thumb {
+    background: var(--border-color); /* Scrollbar color */
     border-radius: 8px;
+}
+
+.product-grid::-webkit-scrollbar-track {
+    background: transparent; /* Track color */
 }
 
 /* Product Card Styling */

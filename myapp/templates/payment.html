@@ -8,7 +8,6 @@
     {% csrf_token %}
 </head>
 {% block content %}
-
 <div class="payment-page">
     <div id="order-column-payment-page">
         {% include 'cartSummary.html' %}
@@ -67,19 +66,19 @@
                         headers: {
                             'X-CSRFToken': '{{ csrf_token }}'
                         },
-                        body: JSON.stringify({ token: result.token})
+                        body: JSON.stringify({token: result.token})
                     })
                         .then(response => response.json())
                         .then(data => {
                             if (data.status === 'success') {
                                 alert("Payment successful");
+                                document.location.href = "{% url 'orderSummary' %}"
                             } else {
                                 alert("Payment failed");
                             }
                         })
                         .catch(error => console.error('Error:', error));
                 }
-                alert(JSON.stringify(result, null, 2));
             })
         } catch (e) {
             console.error(e);
@@ -150,6 +149,5 @@
         }
     })()
 </script>
-
 
 {% endblock %}
