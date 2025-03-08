@@ -22,12 +22,9 @@ urlpatterns = [
     # Google Calendar
     path('googleCalendar/', views.googleCalendar, name='googleCalendar'),
 
-    # Square API
-    path('listLocations/', views.listLocations, name='listLocations'),
-
     # Checkout & Orders
     path('checkout/', views.checkout, name='checkout'),
-    path('checkout/', views.create_order, name='create_order'),
+    path('checkout/store_data', views.store_order_data, name='store_order_data'),
     path('checkout/payment/', views.paymentPortal, name='payment'),
     path('orderSummary/', views.orderSummary, name='orderSummary'),
     path('process_payment/', views.process_payment, name='process_payment'),

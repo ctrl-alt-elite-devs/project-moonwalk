@@ -248,29 +248,6 @@
         </div>
     </div>
 
-    <script>
-        $(document).ready(function(){
-            $('#login-button').on('click', function(){
-                $.ajax({
-                    url: "{% url 'listLocations' %}",
-                    method: "GET",
-                    success: function(response) {
-                        if (response.status === "success") {
-                            $('#locations-list').empty();
-                            response.locations.forEach(function(location) {
-                                $('locations-list').append("<li>${location.name} - ${location.id}</li>")
-                            });
-                        } else {
-                            alert("Error fetching locations: " + response.message);
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        alert("An error occurred: " + error);
-                    }
-                });
-            });
-        });
-    </script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="{% static 'scripts/login-script.js' %}"></script>
 
@@ -309,12 +286,6 @@
             <i class="fa-brands fa-instagram fa-2xl"></i>
         </a>
         </div>
-
-        <ul>
-            {% for location in locations %}
-                <li>{{location.name}} - {{location.id}}</li>
-            {% endfor %}
-        </ul>
 
         <hr id="footerLine">
         <div class="littleThings">

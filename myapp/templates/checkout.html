@@ -16,7 +16,7 @@
         {% for field in form %}
         {{ field.as_hidden }}
         {% endfor %}
-        <form id="checkout-form" method="post" enctype="multipart/form-data">
+        <form id="checkout-form" action="{% url 'store_order_data' %}" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="order-type">
                 <h1>How Would You Like To Get Your Order?</h1>
