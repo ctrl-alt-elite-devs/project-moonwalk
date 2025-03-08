@@ -301,37 +301,37 @@ def create_square_order(cart_items):
         }
         line_items.append(line_item)
 
-        order_payload = {
-            "order": {
-                "location_id": "LNG128XEAPR21",
-                "line_items": line_items,
-                "taxes": [
-                    {
-                        "uid": "STATE_SALES_TAX_UID",
-                        "type": "ADDITIVE",
-                        "scope": "ORDER",
-                        "name": "Sales Tax",
-                        "percentage": "7.25"
-                    }
-                ],
-                "pricing_options": {
-                    "auto_apply_taxes" : True
+    order_payload = {
+        "order": {
+            "location_id": "LNG128XEAPR21",
+            "line_items": line_items,
+            "taxes": [
+                {
+                    "uid": "STATE_SALES_TAX_UID",
+                    "type": "ADDITIVE",
+                    "scope": "ORDER",
+                    "name": "Sales Tax",
+                    "percentage": "7.25"
                 }
-            },
-            "idempotency_key": str(uuid.uuid4())
-        }
+            ],
+            "pricing_options": {
+                "auto_apply_taxes" : True
+            }
+        },
+        "idempotency_key": str(uuid.uuid4())
+    }
 
-        result = client.orders.create_order(body=order_payload)
+    result = client.orders.create_order(body=order_payload)
 
-        if result.is_success():
-            order = result.body["order"]
-            order_id = order["id"]
-            total_amount = order["total_money"]["amount"]
+    if result.is_success():
+        order = result.body["order"]
+        order_id = order["id"]
+        total_amount = order["total_money"]["amount"]
 
-            return order_id, total_amount
-        else:
-            print(result.errors)
-            return None, None
+        return order_id, total_amount
+    else:
+        print(result.errors)
+        return None, None
 
 def process_payment(request):
     if request.method == 'POST':
