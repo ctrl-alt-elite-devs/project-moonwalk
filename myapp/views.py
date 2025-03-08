@@ -1,9 +1,7 @@
 from django.shortcuts import render, redirect
 import datetime
 from django.contrib import messages
-
-from .forms import CheckoutForm
-from .models import Cart, Product, Category, Order
+from .models import Cart, Customer, Product, Category
 from .square_service import client
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -13,9 +11,12 @@ import json
 import uuid
 import shippo
 from shippo.models import components
-from django.http import HttpResponse
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 from django.contrib import messages
 
 from django import template
@@ -37,6 +38,7 @@ def home(request):
     featured = Product.objects.filter(featured=True)
     return render(request, 'home.html', {'total_time': total_time, 'products':products, 'featured':featured})
     # return render(request, 'home.html')
+
 
 def total_time(request):
     # Current date is hard coded
@@ -92,7 +94,7 @@ def cart(request):
     total_time = total_time.total_seconds()
 
     if request.user.is_authenticated:
-        cart_items = Cart.objects.filter(customer=request.user.customer)
+        cart_items = Cart.objects.filter(customer = Customer.objects.filter(user=request.user).first())
     else:
         cart_items = Cart.objects.filter(session_key=request.session.session_key)
 
@@ -107,20 +109,46 @@ def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
 
     if request.user.is_authenticated:
-        customer = request.user.customer
+        customer, created = Customer.objects.get_or_create(user=request.user)
         cart_item, created = Cart.objects.get_or_create(customer=customer, product=product)
+        cart_items = Cart.objects.filter(customer=customer)  # Only count current user's cart
     else:
         session_key = request.session.session_key
         if not session_key:
             request.session.create()
         cart_item, created = Cart.objects.get_or_create(session_key=request.session.session_key, product=product)
+        cart_items = Cart.objects.filter(session_key=request.session.session_key)  # Only count session cart
 
-    # Handle if the product is already in the cart
     if not created:
-        return JsonResponse({'message': 'Product is already in the cart!'}, status=400)
+        return JsonResponse({
+            'message': 'Product is already in the cart!',
+            'cart_item_count': cart_items.count(),  # Fix: Count only the user's/session cart items
+            'cart_items': []
+        }, status=400)
 
     cart_item.save()
-    return JsonResponse({'message': 'Product added to cart successfully!'})
+
+    # Fetch the latest cart items
+    cart_items_data = [
+        {
+            "product": {
+                "image_url": item.product.image.url if item.product.image else "",
+                "name": item.product.name,
+                "price": float(item.product.price),
+            }
+        }
+        for item in cart_items[:4]  # Limit to first 4 for mini cart
+    ]
+
+    print("📦 Updated Cart Count:", cart_items.count())  # Debugging
+
+    return JsonResponse({
+        'message': 'Product added to cart successfully!',
+        'cart_item_count': cart_items.count(),  # Fix: Return correct count
+        'cart_items': cart_items_data
+    })
+
+
 
 def remove_from_cart(request, cart_item_id):
     if request.method == 'POST':  # Ensure the method is POST for safety
@@ -143,11 +171,11 @@ def remove_from_cart(request, cart_item_id):
 def merge_cart(sender, request, user, **kwargs):
     session_key = request.session.session_key
     session_cart = Cart.objects.filter(session_key=session_key)
-    customer_cart = Cart.objects.filter(customer=user.customer)
+    customer_cart = Cart.objects.filter(customer = Customer.objects.filter(user=request.user).first())
 
     for item in session_cart:
         cart_item, created = Cart.objects.get_or_create(
-            customer=user.customer, product=item.product,
+            customer = Customer.objects.filter(user=request.user).first(), product=item.product,
         )
         if not created:
             cart_item.save()
@@ -159,6 +187,7 @@ def googleCalendar(request):
     '''
     return render(request, 'googleCalendar.html', {'iframe_code': iframe_code})
 
+@csrf_exempt
 def checkout(request):
     if request.method == 'POST':
         form = CheckoutForm()
@@ -283,6 +312,50 @@ def logout_user(request):
     messages.success(request, ("YOU LOGGED OUT"))
     return redirect('home')
 
+#register user account
+def register_user(request):
+    if request.method == "POST":
+        username = request.POST.get("email")
+        email = request.POST.get("email")
+        password = request.POST.get("password")
+        confirm_password = request.POST.get("confirm-password")
+        first_name = request.POST.get("first-name")
+        last_name = request.POST.get("last-name")
+        phone = request.POST.get("phone")
+        text_messages = request.POST.get("text-checkbox") == "on"
+        email_messages = request.POST.get("email-checkbox") == "on"
+
+        # Check if username already exists
+        if User.objects.filter(username=username).exists():
+            messages.success(request, "Email is already in use. Try Logging in.")
+            return redirect('home')
+        
+        # Check if passwords match
+        if password != confirm_password:
+            messages.success(request, f"Passwords do not match. Entered: {password} and {confirm_password}")
+            return redirect('home')
+          
+        try:
+            user = User.objects.create_user(username=username, password=password, email=email, first_name=first_name, last_name=last_name)
+            user.save()
+
+            # Get or create customer, then update phone number
+            customer, created = Customer.objects.get_or_create(user=user)
+            customer.phone = phone  # Update phone field
+            customer.text_messages = text_messages
+            customer.email_messages = email_messages
+            customer.save()
+
+            user = authenticate(request, username=username, password=password)
+            login(request, user)
+            messages.success(request, "Registration successful! You are now logged in.")
+            return redirect('home')
+        except Exception as e:
+            messages.success(request, f"Error creating account: {e}")
+            return redirect('home')
+
+    return redirect('home')
+
 #shippo to create label (accept user address input)
 
 shippo_sdk = shippo.Shippo(api_key_header="shippo_test_f3cb884569acedbe9a0860114d181ec57bed5277")
@@ -378,16 +451,112 @@ def submit_address(request):
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
-#for handling input data in checkout
-def process_checkout_data(request):
-
-    form = CheckoutForm(request.POST)
-    if request.method == 'POST':
-        customerFirstName = request.POST.custoemrFirstName
-        customerLastName = request.POST.customerLastName
-        customerEmail = request.POST.customerEmail
-        customerPhone = request.POSTcustomerPhone
-        return HttpResponse("Data received Successfully!")
-    return render(request, paymentPortal, {'form' : form})
+@register.inclusion_tag('orderCartSummary.html', takes_context=True)
+def orderCartSummary(context):
+    return {
+        'orderCartSummary': context['data'],
+    }
 
 
+@csrf_exempt  # Only use this for local testing, remove it if using CSRF middleware
+def subscribe(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            email = data.get("email")
+
+            if not email:
+                return JsonResponse({"success": False, "message": "Invalid email address."}, status=400)
+
+            subscriber, created = Subscriber.objects.get_or_create(email=email)
+
+            if not created:
+                return JsonResponse({"success": False, "message": "You are already subscribed."})
+
+            # Render HTML Email Content
+            html_content = render_to_string("subscription.html", {"email": email})
+            text_content = strip_tags(html_content)  # Convert HTML to plain text
+
+            # Create Email with HTML and Plain Text
+            subject = "🎉 Welcome to MoonWalk Threads!"
+            from_email = "info@yourdomain.com"
+            recipient_list = [email]
+
+            email_message = EmailMultiAlternatives(subject, text_content, from_email, recipient_list)
+            email_message.attach_alternative(html_content, "text/html")
+            email_message.send()
+
+            return JsonResponse({"success": True, "message": "Subscription successful."})
+
+        except json.JSONDecodeError:
+            return JsonResponse({"success": False, "message": "Invalid data format."}, status=400)
+
+    return JsonResponse({"success": False, "message": "Invalid request."}, status=405)
+
+def send_order_email(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            customer_email = data.get("email", "guest@moonwalkthreads.com")  # Default for guests
+            user_first_name = request.user.first_name if request.user.is_authenticated else "Guest"
+
+            # Fetch cart items for the user (or guest session)
+            if request.user.is_authenticated:
+                cart_items = Cart.objects.filter(customer=request.user.customer)
+            else:
+                session_key = request.session.session_key
+                cart_items = Cart.objects.filter(session_key=session_key)
+
+            # Format order details
+            order_items = []
+            total_price = 0
+            for item in cart_items:
+                order_items.append(f"{item.product.name} - ${item.product.price}")
+                total_price += item.product.price
+
+            # Render the email template
+            html_content = render_to_string("order_confirmation_email.html", {
+                "first_name": user_first_name,
+                "email": customer_email,
+                "order_items": order_items,
+                "total_price": total_price,
+            })
+            text_content = strip_tags(html_content)
+
+            # Send email
+            subject = "🛍️ Your MoonWalk Threads Order Confirmation"
+            from_email = "orders@moonwalkthreads.com"
+            recipient_list = [customer_email]
+
+            email_message = EmailMultiAlternatives(subject, text_content, from_email, recipient_list)
+            email_message.attach_alternative(html_content, "text/html")
+            email_message.send()
+
+            return JsonResponse({"success": True, "message": "Order confirmation email sent."})
+
+        except json.JSONDecodeError:
+            return JsonResponse({"success": False, "message": "Invalid data format."}, status=400)
+
+    return JsonResponse({"success": False, "message": "Invalid request."}, status=405)
+def profile(request):
+    # Check if a user is logged in
+    if request.user.is_authenticated:
+        user_data = {
+            "email": request.user.email,
+            "password": "********",  # Hidden for security
+            "address": request.user.customer.address if hasattr(request.user, "customer") else "No address available",
+            "orders": [],  # Placeholder for future order retrieval
+        }
+    else:
+        # Hardcoded data for non-logged-in users
+        user_data = {
+            "email": "guest@example.com",
+            "password": "********",
+            "address": "No address available",
+            "orders": [
+                {"id": 1, "status": "Shipped", "total": 59.99},
+                {"id": 2, "status": "Processing", "total": 120.50},
+            ],
+        }
+
+    return render(request, "profile.html", {"user": user_data})

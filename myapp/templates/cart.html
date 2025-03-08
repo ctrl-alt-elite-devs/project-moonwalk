@@ -115,9 +115,7 @@
                         headers: {
                             'X-CSRFToken': '{{ csrf_token }}', // Include CSRF token
                         },
-                        success: function (response) {
-                            alert(response.message); // Show success message
-
+                        success: function () {
                             // Reload the page to ensure total price and UI updates
                             location.reload();
                         },

@@ -35,6 +35,11 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Edu+AU+VIC+WA+NT+Dots:wght@400..700&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
     
 </head>
+
+        <!-- Notification Message -->
+        <div id="cart-notification" class="cart-notification">
+            ✅ Item added to cart!
+        </div>
 <body>
     <header>
         <div class="brand-header">
@@ -57,6 +62,7 @@
                 <i class="fa-solid fa-cart-shopping"></i>
                 <span class="cart-count">{% if cart_item_count > 0 %}{{ cart_item_count }}{% else %}0{% endif %}</span>
             </a>
+
         
             <!-- Mini Cart Dropdown -->
             <div class="cart-dropdown" id="cart-dropdown">
@@ -81,8 +87,11 @@
             </div>
             
         </div>
+
+
         
         <div class="profile_btn open_login">
+            <a href="{% url 'profile' %}"></a>
             <i class="fa-solid fa-user"></i>
         </div>
 

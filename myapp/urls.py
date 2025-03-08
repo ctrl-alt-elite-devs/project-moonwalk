@@ -43,5 +43,9 @@ urlpatterns = [
     path('logout/', views.logout_user, name='logout'),
 
     # Payment Portal (Testing)
-    path('payment/', views.paymentPortal, name='paymentPortal')
+    path('payment/', views.paymentPortal, name='paymentPortal'),
+
+    # User Profile
+    path('profile/', views.profile, name='profile')
+
 ]
