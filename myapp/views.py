@@ -368,8 +368,8 @@ def process_payment(request):
                         "currency": "USD"
                     },
                     "autocomplete": True,
-                    #"customer_id": "W92WH6P11H4Z77CTET0RNTGFW8",
-                    "note": "Brief description"
+                    "order_id": order_id,
+                    #"note": "Brief description"
                 })
             if result.is_success:
                 #return redirect('orderSummary.html')
