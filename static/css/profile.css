@@ -17,7 +17,7 @@
     position: absolute;
     top: 50px; /* Distance below profile icon */
     right: 0%; /* Center the dropdown under the icon */
-    transform: translateX(-50%); /* Adjust positioning */
+    transform: translateX(-10%); /* Adjust positioning */
     z-index: 999;
     visibility: hidden; /* Initially hidden */
     opacity: 0;
