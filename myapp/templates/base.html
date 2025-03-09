@@ -29,7 +29,8 @@
     <link rel="stylesheet" href="{% static 'css/about.css' %}">
     <link rel="stylesheet" href="{% static 'css/contact.css' %}">
     <link rel="stylesheet" href="{% static 'css/payment.css' %}">
-    <link rel="stylesheet" href="{% static 'css/order-summary.css' %}">
+    <link rel="stylesheet" href="{% static 'css/profile.css' %}">
+
 
     <script src="https://kit.fontawesome.com/34f0afb215.js" crossorigin="anonymous"></script>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Edu+AU+VIC+WA+NT+Dots:wght@400..700&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
@@ -90,10 +91,18 @@
 
 
         
-        <div class="profile_btn open_login">
-            <a href="{% url 'profile' %}"></a>
-            <i class="fa-solid fa-user"></i>
+        <div class="my-profile">
+            <!-- Profile Icon (Triggers Login Popup on Click) -->
+            <div class="profile_btn open_login">
+                <i class="fa-solid fa-user"></i>
+            </div>
+        
+            <!-- Profile Dropdown (Appears on Hover) -->
+            <div class="profile-dropdown">
+                <a href="{% url 'profile' %}" class="profile-link">My Profile</a>
+            </div>
         </div>
+        
 
         <script>
                     document.addEventListener("DOMContentLoaded", function () {
@@ -118,6 +127,7 @@
         </script>
 
 <script src="{% static 'scripts/cart_hover.js' %}"></script>
+<script src="{% static 'scripts/profile_hover.js' %}"></script>
 
 
     </div>
