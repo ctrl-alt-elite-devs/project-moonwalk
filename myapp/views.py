@@ -383,7 +383,7 @@ def process_payment(request):
 #login request
 def login_user(request):
     if request.method == "POST":
-        username = request.POST['username']
+        username = request.POST['email']
         password = request.POST['password']
         user = authenticate(request, username=username, password=password)
         if user is not None:
