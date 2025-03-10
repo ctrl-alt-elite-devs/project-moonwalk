@@ -27,7 +27,6 @@
     <link rel="stylesheet" href="{% static 'css/checkout.css' %}">
     <link rel="stylesheet" href="{% static 'css/productDetails.css' %}">
     <link rel="stylesheet" href="{% static 'css/about.css' %}">
-    <link rel="stylesheet" href="{% static 'css/contact.css' %}">
     <link rel="stylesheet" href="{% static 'css/payment.css' %}">
     <link rel="stylesheet" href="{% static 'css/order-summary.css' %}">
     <link rel="stylesheet" href="{% static 'css/subscribe.css' %}">
@@ -47,7 +46,6 @@
             <li><a href="{% url 'home' %}">Home</a></li>
             <li><a href="{% url 'shop' %}">Shop</a></li>
             <li><a href="{% url 'about' %}">About</a></li>
-            <li><a href="{% url 'contact' %}">Contact</a></li>
         </ul>
         <div class="toggle_btn">
             <i class="fa-solid fa-bars"></i>
@@ -295,47 +293,47 @@
     {% block content %}
     {% endblock %}
 
-    <footer>
-        <p id="footer-header">SIGN UP FOR MORE</p>
-        <label for="phoneNum"></label>
-        <label for="emailAddress"></label>
+    <footer class="mx-auto h-full bg-[#F46471] p-4 text-center">
+        <p class="font-roboto font-bold text-lg text-black">SIGN UP FOR MORE</p>
 
-        <div class="subscribe-section">
-            <div class="subscribe-subsection">
-                <input class="subscribeInput" type="email" id="emailAddress" placeholder="Your email address" autocomplete="email">
-                <button class="subscribeButton" type="button" id="subscribeButton">SUBSCRIBE</button>
+        <div class="flex flex-col md:flex-row items-center justify-center gap-4 mt-4 w-full max-w-md mx-auto">
+            <div class="flex flex-row items-center w-full gap-2">
+                <input type="email" id="emailAddress" placeholder="Your email address"
+                       class="border border-black rounded-md px-2 py-1 w-full text-black bg-transparent appearance-none" autocomplete="email">
+                <button type="button" class="bg-black text-[#F46471] border-none rounded-md px-4 py-1 hover:text-white">SUBSCRIBE</button>
             </div>
         </div>
 
-            <div class="subscribe-subsection">
-                <input class="subscribeInput" type="text" id="phoneNum" placeholder="Your phone number">
-                <button class="subscribeButton" type="button">SUBSCRIBE</button>
+        <div class="flex flex-col md:flex-row items-center justify-center gap-4 mt-4 w-full max-w-md mx-auto">
+            <div class="flex flex-row items-center w-full gap-2">
+                <input type="text" id="phoneNum" placeholder="Your phone number"
+                       class="border border-black rounded-md px-2 py-1 w-full text-black bg-transparent">
+                <button type="button" class="bg-black text-[#F46471] border-none rounded-md px-4 py-1 hover:text-white">SUBSCRIBE</button>
             </div>
         </div>
 
-
-        <div class="instaIcon">
-        <a href="https://www.instagram.com/moonwalkthreads/?hl=en">
-            <i class="fa-brands fa-instagram fa-2xl"></i>
-        </a>
+        <div class="mt-6">
+            <a href="https://www.instagram.com/moonwalkthreads/?hl=en">
+                <i class="fa-brands fa-instagram fa-2xl"></i>
+            </a>
         </div>
 
-        <ul>
+        <ul class="mt-4 text-black">
             {% for location in locations %}
-                <li>{{location.name}} - {{location.id}}</li>
+            <li>{{location.name}} - {{location.id}}</li>
             {% endfor %}
         </ul>
 
-        <hr id="footerLine">
-        <div class="littleThings">
-            <div>
-                <small>Privacy Policy</small>
-                <small>Terms & Conditions</small>
-                <small>Contact Us</small>
+        <hr class="w-full border-t border-black mt-4">
+        <!-- Need to hyperlink correct pages when finished -->
+        <div class="text-xs font-roboto mt-4 space-y-2">
+            <div class="text-xs space-x-4">
+                <a href="{% url 'contact' %}" class="text-black hover:underline">Privacy Policy</a>
+                <a href="{% url 'contact' %}" class="text-black hover:underline">Terms & Conditions</a>
+                <a href="{% url 'contact' %}" class="text-black hover:underline">Contact Us</a>
             </div>
-            <small id="bottomLine">Copyright © 2024 MoonWalk Threads - All Rights Reserved.</small>
+            <small class="block">Copyright © 2024 MoonWalk Threads - All Rights Reserved.</small>
         </div>
-
     </footer>
 
     <script>
