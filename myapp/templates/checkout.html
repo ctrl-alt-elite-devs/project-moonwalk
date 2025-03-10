@@ -7,7 +7,7 @@
 </head>
 {% block content %}
 <div class="checkout-page">
-
+    {% if checkout_token %}
     <div id="cart-summary-column">
         {% include 'cartSummary.html' %}
     </div>
@@ -115,10 +115,9 @@
                     <input type="email" id="customerEmail" name="email" placeholder="Email Address"><br>
                     <input type="text" id="customerPhone" name="phone" placeholder="Phone Number"><br>
                     <input type="hidden" id="delivery-method-items" name="delivery-method-items">-->
-
-
+                    
                     <!--<button type="submit" class="payment-checkout-button" id="payment-proceed-2" onclick="proceed()">
-                        PROCEED TO PAYMENT</button> -->
+                        PROCEED TO PAYMENT</button>-->
                     <!--<button type="submit" class="payment-button">Payment</button>--> <!--For Shippo API Testing purposes-->
                 </div>
             </div>
@@ -134,6 +133,9 @@
             <input type="submit" value="Proceed to Payment" class="payment-checkout-button">
         </form>
     </div>
+    {% else %}
+        <p>Your session has expired. Please <a href="{% url 'login' %}">log in</a> again.</p>
+    {% endif %}
 </div>
 
 

@@ -139,6 +139,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+SESSION_COOKIE_AGE = 1800
 
 #CSRF cookies
 CSRF_COOKIE_SECURE = False
