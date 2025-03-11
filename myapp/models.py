@@ -43,17 +43,6 @@ class Customer(models.Model):
             user_customer.save()
     
     post_save.connect(create_customer, sender=User)
-    
-#Categories of products
-class Category(models.Model):
-    name = models.CharField(max_length=50)
-
-    def __str__(self):
-        return self.name
-    
-    class Meta:
-        verbose_name_plural = 'categories'
-
 
 class Subscriber(models.Model):
     email = models.EmailField(unique=True)
