@@ -33,6 +33,12 @@ body {
     width: 75%;
 }
 
+.demo#img_banner{
+    height: 500px;
+}
+
+
+
 .color-editor {
     padding-left: 5rem;
 }
@@ -44,6 +50,7 @@ body {
     display: flex;
     justify-content: center;
     overflow: hidden;
+    object-fit: cover;
 }
 
 .img_banner img {
