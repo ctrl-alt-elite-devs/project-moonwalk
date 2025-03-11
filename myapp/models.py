@@ -1,6 +1,9 @@
 import uuid
 
 from django.db import models
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.utils import timezone
 import datetime
 
 # Create your models here.
@@ -17,14 +20,29 @@ class Category(models.Model):
     
 
 class Customer(models.Model):
-    first_name = models.CharField(max_length=50)
-    last_name = models.CharField(max_length=50)
-    phone = models.CharField(max_length=10)
-    email = models.EmailField(max_length=100)
-    password = models.CharField(max_length=100)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    data_modified = models.DateTimeField(auto_now=True)
+    phone = models.CharField(max_length=20, blank=True)
+    text_messages = models.BooleanField(default = False)
+    email_messages = models.BooleanField(default = False)
 
+    # Address fields
+    street_address = models.CharField(max_length=255, blank=True)
+    street_address2 = models.CharField(max_length=255, blank=True)
+    city = models.CharField(max_length=100, blank=True)
+    state = models.CharField(max_length=100, blank=True)
+    zip_code = models.CharField(max_length=20, blank=True)
+ 
+ 
     def __str__(self):
-        return f'{self.first_name} {self.last_name}'
+        return self.user.username
+     
+    def create_customer(sender, instance, created, **kwargs):
+        if created:
+            user_customer = Customer(user=instance)
+            user_customer.save()
+    
+    post_save.connect(create_customer, sender=User)
     
 
 class Product(models.Model):
@@ -44,13 +62,13 @@ class Order(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
     address = models.CharField(max_length=100, default='', blank=True)
-    zipCode = models.CharField(max_length=10)
-    city = models.CharField(max_length=20)
+    zipCode = models.CharField(max_length=10, default='00000')
+    city = models.CharField(max_length=20, default='')
     phone = models.CharField(max_length=20, default='', blank=True)
-    delivering = models.BooleanField()
+    delivering = models.BooleanField(default = False)
     idempotency_key = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-    amount = models.IntegerField()
-    created_at = models.DateTimeField(auto_now_add=True)
+    amount = models.IntegerField(default=0)
+    created_at = models.DateTimeField(default=timezone.now)
     status = models.CharField(max_length=20, default='pending')
 
     def __str__(self):
