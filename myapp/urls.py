@@ -23,7 +23,6 @@ urlpatterns = [
     path('googleCalendar/', views.googleCalendar, name='googleCalendar'),
 
     # Checkout & Orders
-    path('start-checkout/', views.start_checkout, name='start_checkout'),
     path('checkout/', views.checkout, name='checkout'),
     path('checkout/store_data', views.store_order_data, name='store_order_data'),
     path('checkout/payment/', views.paymentPortal, name='payment'),

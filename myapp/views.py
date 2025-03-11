@@ -24,6 +24,9 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
 from django.utils import timezone
 from datetime import timedelta
+from .decorator import authenticated_user
+from .decorator import checkout_required
+from .decorator import payment_required
 
 
 
@@ -255,6 +258,8 @@ def create_order(request):
     print("checkout successful")
     return render(request, 'payment.html')
 
+@authenticated_user
+@payment_required
 def orderSummary(request):
     send_order_email(request)
     if request.user.is_authenticated:
@@ -272,8 +277,11 @@ def productDetails(request,pk):
     product = Product.objects.get(id=pk)
     return render(request, 'productDetails.html', {'product': product})
 
-
+@authenticated_user
+@checkout_required
 def paymentPortal(request):
+    request.session['from_checkout'] = True
+    
     square_app_id = 'sandbox-sq0idb-8IPgsCCDGo1xxuoCMh0SSQ'
     square_location_id = 'LNG128XEAPR21'
 
@@ -389,76 +397,11 @@ def process_payment(request):
         except Exception as e:
             return JsonResponse({"status": "error", "message": str(e)})
     return JsonResponse({"status": "error", "message": "Invalid request method"})
-    
-def token_required(view_func):
-    def wrap(request, *args, **kwargs):
-        token = request.session.get('checkout_token')
-        token_expiry_str = request.session.get('checkout_token_expiry')
 
-        # Check if token or expiry date is not set
-        if not token or not token_expiry_str:
-            messages.error(request, "You are not logged in. Please log in to continue.")
-            return redirect('home')  # Redirect to home page if not logged in
-
-        try:
-            # Convert token expiry string to datetime
-            token_expiry = timezone.datetime.fromisoformat(token_expiry_str)
-
-            if token_expiry.tzinfo is None:
-                token_expiry = timezone.make_aware(token_expiry, timezone.get_current_timezone())
-
-        except ValueError:
-            messages.error(request, "Session token is invalid or expired. Please log in again.")
-            return redirect('home')  # Redirect to home page if the expiry time is invalid
-
-        # If the session token has expired
-        if timezone.now() > token_expiry:
-            messages.error(request, "Session expired. Please log in again.")
-            return redirect('home')  # Redirect to home page if session has expired
-
-        return view_func(request, *args, **kwargs)
-
-    return wrap
-
-# Start checkout view
-@login_required(login_url='home')  # If not logged in redirect to home page
-def start_checkout(request):
-    # Generate a new checkout token if not already in session
-    if 'checkout_token' not in request.session:
-        token = str(uuid.uuid4())  # Generate new token
-        checkout_token_expiry = timezone.now() + timedelta(minutes=60)  # Expiry in 60 minutes
-
-        # Store token and expiry time in session
-        request.session['checkout_token'] = token
-        request.session['checkout_token_expiry'] = checkout_token_expiry.isoformat()
-
-    return redirect('checkout')
-
-# Checkout view 
-@login_required(login_url='home')  # If not logged in redirect to home page
-@token_required  # Ensure the token is valid 
+@authenticated_user
 def checkout(request):
-    token = request.session.get('checkout_token')
-    token_expiry_str = request.session.get('checkout_token_expiry')
-    
-    if not token or not token_expiry_str:
-        messages.error(request, "Session expired. Please log in again.")
-        return redirect('home')  # Redirect to home page if token doesn't exist or expired
-
-    token_expiry = timezone.datetime.fromisoformat(token_expiry_str)
-
-    if token_expiry.tzinfo is None:
-        token_expiry = timezone.make_aware(token_expiry, timezone.get_current_timezone())
-
-    # If the session token has expired
-    if timezone.now() > token_expiry:
-        messages.error(request, "Session expired. Please log in again.")
-        del request.session['checkout_token']
-        del request.session['checkout_token_expiry']
-        return redirect('home')  # Redirect to home page if session has expired
-
-    # Render the checkout page with the token in context
-    return render(request, 'checkout.html', {'checkout_token': token})
+    request.session['from_checkout'] = True
+    return render(request, 'checkout.html', {}) 
 
 #login request
 def login_user(request):

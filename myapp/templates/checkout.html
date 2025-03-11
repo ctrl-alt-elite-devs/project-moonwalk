@@ -7,7 +7,6 @@
 </head>
 {% block content %}
 <div class="checkout-page">
-    {% if checkout_token %}
     <div id="cart-summary-column">
         {% include 'cartSummary.html' %}
     </div>
@@ -133,9 +132,6 @@
             <input type="submit" value="Proceed to Payment" class="payment-checkout-button">
         </form>
     </div>
-    {% else %}
-        <p>Your session has expired. Please <a href="{% url 'login' %}">log in</a> again.</p>
-    {% endif %}
 </div>
 
 
