@@ -18,6 +18,17 @@ from square.client import Client
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib import messages
+from django.utils import timezone
+from datetime import timedelta
+from .decorator import authenticated_user
+from .decorator import checkout_required
+from .decorator import payment_required
+
+
 
 from django import template
 
@@ -247,6 +258,8 @@ def create_order(request):
     print("checkout successful")
     return render(request, 'payment.html')
 
+@authenticated_user
+@payment_required
 def orderSummary(request):
     send_order_email(request)
     if request.user.is_authenticated:
@@ -264,8 +277,11 @@ def productDetails(request,pk):
     product = Product.objects.get(id=pk)
     return render(request, 'productDetails.html', {'product': product})
 
-
+@authenticated_user
+@checkout_required
 def paymentPortal(request):
+    request.session['from_checkout'] = True
+    
     square_app_id = 'sandbox-sq0idb-8IPgsCCDGo1xxuoCMh0SSQ'
     square_location_id = 'LNG128XEAPR21'
 
@@ -335,6 +351,8 @@ def create_square_order(cart_items):
 
 def process_payment(request):
     if request.method == 'POST':
+        if not request.session.session_key:
+                request.session.create()
         #get cart_items
         if request.user.is_authenticated:
             cart_items = Cart.objects.filter(customer=request.user.customer)
@@ -380,6 +398,11 @@ def process_payment(request):
             return JsonResponse({"status": "error", "message": str(e)})
     return JsonResponse({"status": "error", "message": "Invalid request method"})
 
+@authenticated_user
+def checkout(request):
+    request.session['from_checkout'] = True
+    return render(request, 'checkout.html', {}) 
+
 #login request
 def login_user(request):
     if request.method == "POST":
@@ -394,7 +417,7 @@ def login_user(request):
             messages.success(request, ("ERROR TRY AGAIN"))
             return redirect('home')
     else:
-        return render(request, 'login.html', {})
+        return render(request, 'login.html', {})   
 #logout request
 def logout_user(request):
     logout(request)
@@ -454,7 +477,7 @@ def submit_address(request):
         return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
 
     try:
-        data = json.loads(request.body)
+        '''data = json.loads(request.body)
         print(f"Received data: {data}")
 
         address_from = components.AddressCreateRequest(
@@ -533,7 +556,7 @@ def submit_address(request):
             return JsonResponse({
                 'status': 'error',
                 'message': error_message
-            }, status=400)
+            }, status=400)'''
 
     except json.JSONDecodeError:
         return JsonResponse({'status': 'error', 'message': 'Invalid JSON format'}, status=400)
@@ -650,3 +673,4 @@ def profile(request):
         }
 
     return render(request, "profile.html", {"user": user_data})
+

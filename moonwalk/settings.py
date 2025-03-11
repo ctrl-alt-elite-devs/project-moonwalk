@@ -156,6 +156,7 @@ MEDIA_URL = f'{AWS_S3_ENDPOINT_URL}/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+SESSION_COOKIE_AGE = 1800
 
 #CSRF cookies
 CSRF_COOKIE_SECURE = False

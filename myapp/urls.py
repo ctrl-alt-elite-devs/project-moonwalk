@@ -45,5 +45,4 @@ urlpatterns = [
 
     # User Profile
     path('profile/', views.profile, name='profile')
-
 ]
