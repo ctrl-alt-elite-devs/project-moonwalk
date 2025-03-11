@@ -23,14 +23,18 @@ body {
 }
 
 .editor {
+    z-index: 10;
     width: 25%;
     display: flex;
     flex-direction: column;
     padding-left: 2rem;
+    bottom: 10px;
+    position: fixed;
+    background-color: rgba(255, 0, 208, 0.381);
 }
 
 .demo {
-    width: 75%;
+    width: 100%;
 }
 
 .demo#img_banner{
