@@ -22,8 +22,23 @@ class Customer(models.Model):
     password = models.CharField(max_length=100)
 
     def __str__(self):
-        return f'{self.first_name} {self.last_name}'
+        return self.user.username
+
+    def create_customer(sender, instance, created, **kwargs):
+        if created:
+            user_customer = Customer(user=instance)
+            user_customer.save()
     
+    #post_save.connect(create_customer, sender=User)
+    
+
+class Subscriber(models.Model):
+    email = models.EmailField(unique=True)
+    date_subscribed = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.email
+
 
 class Product(models.Model):
     name = models.CharField(max_length=100)
