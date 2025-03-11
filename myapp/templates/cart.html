@@ -115,9 +115,7 @@
                         headers: {
                             'X-CSRFToken': '{{ csrf_token }}', // Include CSRF token
                         },
-                        success: function (response) {
-                            alert(response.message); // Show success message
-
+                        success: function () {
                             // Reload the page to ensure total price and UI updates
                             location.reload();
                         },
@@ -144,14 +142,17 @@
      {% endif %}
             <!-- Checkout Button -->
         <div class="checkout">
-            <a href="{% url 'checkout' %}"><button>CHECKOUT</button></a>
+            <div>
+                <button class="checkout-button" onclick="window.location.href = {% url 'checkout' %}">CHECKOUT</button>
+            </div>
 
-        </div>
             <!-- Digital Payment Options -->
-        <div class="digitalPayment">
-            <div id="google-pay-button"></div>
-            <div id="apple-pay"></div>
+            <div class="digitalPayment">
+                <div id="google-pay-button"></div>
+                <div id="apple-pay"></div>
+            </div>
         </div>
+
 </div>
 
     </div>

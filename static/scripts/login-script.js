@@ -52,17 +52,20 @@ openForgot.forEach(function(button) {
 closeLogin.onclick = function() {
   loginModal.style.display = "none";
 }
+
 // Close signup modal when clicking the close button
 closeSignup.onclick = function() {
   signupModal.style.display = "none";
 }
-// Close login modal when clicking the close button
-closeForgot.onclick = function() {
-  forgotModal.style.display = "none";
-}
+
 // Close signup modal when clicking the close button
 closeTerms.onclick = function() {
   termsModal.style.display = "none";
+}
+
+// Close login modal when clicking the close button
+closeForgot.onclick = function() {
+  forgotModal.style.display = "none";
 }
 
 // Close any modal when clicking outside of it

@@ -23,17 +23,23 @@
     <link rel="stylesheet" href="{% static 'css/footer.css' %}">
     <link rel="stylesheet" href="{% static 'css/login.css' %}">
     <link rel="stylesheet" href="{% static 'css/eventstyles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/cart.css' %}">
     <link rel="stylesheet" href="{% static 'css/checkout.css' %}">
     <link rel="stylesheet" href="{% static 'css/productDetails.css' %}">
     <link rel="stylesheet" href="{% static 'css/about.css' %}">
     <link rel="stylesheet" href="{% static 'css/contact.css' %}">
     <link rel="stylesheet" href="{% static 'css/payment.css' %}">
     <link rel="stylesheet" href="{% static 'css/order-summary.css' %}">
-    <link rel="stylesheet" href="{% static 'css/subscribe.css' %}">
+
     <script src="https://kit.fontawesome.com/34f0afb215.js" crossorigin="anonymous"></script>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Edu+AU+VIC+WA+NT+Dots:wght@400..700&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
-
+    
 </head>
+
+        <!-- Notification Message -->
+        <div id="cart-notification" class="cart-notification">
+            ✅ Item added to cart!
+        </div>
 <body>
     <header>
         <div class="brand-header">
@@ -56,6 +62,7 @@
                 <i class="fa-solid fa-cart-shopping"></i>
                 <span class="cart-count">{% if cart_item_count > 0 %}{{ cart_item_count }}{% else %}0{% endif %}</span>
             </a>
+
         
             <!-- Mini Cart Dropdown -->
             <div class="cart-dropdown" id="cart-dropdown">
@@ -80,8 +87,11 @@
             </div>
             
         </div>
+
+
         
         <div class="profile_btn open_login">
+            <a href="{% url 'profile' %}"></a>
             <i class="fa-solid fa-user"></i>
         </div>
 
@@ -167,7 +177,6 @@
             <span class="login-x signup-close">&times;</span>
             <form id="signup-form" method="POST" action="{% url 'register' %}">
                 {% csrf_token %}
-
                 <label for="signup-email">Email</label>
                 <input type="email" id="signup-email" name="email" required>
 
@@ -201,9 +210,9 @@
             </div>
     </div>
 
-    <!-- The Forgot Password Popup -->
-    <div id="forgot-modal" class="login-modal">
-            
+     <!-- The Forgot Password Popup -->
+     <div id="forgot-modal" class="login-modal">
+             
         <div class="login-content">
             <span class="login-x forgot-close">&times;</span>
             <form id="forgot-form" >
@@ -254,32 +263,8 @@
         </div>
     </div>
 
-    <script>
-        $(document).ready(function(){
-            $('#login-button').on('click', function(){
-                $.ajax({
-                    url: "{% url 'listLocations' %}",
-                    method: "GET",
-                    success: function(response) {
-                        if (response.status === "success") {
-                            $('#locations-list').empty();
-                            response.locations.forEach(function(location) {
-                                $('locations-list').append("<li>${location.name} - ${location.id}</li>")
-                            });
-                        } else {
-                            alert("Error fetching locations: " + response.message);
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        alert("An error occurred: " + error);
-                    }
-                });
-            });
-        });
-    </script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="{% static 'scripts/login-script.js' %}"></script>
-
 
     {% if messages %}
         {% for message in messages %}
@@ -301,10 +286,9 @@
 
         <div class="subscribe-section">
             <div class="subscribe-subsection">
-                <input class="subscribeInput" type="email" id="emailAddress" placeholder="Your email address" autocomplete="email">
-                <button class="subscribeButton" type="button" id="subscribeButton">SUBSCRIBE</button>
+                <input class="subscribeInput" type="text" id="emailAddress" placeholder="Your email address" autocomplete="email">
+                <button class="subscribeButton" type="button">SUBSCRIBE</button>
             </div>
-        </div>
 
             <div class="subscribe-subsection">
                 <input class="subscribeInput" type="text" id="phoneNum" placeholder="Your phone number">
@@ -312,18 +296,11 @@
             </div>
         </div>
 
-
         <div class="instaIcon">
         <a href="https://www.instagram.com/moonwalkthreads/?hl=en">
             <i class="fa-brands fa-instagram fa-2xl"></i>
         </a>
         </div>
-
-        <ul>
-            {% for location in locations %}
-                <li>{{location.name}} - {{location.id}}</li>
-            {% endfor %}
-        </ul>
 
         <hr id="footerLine">
         <div class="littleThings">
@@ -346,16 +323,6 @@
             dropDownMenu.classList.toggle('open')
         }
     </script>
-
-<!-- Subscription Confirmation Modal -->
-<div id="subscription-modal" class="modal-overlay">
-    <div class="modal-content">
-        <p id="modal-message">✅ Thank you! A confirmation email has been sent.</p>
-        <button id="close-modal">OK</button>
-    </div>
-</div>
-
-<script src="{% static 'scripts/subscribe.js' %}" defer></script>
 
 </body>
 </html>
