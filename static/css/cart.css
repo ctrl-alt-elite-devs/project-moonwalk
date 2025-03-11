@@ -33,8 +33,6 @@ body {
     font-weight: bold;
     margin-bottom: .66rem;
     color: white;
-    -webkit-text-stroke-color: black;
-    -webkit-text-stroke-width: 0.9px;
 }
 
 .countdown-timer {
@@ -104,12 +102,15 @@ body {
     color: white;
 }
 
-.remove-item button {
+.remove-item button{
     background-color: transparent;
     border: none;
-    font-size: 20px;
     color: white;
     cursor: pointer;
+    display: flex;
+    justify-content: center; /* Move to the right */
+    align-items: center; /* Align vertically */
+    width: 2.8125rem;
 }
 
 /* Total Section */
@@ -142,14 +143,17 @@ body {
     background-color: #F46471;
     padding: 0.625rem;
 
-    align-items: center;
+    display: grid;
+    align-content: center;
+    justify-content: center;
 }
 
-.checkout button {
+.checkout-button {
     background-color:#F46471;
     color: white;
     border: .125rem solid #d6334a;
     padding: .625rem 1.875rem;
+    margin: 0.625rem;
     font-size: 1rem;
     cursor: pointer;
     border-radius: .3125rem;
@@ -157,10 +161,18 @@ body {
 
     min-width: 240px;
     min-height: 40px;
+
+    justify-self: center;
+}
+
+.checkout-button:hover {
+    background-color: white;
+    color: #F46471;
 }
 
 .digitalPayment {
     background-color: #F46471;
+    margin: 0;
     display: flex;
     justify-content: center;
 }

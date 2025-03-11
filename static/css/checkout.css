@@ -16,6 +16,7 @@
     height: 40px;
     display: flex;
     max-width: 100%;
+    padding: 0;
 }
 
 
@@ -23,12 +24,12 @@
     background-color: transparent;
     color: black;
     width: 100%;
-    height: 40px;
-    padding: 0px;
+    height: 100%;
+    padding: 0;
     border-radius: 5px;
     font-size: 14px;
+    border: 0;
 }
-
 
 .delivery-selection button:hover{
     background-color: #F46471;
@@ -62,7 +63,7 @@
 }
 
 
-.deliver-home select, .deliver-home input {
+.deliver-home select, .deliver-home input, .contact-information input{
     padding: 10px;
     font-size: 16px;
     width: 100%;
@@ -73,8 +74,50 @@
     margin-bottom: 10px;
 }
 
+.deliver-home select{
+    padding: 10px;
+    font-size: 16px;
+    width: 100%;
+    height: 40px;
+    background-color: white;
+    color: gray;
+    border: solid 1px grey;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
 
-.deliver-home button, .store-pickup button {
+.deliver-home input:focus, .contact-information input:focus {
+    outline: solid 2px #F46471;
+    box-shadow: 0 0 5px #F46471;
+    border-color: grey;
+}
+
+.deliver-home .typeAddress{
+    padding: 10px;
+    font-size: 16px;
+    width: 100%;
+    height: 40px;
+    background-color: transparent;
+    color: black;
+    border: none;
+    border-bottom: solid 2px grey;
+    margin-bottom: 10px;
+    border-radius: 0;
+}
+
+.deliver-home .typeAddress:focus {
+    outline: none;
+    box-shadow: none;
+    border-color: grey;
+    border-bottom: 2px solid #F46471;
+}
+
+.contact-information {
+    padding: 20px;
+}
+
+
+/*.deliver-home button, .store-pickup button {
     background-color: #F46471;
     color: black;
     width: 100%;
@@ -86,13 +129,16 @@
 
 .deliver-home button:hover, .store-pickup button:hover {
     color: white;
-}
-
+} */
 
 
 
 .delivery-selection .tablinks.active, .store-pickup .tablinks.active {
     background-color: #F46471;
+}
+
+.error {
+    color: black;
 }
 
 /* payment button and card input */
@@ -104,6 +150,25 @@
 #payButtonContainer {
     display: flex;
     justify-content: center;
+}
+
+.payment-checkout-button {
+    border: 1px solid black;
+    border-radius: 10px;
+    background-color: transparent;
+    color: black;
+    padding: 10px;
+
+    width: 690px;
+    max-width: 100%;
+
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.payment-checkout-button:hover {
+    background-color: #F46471;
+    color: white;
 }
 
 #pay-checkout {
@@ -132,4 +197,46 @@
 
 #pay-checkout:active {
     background-color: #F46471;
+}
+
+.checkout-page {
+    margin: 10px;
+    display: flex;
+
+}
+
+#cart-summary-column {
+    min-width: 49%;
+    margin: 10px;
+
+}
+
+#checkout-column {
+    min-width: 49%;
+    margin: 10px;
+    text-align: center;
+    align-content: center;
+    justify-content: center;
+}
+
+@media screen and (max-width: 768px) {
+    .checkout-page {
+        margin: 10px;
+        display: inline;
+
+        align-content: center;
+        justify-content: center;
+    }
+
+    #cart-summary-column {
+        text-align: center;
+        align-content: center;
+        justify-content: center;
+    }
+
+    #checkout-column {
+        text-align: center;
+        align-content: center;
+        justify-content: center;
+    }
 }

@@ -8,13 +8,16 @@
     {% csrf_token %}
 </head>
 {% block content %}
-<div class="payment_page">
+<div class="payment-page">
+    <div id="order-column-payment-page">
+        {% include 'cartSummary.html' %}
+    </div>
     <div id="payment-column">
         <div id="pay-header-container">
             <h1 id="pay-header">Payment</h1>
         </div>
         <div id="paymentWrapper">
-            <div class="digitalPayment">
+            <div class="digital-payment-container">
                 <div id="google-pay-button"></div>
                 <!--<div id="apple-pay"></div>      Implement once site is deployed. otherwise, messes with styling and functionality-->
             </div>
@@ -25,9 +28,17 @@
             <button id="pay" type="button">Pay</button>
         </div>
     </div>
-    <div id-="payment-page-order-summary">
-    </div>
+
 </div>
+
+<!-- For testing Shippo API purposes-->
+<!--{% if label_url %}
+    <p>Your shipping label is ready! <a href="{{ label_url }}" target="_blank">View Label</a></p>
+    <p>You can track your shipment here: <a href="{{ tracking_url }}" target="_blank">Track Shipment</a></p>
+    <p>To view your shipment in Shippo, click here: <a href="{{ shippo_url }}" target="_blank">View in Shippo Portal</a></p>
+{% else %}
+    <p>There was an error creating the shipping label.</p>
+{% endif %}-->
 
 <!-- credit card payment script -->
 <script>
@@ -55,19 +66,19 @@
                         headers: {
                             'X-CSRFToken': '{{ csrf_token }}'
                         },
-                        body: JSON.stringify({ token: result})
+                        body: JSON.stringify({token: result.token})
                     })
                         .then(response => response.json())
                         .then(data => {
                             if (data.status === 'success') {
                                 alert("Payment successful");
+                                document.location.href = "{% url 'orderSummary' %}"
                             } else {
                                 alert("Payment failed");
                             }
                         })
                         .catch(error => console.error('Error:', error));
                 }
-                alert(JSON.stringify(result, null, 2));
             })
         } catch (e) {
             console.error(e);
