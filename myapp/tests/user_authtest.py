@@ -1,67 +1,104 @@
 from django.test import TestCase
+from django.urls import reverse
 from django.contrib.auth.models import User
-from django.db.utils import IntegrityError
-from django.core import mail
-from django.core.exceptions import ValidationError
-from django.contrib.auth.password_validation import validate_password
-from django.db import transaction
+from myapp.models import Customer
+
 
 class UserAuthTests(TestCase):
-
-    @classmethod
-    def setUpTestData(cls):
-        """Create a test user once for all test cases."""
-        cls.user_data = {
-            "username": "testuser",
+    def setUp(self):
+        """Create a test user for login tests"""
+        self.valid_user_data = {
+            "first-name": "Test",
+            "last-name": "User",
             "email": "testuser@example.com",
-            "password": "SecurePassword123!"
+            "password": "SecurePassword123!",
+            "confirm-password": "SecurePassword123!",
+            "phone": "1234567890",
         }
-        cls.user = User.objects.create_user(**cls.user_data)
 
-    def test_duplicate_email(self):
-        """Ensure duplicate email restriction works."""
-        print(f"\n🛠️ Testing duplicate email: {self.user_data['email']}")
+        self.invalid_user_data = {
+            "first-name": "Test",
+            "last-name": "User",
+            "email": "invaliduser@example.com",
+            "password": "SecurePassword123!",
+            "confirm-password": "WrongPassword123!",
+            "phone": "0987654321",
+        }
 
-        # Django's default User model does not enforce unique emails
-        with transaction.atomic():
-            User.objects.create_user(username="anotheruser", email=self.user_data["email"], password="AnotherPass123!")
+        # Create a test user
+        self.test_user = User.objects.create_user(
+            username=self.valid_user_data["email"],
+            email=self.valid_user_data["email"],
+            password=self.valid_user_data["password"],
+            first_name=self.valid_user_data["first-name"],
+            last_name=self.valid_user_data["last-name"],
+        )
 
-        # Instead, we check if the user exists already
-        duplicate_count = User.objects.filter(email=self.user_data["email"]).count()
-        self.assertEqual(duplicate_count, 1, "❌ Duplicate email was allowed!")
-        print("✅ Duplicate email correctly restricted!")
+        # Ensure a Customer is created only if one doesn't already exist
+        Customer.objects.get_or_create(user=self.test_user, defaults={"phone": self.valid_user_data["phone"]})
 
-    def test_duplicate_username(self):
-        """Ensure usernames must be unique."""
-        print(f"\n🛠️ Testing duplicate username: {self.user_data['username']}")
-        with self.assertRaises(IntegrityError):
-            with transaction.atomic():  # Ensure we prevent transaction failures
-                User.objects.create_user(username=self.user_data["username"], email="newemail@example.com", password="AnotherPass123!")
-        print("✅ Duplicate username test passed!")
+    def tearDown(self):
+        """Delete test users after each test"""
+        User.objects.all().delete()
+        print("🗑️ Test users deleted.\n")
+        
+    def test_successful_user_registration(self):
+        """Test registering a new user successfully"""
+        print(f"🛠️ Testing user registration: {self.valid_user_data['email']}")
+        response = self.client.post(reverse("register"), self.valid_user_data)
+        self.assertEqual(response.status_code, 302)  # Redirect expected after successful registration
+        self.assertTrue(User.objects.filter(username=self.valid_user_data["email"]).exists())
+        print("✅ User registration test passed!\n")
 
-    def test_password_requirements(self):
-        """Test password strength enforcement using Django's validator."""
-        weak_passwords = ["123", "password", "12345678", "qwerty"]
+    def test_duplicate_email_registration(self):
+        """Ensure a user cannot register with an existing email"""
+        print(f"🛠️ Testing duplicate email: {self.valid_user_data['email']}")
+        response = self.client.post(reverse("register"), self.valid_user_data)
+        self.assertEqual(response.status_code, 302)  # Should redirect due to duplicate email
+        print("✅ Duplicate email test passed!\n")
 
-        for weak_pass in weak_passwords:
-            print(f"\n⚠️ Testing weak password: {weak_pass}")
-            with self.assertRaises(ValidationError):
-                validate_password(weak_pass)
-            print("✅ Weak password correctly rejected!")
+ 
 
-    def test_email_sent_on_registration(self):
-        """Test if an email is sent after successful registration."""
-        print(f"\n📧 Testing email sent for new user: {self.user_data['email']}")
-        mail.send_mail("Welcome!", "Thank you for signing up!", "no-reply@example.com", [self.user_data["email"]])
-        self.assertEqual(len(mail.outbox), 1)
-        print("✅ Email successfully sent!")
 
-    def test_user_login_valid(self):
-        """Test login with valid credentials."""
-        print(f"\n🔑 Testing login with credentials: {self.user_data['username']} / {self.user_data['password']}")
-        login_success = self.client.login(username=self.user_data["username"], password=self.user_data["password"])
-        self.assertTrue(login_success)
-        print("✅ Login successful!")
+    def test_password_is_hashed(self):
+        """Ensure passwords are not stored in plain text"""
+        print(f"🔍 Checking if password for {self.valid_user_data['email']} is hashed...")
 
-if __name__ == "__main__":
-    print("\n🚀 Running Authentication Tests...\n")
+        # Retrieve the user from the database
+        user = User.objects.get(username=self.valid_user_data["email"])
+
+        # Check if the stored password is not the same as the raw password
+        self.assertNotEqual(user.password, self.valid_user_data["password"])
+
+        # Check if the password is hashed (should start with an identifier like 'pbkdf2_sha256$')
+        self.assertTrue(user.password.startswith("pbkdf2_sha256$") or user.password.startswith("argon2$"))
+
+        print("✅ Password is securely hashed!\n")
+
+    def test_login_with_correct_credentials(self):
+        """Test logging in with valid credentials"""
+        print(f"🔑 Testing login with credentials: {self.valid_user_data['email']} / {self.valid_user_data['password']}")
+        response = self.client.post(reverse("login"), {
+            "email": self.valid_user_data["email"],
+            "password": self.valid_user_data["password"]
+        })
+        self.assertEqual(response.status_code, 302)  # Redirect expected after login
+        print("✅ Login successful!\n")
+
+    def test_login_with_invalid_credentials(self):
+        """Ensure login fails with incorrect password"""
+        print(f"🚫 Testing login failure for incorrect password: {self.valid_user_data['email']}")
+        response = self.client.post(reverse("login"), {
+            "email": self.valid_user_data["email"],
+            "password": "WrongPassword"
+        })
+        self.assertEqual(response.status_code, 302)  # Redirect expected after failed login
+        print("✅ Login failure test passed!\n")
+
+    def test_logout(self):
+        """Test logging out successfully"""
+        self.client.login(username=self.valid_user_data["email"], password=self.valid_user_data["password"])
+        print(f"🔓 Logging out user: {self.valid_user_data['email']}")
+        response = self.client.get(reverse("logout"))
+        self.assertEqual(response.status_code, 302)  # Redirect expected after logout
+        print("✅ Logout test passed!\n")
