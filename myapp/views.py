@@ -651,13 +651,14 @@ def send_order_email(request):
             return JsonResponse({"success": False, "message": "Invalid data format."}, status=400)
 
     return JsonResponse({"success": False, "message": "Invalid request."}, status=405)
+
 def profile(request):
     # Check if a user is logged in
     if request.user.is_authenticated:
         user_data = {
             "email": request.user.email,
             "password": "********",  # Hidden for security
-            "address": request.user.customer.address if hasattr(request.user, "customer") else "No address available",
+            "address": request.user.customer.street_address if hasattr(request.user, "customer") else "No address available",
             "orders": [],  # Placeholder for future order retrieval
         }
     else:
