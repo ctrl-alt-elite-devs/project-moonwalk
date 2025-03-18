@@ -127,7 +127,7 @@ body {
     margin: auto;
     display: flex;
     justify-content: space-between;
-    background-color: #F46471;
+    background-color: var(--background_color);
     font-family: 'Cobito', monospace;
     align-items: center;
     position: relative;
