@@ -67,6 +67,10 @@ def about(request):
 def contact(request):
     return render(request, 'contact.html')
 
+# Adding the view for the adminstylechanges html
+def adminCSS(request):
+    return render(request, 'adminCSS.html')
+
 def cart(request):
     #mock items
         # Current date is hard coded
