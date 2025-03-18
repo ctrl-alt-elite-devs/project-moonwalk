@@ -1,23 +1,28 @@
-from .models import Cart
+from myapp.models import Cart
+
 
 def cart_context(request):
     cart_items = []
     cart_item_count = 0
     total_price = 0
 
+    if request.path.startswith("/admin/"):
+        return {}  # ✅ Prevent errors in Django Admin
+
     if request.user.is_authenticated:
-        cart_items = Cart.objects.filter(customer=request.user.customer)
+        customer = getattr(request.user, "customer", None)  # ✅ Use customer instead of user
+        if customer:
+            cart_items = Cart.objects.filter(customer=customer)
     else:
         session_key = request.session.session_key
         if session_key:
             cart_items = Cart.objects.filter(session_key=session_key)
 
-    # Update cart item count and total price
-    cart_item_count = len(cart_items)  # Count the items directly
+    cart_item_count = len(cart_items)
     total_price = sum(item.product.price for item in cart_items)
 
     return {
-        'cart_items': cart_items,
-        'cart_item_count': cart_item_count,
-        'total_price': total_price,
+        "cart_items": cart_items,
+        "cart_item_count": cart_item_count,
+        "total_price": total_price,
     }

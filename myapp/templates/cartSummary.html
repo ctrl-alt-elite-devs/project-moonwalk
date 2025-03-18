@@ -51,10 +51,10 @@
         {% if cart_items %}
         <div class="total-section">
             <p>Items: ${{ total_price|floatformat:2 }}</p>
-            <p>Shipping & Taxes Calculated at Checkout</p>
+            <p>Tax: ${{ tax_amount|floatformat:2 }}</p>
             <!-- Custom divider -->
             <div class="divider"></div>
-            <p>Total: ${{ total_price|floatformat:2 }}</p>
+            <p>Total: ${{ tax_total|floatformat:2 }}</p>
         </div>
         {% endif %}
     </div>

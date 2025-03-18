@@ -63,7 +63,7 @@
 }
 
 
-.deliver-home input {
+.deliver-home select, .deliver-home input, .contact-information input{
     padding: 10px;
     font-size: 16px;
     width: 100%;
@@ -86,10 +86,10 @@
     margin-bottom: 10px;
 }
 
-.deliver-home input:focus {
+.deliver-home input:focus, .contact-information input:focus {
     outline: solid 2px #F46471;
     box-shadow: 0 0 5px #F46471;
-    border-color: grey; 
+    border-color: grey;
 }
 
 .deliver-home .typeAddress{
@@ -112,8 +112,12 @@
     border-bottom: 2px solid #F46471;
 }
 
+.contact-information {
+    padding: 20px;
+}
 
-.deliver-home button, .store-pickup button {
+
+/*.deliver-home button, .store-pickup button {
     background-color: #F46471;
     color: black;
     width: 100%;
@@ -125,8 +129,7 @@
 
 .deliver-home button:hover, .store-pickup button:hover {
     color: white;
-}
-
+} */
 
 
 
@@ -147,6 +150,25 @@
 #payButtonContainer {
     display: flex;
     justify-content: center;
+}
+
+.payment-checkout-button {
+    border: 1px solid black;
+    border-radius: 10px;
+    background-color: transparent;
+    color: black;
+    padding: 10px;
+
+    width: 690px;
+    max-width: 100%;
+
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.payment-checkout-button:hover {
+    background-color: #F46471;
+    color: white;
 }
 
 #pay-checkout {
