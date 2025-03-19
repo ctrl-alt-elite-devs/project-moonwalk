@@ -153,13 +153,13 @@
 
             <label for="password">Password</label>
             <input type="password" id="password" name="password" required>
-    
+
             <button type="submit" class="login-btn" >Log In</button>
 
             <ul id="locations-list"></ul>
             
             <div class="forgot-create-container">
-                <a href="#" class="forgot-password open_forgot">Forgot Password</a>
+                <a href="{% url 'password_reset' %}" class="forgot-password">Forgot Password?</a>
                 <a href="#" class="create-account open_signup">Create Account</a>
             </div>
 
