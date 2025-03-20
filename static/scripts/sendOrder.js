@@ -5,6 +5,13 @@ document.addEventListener("DOMContentLoaded", function () {
         payButton.addEventListener("click", async function (event) {
             event.preventDefault();
 
+            let firstName = localStorage.getItem("firstName");
+            let email = localStorage.getItem("email");
+            let deliveryMethod = localStorage.getItem("deliveryMethod");
+            let cartItems = JSON.parse(localStorage.getItem("cartItems"));
+            let totalPrice = Number(localStorage.getItem("totalPrice"));
+            let addressDetails = localStorage.getItem("address");
+
             console.log("🛒 Payment initiated... Waiting for confirmation.");
 
             // Wait for payment to process first
@@ -19,9 +26,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 },
                 body: JSON.stringify({
                     first_name: firstName,
-                    email: email,
+                    customer_email: email,
                     delivery_method: deliveryMethod,
-                    cart_items: cartItems,
+                    order_items: cartItems,
                     total_price: totalPrice,
                     address: addressDetails,
                 }),

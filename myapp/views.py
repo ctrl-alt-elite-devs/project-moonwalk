@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 import datetime
 from django.contrib import messages
-from .models import Cart, Customer, Product, Category
+from .models import Cart, Customer, Product, Category, Subscriber
 from .square_service import client
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -394,7 +394,7 @@ def process_payment(request):
 
         if payment_result.is_success():
             # ✅ Payment Successful, Send Confirmation Email
-            send_order_email(
+            '''/*send_order_email(
                 email=customer_email,
                 first_name=user_first_name,
                 order_items=[{
@@ -405,7 +405,7 @@ def process_payment(request):
                 total_price=total_amount / 100,  # Convert cents to dollars
                 delivery_method=delivery_method,
                 address_details=data.get("address", {}) if delivery_method == "delivery" else {}
-            )
+            )'''
 
             # 🛒 Clear the cart after successful payment
             cart_queryset.delete()
@@ -627,8 +627,18 @@ def subscribe(request):
 
     return JsonResponse({"success": False, "message": "Invalid request."}, status=405)
 
-def send_order_email(customer_email, user_first_name, order_items, total_price, delivery_method, address_info=None):
+def send_order_email(request):
+    #used to have these parameters: customer_email, user_first_name, order_items, _total_price, delivery_method, address_info
     """Send order confirmation email with tax and delivery method adjustments."""
+
+    data = json.loads(request.body)
+
+    user_first_name = data.get("user_first_name")
+    customer_email = data.get("customer_email")
+    order_items = data.get("order_items")
+    delivery_method = data.get("delivery_method")
+    address_info = data.get("address_info")
+    total_price = data.get("total_price")
 
     # 🏷️ **Tax Calculation (7.25%)**
     tax_amount = round(total_price * 0.0725, 2)
@@ -656,6 +666,8 @@ def send_order_email(customer_email, user_first_name, order_items, total_price, 
     email_message = EmailMultiAlternatives(subject, text_content, from_email, recipient_list)
     email_message.attach_alternative(html_content, "text/html")
     email_message.send()
+
+    return HttpResponse("success", 200)
     
 def generate_test_tracking():
     """Generate a fake Shippo test tracking number, tracking URL, and label URL."""

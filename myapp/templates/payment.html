@@ -72,6 +72,7 @@
             const payButton = document.getElementById('pay');
             payButton.addEventListener('click', async () => {
                 const result = await card.tokenize();
+                console.log("result: " + result);
                 if (result.status !== "OK") {
                     alert("⚠️ Payment failed. Please try again.");
                     return;
