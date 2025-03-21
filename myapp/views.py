@@ -20,9 +20,11 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm
+from django.views.generic.edit import FormView
 from django.contrib import messages
 from django.utils import timezone
+from django.conf import settings
 from datetime import timedelta
 from .decorator import authenticated_user
 from .decorator import checkout_required
@@ -468,6 +470,18 @@ def register_user(request):
 
     return redirect('home')
 
+class password_reset(FormView):
+    form_class = PasswordResetForm  # Built-in Django form
+
+    def form_valid(self, form):
+        form.save(
+            use_https=self.request.is_secure(),
+            request=self.request,
+            email_template_name="registration/password_reset_email.txt",       # plain text fallback
+            html_email_template_name="registration/password_reset_email.html", 
+        )
+        return JsonResponse({"success": True}) # Return JSON response to be checked in login-script
+
 #shippo to create label (accept user address input)
 
 shippo_sdk = shippo.Shippo(api_key_header="shippo_test_f3cb884569acedbe9a0860114d181ec57bed5277")
@@ -652,6 +666,7 @@ def send_order_email(request):
 
     return JsonResponse({"success": False, "message": "Invalid request."}, status=405)
 
+@login_required
 def profile(request):
     # Check if a user is logged in
     if request.user.is_authenticated:
@@ -673,5 +688,5 @@ def profile(request):
             ],
         }
 
-    return render(request, "profile.html", {"user": user_data})
+    return render(request, "profile.html", {"user_data": user_data})
 

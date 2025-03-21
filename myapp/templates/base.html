@@ -9,7 +9,7 @@
 
     <script src="https://sandbox.web.squarecdn.com/v1/square.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script> 
+    <script>
         var data = "{{ total_time }}";
     </script>
 
@@ -92,14 +92,14 @@
 
         
         <div class="my-profile">
-            <!-- Profile Icon (Triggers Login Popup on Click) -->
-            <div class="profile_btn open_login">
-                <i class="fa-solid fa-user"></i>
-            </div>
-        
-            <!-- Profile Dropdown (Appears on Hover) -->
-            <div class="profile-dropdown">
-                <a href="{% url 'profile' %}" class="profile-link">My Profile</a>
+            <div class="profile_btn">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'profile' %}">
+                        <i class="fa-solid fa-user"></i>
+                    </a>
+                {% else %}
+                    <i class="fa-solid fa-user open_login"></i>
+                {% endif %}
             </div>
         </div>
         
@@ -220,11 +220,10 @@
             </div>
     </div>
 
-     <!-- Forgot Password Popup -->
+    <!-- Forgot Password Popup -->
     <div id="forgot-modal" class="login-modal">
         <div class="login-content">
             <span class="login-x forgot-close">&times;</span>
-        
             <form id="forgot-form" method="POST" action="{% url 'password_reset' %}">
                 {% csrf_token %}
                 <label for="email">Enter your email to reset password</label>
@@ -235,6 +234,17 @@
                 <p class="password-reset-message" style="display:none; color: green;">
                 </p>
             </form>
+        </div>
+    </div>
+
+    <!-- Email Sent Modal (Initially Hidden) -->
+    <div id="sent-modal" class="login-modal">
+        <div class="login-content">
+            <span class="login-x sent-close">&times;</span>
+            
+            <h3>Password Reset Email Sent</h3>
+            <p>If an account exists with that email, you will receive a reset link shortly.</p>
+
         </div>
     </div>
 
