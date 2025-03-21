@@ -159,7 +159,7 @@
             <ul id="locations-list"></ul>
             
             <div class="forgot-create-container">
-                <a href="{% url 'password_reset' %}" class="forgot-password">Forgot Password?</a>
+                <a href="#" class="forgot-password open_forgot">Forgot Password?</a>
                 <a href="#" class="create-account open_signup">Create Account</a>
             </div>
 
@@ -221,21 +221,24 @@
             </div>
     </div>
 
-     <!-- The Forgot Password Popup -->
-     <div id="forgot-modal" class="login-modal">
-             
+     <!-- Forgot Password Popup -->
+    <div id="forgot-modal" class="login-modal">
         <div class="login-content">
             <span class="login-x forgot-close">&times;</span>
-            <form id="forgot-form" >
-
-                <label for="email">Enter email to recover password</label>
-                <input type="email" id="email" name="email" required>
         
-                <button type="submit" class="login-btn" >Submit</button>
+            <form id="forgot-form" method="POST" action="{% url 'password_reset' %}">
+                {% csrf_token %}
+                <label for="email">Enter your email to reset password</label>
+                <input type="email" id="forgot-email" name="email" required>
 
+                <button type="submit" class="login-btn">Submit</button>
+
+                <p class="password-reset-message" style="display:none; color: green;">
+                </p>
             </form>
         </div>
     </div>
+
 
     <div id="terms-modal" class="login-modal">
         <div class="login-content">
