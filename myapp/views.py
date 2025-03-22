@@ -258,7 +258,7 @@ def create_order(request):
     print("checkout successful")
     return render(request, 'payment.html')
 
-@authenticated_user
+#@authenticated_user
 @payment_required
 def orderSummary(request):
     send_order_email(request)
@@ -277,10 +277,10 @@ def productDetails(request,pk):
     product = Product.objects.get(id=pk)
     return render(request, 'productDetails.html', {'product': product})
 
-@authenticated_user
+#@authenticated_user
 @checkout_required
 def paymentPortal(request):
-    request.session['from_checkout'] = True
+    request.session['from_paymentPortal'] = True
     
     square_app_id = 'sandbox-sq0idb-8IPgsCCDGo1xxuoCMh0SSQ'
     square_location_id = 'LNG128XEAPR21'
@@ -420,7 +420,7 @@ def process_payment(request):
     except Exception as e:
         return JsonResponse({"status": "error", "message": str(e)}, status=500)
 
-@authenticated_user
+#@authenticated_user
 def checkout(request):
     request.session['from_checkout'] = True
     return render(request, 'checkout.html', {}) 
