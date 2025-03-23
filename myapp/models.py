@@ -23,8 +23,6 @@ class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     data_modified = models.DateTimeField(auto_now=True)
     phone = models.CharField(max_length=20, blank=True)
-    text_messages = models.BooleanField(default = False)
-    email_messages = models.BooleanField(default = False)
 
     # Address fields
     street_address = models.CharField(max_length=255, blank=True)
