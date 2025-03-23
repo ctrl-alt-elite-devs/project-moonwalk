@@ -3,7 +3,7 @@
 <head>
     {% load static %}
     {% csrf_token %}
-    <link rel="stylesheet" href="{% static 'css/checkout.css' %}"/>
+    <title>Checkout</title>
 </head>
 {% block content %}
 <div class="checkout-page">
@@ -129,18 +129,10 @@
                 <input type="tel" id="customerPhone" name="phone" placeholder="Phone Number" required pattern="[0-9]{10}"><br>
                 <input type="hidden" id="delivery-method-items" name="delivery-method-items" required>
             </div>
-            <input type="submit" id="payment-proceed-2" value="Proceed to Payment" class="payment-checkout-button">
+            <input type="submit" id="payment-proceed" value="Proceed to Payment" class="payment-checkout-button">
         </form>
     </div>
 </div>
-
-
-<!--<div class="payment-stuff" id="payment" style="display:none">
-    <div id="card"></div>
-    <a id="payButtonContainer" href="{% url 'paymentPortal' %}">
-        <button id="pay" type="button">Pay</button>
-    </a>
-</div> -->
 
 <!--Script for the Tabs-->
 <script>
@@ -171,7 +163,7 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-    const proceedButton = document.getElementById("payment-proceed-2");
+    const proceedButton = document.getElementById("payment-proceed");
 
     if (!proceedButton) {
         console.error("❌ Proceed button not found.");
@@ -180,6 +172,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     proceedButton.addEventListener("click", function (event) {
         event.preventDefault();
+
+        const form = document.getElementById("checkout-form");
+
+        if (!form.checkValidity()) {
+            alert("❌Form validation failed. Please fill in all required fields.");
+            return;
+        }
 
         console.log("🚀 Storing user details before proceeding to payment...");
 

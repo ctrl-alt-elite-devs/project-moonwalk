@@ -262,10 +262,10 @@ def create_order(request):
     print("checkout successful")
     return render(request, 'payment.html')
 
-@authenticated_user
+#@authenticated_user
 @payment_required
 def orderSummary(request):
-    send_order_email(request)
+    #send_order_email(request)
     if request.user.is_authenticated:
         cart_items = Cart.objects.filter(customer = Customer.objects.filter(user=request.user).first())
     else:
@@ -281,10 +281,10 @@ def productDetails(request,pk):
     product = Product.objects.get(id=pk)
     return render(request, 'productDetails.html', {'product': product})
 
-@authenticated_user
+#@authenticated_user
 @checkout_required
 def paymentPortal(request):
-    request.session['from_checkout'] = True
+    request.session['from_paymentPortal'] = True
     
     square_app_id = 'sandbox-sq0idb-8IPgsCCDGo1xxuoCMh0SSQ'
     square_location_id = 'LNG128XEAPR21'
@@ -424,10 +424,30 @@ def process_payment(request):
     except Exception as e:
         return JsonResponse({"status": "error", "message": str(e)}, status=500)
 
-@authenticated_user
+#@authenticated_user
 def checkout(request):
     request.session['from_checkout'] = True
-    return render(request, 'checkout.html', {}) 
+
+    square_app_id = 'sandbox-sq0idb-8IPgsCCDGo1xxuoCMh0SSQ'
+    square_location_id = 'LNG128XEAPR21'
+
+    if request.user.is_authenticated:
+        cart_items = Cart.objects.filter(customer = Customer.objects.filter(user=request.user).first())
+    else:
+        cart_items = Cart.objects.filter(session_key=request.session.session_key)
+
+    total_price = sum(item.product.price for item in cart_items)
+    tax_amount = float(total_price) * 0.0725
+    tax_total = float(total_price) + tax_amount
+
+    context = {
+       "square_app_id": square_app_id,
+       "square_location_id": square_location_id,
+       'tax_amount': tax_amount,
+       'tax_total': tax_total
+    }
+
+    return render(request, 'checkout.html', context)
 
 #login request
 def login_user(request):
