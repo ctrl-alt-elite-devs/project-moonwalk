@@ -23,8 +23,6 @@ class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     data_modified = models.DateTimeField(auto_now=True)
     phone = models.CharField(max_length=20, blank=True)
-    text_messages = models.BooleanField(default = False)
-    email_messages = models.BooleanField(default = False)
 
     # Address fields
     street_address = models.CharField(max_length=255, blank=True)
@@ -43,17 +41,6 @@ class Customer(models.Model):
             user_customer.save()
     
     post_save.connect(create_customer, sender=User)
-    
-#Categories of products
-class Category(models.Model):
-    name = models.CharField(max_length=50)
-
-    def __str__(self):
-        return self.name
-    
-    class Meta:
-        verbose_name_plural = 'categories'
-
 
 class Subscriber(models.Model):
     email = models.EmailField(unique=True)

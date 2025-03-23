@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 import datetime
 from django.contrib import messages
-from .models import Cart, Customer, Product, Category
+from .models import Cart, Customer, Product, Category, Subscriber
 from .square_service import client
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -18,6 +18,21 @@ from square.client import Client
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib import messages
+from django.utils import timezone
+from datetime import timedelta
+from .decorator import authenticated_user
+from .decorator import checkout_required
+from .decorator import payment_required
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
+from django.contrib.auth.password_validation import validate_password
+import re
+
+
 
 from django import template
 
@@ -247,8 +262,10 @@ def create_order(request):
     print("checkout successful")
     return render(request, 'payment.html')
 
+#@authenticated_user
+@payment_required
 def orderSummary(request):
-    send_order_email(request)
+    #send_order_email(request)
     if request.user.is_authenticated:
         cart_items = Cart.objects.filter(customer = Customer.objects.filter(user=request.user).first())
     else:
@@ -264,8 +281,11 @@ def productDetails(request,pk):
     product = Product.objects.get(id=pk)
     return render(request, 'productDetails.html', {'product': product})
 
-
+#@authenticated_user
+@checkout_required
 def paymentPortal(request):
+    request.session['from_paymentPortal'] = True
+    
     square_app_id = 'sandbox-sq0idb-8IPgsCCDGo1xxuoCMh0SSQ'
     square_location_id = 'LNG128XEAPR21'
 
@@ -334,51 +354,100 @@ def create_square_order(cart_items):
         return None, None
 
 def process_payment(request):
-    if request.method == 'POST':
-        #get cart_items
+    if request.method != 'POST':
+        return JsonResponse({"status": "error", "message": "Invalid request method"}, status=405)
+
+    try:
+        data = json.loads(request.body)
+        token = data.get("token")
+        delivery_method = data.get("delivery_method", "pickup")
+        customer_email = data.get("email", "guest@moonwalkthreads.com")
+        user_first_name = data.get("first_name", "Guest")
+
+        # 🛒 Retrieve Cart Items
         if request.user.is_authenticated:
-            cart_items = Cart.objects.filter(customer=request.user.customer)
+            customer = request.user.customer
+            cart_queryset = Cart.objects.filter(customer=customer)
         else:
             session_key = request.session.session_key
-            cart_items = Cart.objects.filter(session_key=session_key)
+            cart_queryset = Cart.objects.filter(session_key=session_key)
 
-        #getting full amount calculated
-        order_items = []
-        total_price = 0
-        for item in cart_items:
-            order_items.append(f"{item.product.name}")
-            total_price += item.product.price
+        # Ensure cart is not empty
+        if not cart_queryset.exists():
+            return JsonResponse({"status": "error", "message": "Cart is empty"}, status=400)
 
-        data = json.loads(request.body)
-        customer_email = data.get("email", "guest@moonwalkthreads.com")
-        user_first_name = request.user.first_name if request.user.is_authenticated else 'Guest'
-        token = data.get("token")
-        order_id = request.session.get("order_id")
-        total_amount = request.session.get("total_amount")
+        # **Step 1: Create Order in Square**
+        square_order_id, total_amount = create_square_order(cart_queryset)
 
-        #getting an uuid (for idempotency) (every payment needs one)
+        if not square_order_id:
+            return JsonResponse({"status": "error", "message": "Failed to create Square order"}, status=500)
 
-        try:
-            result = client.payments.create_payment(
-                body = {
-                    "source_id": token,
-                    "idempotency_key": order_id,
-                    "amount_money": {
-                        "amount": total_amount,
-                        "currency": "USD"
-                    },
-                    "autocomplete": True,
-                    "order_id": order_id,
-                    #"note": "Brief description"
-                })
-            if result.is_success:
-                #return redirect('orderSummary.html')
-                return JsonResponse({"status": "success", "payment_id}": result.body['payment']['id']})
-            else:
-                return JsonResponse({"status": "error", "errors": result.errors})
-        except Exception as e:
-            return JsonResponse({"status": "error", "message": str(e)})
-    return JsonResponse({"status": "error", "message": "Invalid request method"})
+        # **Step 2: Process Payment Using Square Order ID**
+        payment_request = {
+            "source_id": token,
+            "idempotency_key": str(uuid.uuid4()),  # Generate unique key
+            "amount_money": {
+                "amount": total_amount,
+                "currency": "USD"
+            },
+            "autocomplete": True,
+            "order_id": square_order_id  # ✅ Use Square's Order ID
+        }
+
+        payment_result = client.payments.create_payment(body=payment_request)
+
+        if payment_result.is_success():
+            # ✅ Payment Successful, Send Confirmation Email
+            '''/*send_order_email(
+                email=customer_email,
+                first_name=user_first_name,
+                order_items=[{
+                    "name": item.product.name,
+                    "price": item.product.price,
+                    "image_url": item.product.image.url
+                } for item in cart_queryset],
+                total_price=total_amount / 100,  # Convert cents to dollars
+                delivery_method=delivery_method,
+                address_details=data.get("address", {}) if delivery_method == "delivery" else {}
+            )'''
+
+            # 🛒 Clear the cart after successful payment
+            cart_queryset.delete()
+
+            return JsonResponse({"status": "success", "message": "Payment successful!"})
+
+        else:
+            return JsonResponse({"status": "error", "message": payment_result.errors}, status=400)
+
+    except json.JSONDecodeError:
+        return JsonResponse({"status": "error", "message": "Invalid JSON format"}, status=400)
+    except Exception as e:
+        return JsonResponse({"status": "error", "message": str(e)}, status=500)
+
+#@authenticated_user
+def checkout(request):
+    request.session['from_checkout'] = True
+
+    square_app_id = 'sandbox-sq0idb-8IPgsCCDGo1xxuoCMh0SSQ'
+    square_location_id = 'LNG128XEAPR21'
+
+    if request.user.is_authenticated:
+        cart_items = Cart.objects.filter(customer = Customer.objects.filter(user=request.user).first())
+    else:
+        cart_items = Cart.objects.filter(session_key=request.session.session_key)
+
+    total_price = sum(item.product.price for item in cart_items)
+    tax_amount = float(total_price) * 0.0725
+    tax_total = float(total_price) + tax_amount
+
+    context = {
+       "square_app_id": square_app_id,
+       "square_location_id": square_location_id,
+       'tax_amount': tax_amount,
+       'tax_total': tax_total
+    }
+
+    return render(request, 'checkout.html', context)
 
 #login request
 def login_user(request):
@@ -391,10 +460,10 @@ def login_user(request):
             messages.success(request, ("YOU LOGGED IN"))
             return redirect('home')
         else:
-            messages.success(request, ("ERROR TRY AGAIN"))
-            return redirect('home')
+            context = {"login_error": "Incorrect email or password"}
+            return render(request, 'home.html', context)
     else:
-        return render(request, 'login.html', {})
+        return render(request, 'home.html', {})   
 #logout request
 def logout_user(request):
     logout(request)
@@ -414,36 +483,87 @@ def register_user(request):
         text_messages = request.POST.get("text-checkbox") == "on"
         email_messages = request.POST.get("email-checkbox") == "on"
 
-        # Check if username already exists
-        if User.objects.filter(username=username).exists():
-            messages.success(request, "Email is already in use. Try Logging in.")
-            return redirect('home')
-        
-        # Check if passwords match
-        if password != confirm_password:
-            messages.success(request, f"Passwords do not match. Entered: {password} and {confirm_password}")
-            return redirect('home')
-          
+        errors = {}
+
+        # Validate email format
         try:
-            user = User.objects.create_user(username=username, password=password, email=email, first_name=first_name, last_name=last_name)
+            validate_email(email)
+        except ValidationError:
+            errors["email_error"] = "Please enter a valid email address."
+
+        # Check that passwords match and that password is strong enough
+        if password != confirm_password:
+            errors["password_match_error"] = "Passwords do not match."
+        else:
+            try:
+                custom_password_validator(password)
+            except ValidationError as e:
+                errors["password_strength_error"] = " ".join(e.messages)
+
+        # Validate phone number (example regex: 9 to 15 digits, optional +)
+        phone_regex = r"^\+?1?\d{9,15}$"
+        if phone and not re.match(phone_regex, phone):
+            errors["phone_error"] = "Please enter a valid phone number (9-15 digits, may include country code)."
+
+        # Check if email is already registered
+        if User.objects.filter(username=username).exists():
+            errors["username_error"] = "Email is already in use. Try logging in."
+
+        if errors:
+            # Re-render the home page (or the signup page) with the errors in the context.
+            context = {
+                "signup_errors": errors,
+                "signup_data": {
+                    "email": request.POST.get("email"),
+                    "first_name": request.POST.get("first-name"),
+                    "last_name": request.POST.get("last-name"),
+                    "phone": request.POST.get("phone"),
+                    "text_checkbox": request.POST.get("text-checkbox"),
+                    "email_checkbox": request.POST.get("email-checkbox"),
+                }
+            }
+            return render(request, 'home.html', context)
+
+        try:
+            user = User.objects.create_user(username=username, password=password, email=email,
+                                            first_name=first_name, last_name=last_name)
             user.save()
 
-            # Get or create customer, then update phone number
+            # Create or update customer info
             customer, created = Customer.objects.get_or_create(user=user)
-            customer.phone = phone  # Update phone field
-            customer.text_messages = text_messages
-            customer.email_messages = email_messages
+            customer.phone = phone
             customer.save()
+
+            if email_messages:
+                Subscriber.objects.get_or_create(email=email)
 
             user = authenticate(request, username=username, password=password)
             login(request, user)
             messages.success(request, "Registration successful! You are now logged in.")
             return redirect('home')
         except Exception as e:
-            messages.success(request, f"Error creating account: {e}")
-            return redirect('home')
-
+            errors["server_error"] = f"Error creating account: {e}"
+            context = {"signup_errors": errors}
+            return render(request, 'home.html', context)
     return redirect('home')
+
+def custom_password_validator(password):
+    # Check for a minimum length of 8 characters
+    if len(password) < 8:
+        raise ValidationError("Password must be at least 8 characters long.")
+    
+    # Check for at least one uppercase letter
+    if not any(c.isupper() for c in password):
+        raise ValidationError("Password must contain at least one uppercase letter.")
+    
+    # Check for at least one lowercase letter
+    if not any(c.islower() for c in password):
+        raise ValidationError("Password must contain at least one lowercase letter.")
+    
+    # Check for at least one digit
+    if not any(c.isdigit() for c in password):
+        raise ValidationError("Password must contain at least one number.")
+
 
 #shippo to create label (accept user address input)
 
@@ -454,7 +574,7 @@ def submit_address(request):
         return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
 
     try:
-        data = json.loads(request.body)
+        '''data = json.loads(request.body)
         print(f"Received data: {data}")
 
         address_from = components.AddressCreateRequest(
@@ -533,7 +653,7 @@ def submit_address(request):
             return JsonResponse({
                 'status': 'error',
                 'message': error_message
-            }, status=400)
+            }, status=400)'''
 
     except json.JSONDecodeError:
         return JsonResponse({'status': 'error', 'message': 'Invalid JSON format'}, status=400)
@@ -583,58 +703,61 @@ def subscribe(request):
     return JsonResponse({"success": False, "message": "Invalid request."}, status=405)
 
 def send_order_email(request):
-    if request.method == "POST":
-        try:
-            data = json.loads(request.body)
-            customer_email = data.get("email", "guest@moonwalkthreads.com")  # Default for guests
-            user_first_name = request.user.first_name if request.user.is_authenticated else "Guest"
+    #used to have these parameters: customer_email, user_first_name, order_items, _total_price, delivery_method, address_info
+    """Send order confirmation email with tax and delivery method adjustments."""
 
-            # Fetch cart items for the user (or guest session)
-            if request.user.is_authenticated:
-                cart_items = Cart.objects.filter(customer=request.user.customer)
-            else:
-                session_key = request.session.session_key
-                cart_items = Cart.objects.filter(session_key=session_key)
+    data = json.loads(request.body)
 
-            # Format order details
-            order_items = []
-            total_price = 0
-            for item in cart_items:
-                order_items.append(f"{item.product.name} - ${item.product.price}")
-                total_price += item.product.price
+    user_first_name = data.get("user_first_name")
+    customer_email = data.get("customer_email")
+    order_items = data.get("order_items")
+    delivery_method = data.get("delivery_method")
+    address_info = data.get("address_info")
+    total_price = data.get("total_price")
 
-            # Render the email template
-            html_content = render_to_string("order_confirmation_email.html", {
-                "first_name": user_first_name,
-                "email": customer_email,
-                "order_items": order_items,
-                "total_price": total_price,
-            })
-            text_content = strip_tags(html_content)
+    # 🏷️ **Tax Calculation (7.25%)**
+    tax_amount = round(total_price * 0.0725, 2)
+    total_with_tax = round(total_price + tax_amount, 2)
 
-            # Send email
-            subject = "🛍️ Your MoonWalk Threads Order Confirmation"
-            from_email = "orders@moonwalkthreads.com"
-            recipient_list = [customer_email]
+    # 🎨 **Render HTML Email Template**
+    html_content = render_to_string("order_confirmation_email.html", {
+        "first_name": user_first_name,
+        "email": customer_email,
+        "order_items": order_items,
+        "total_price": total_price,
+        "tax_amount": tax_amount,  # 👈 Added tax amount
+        "total_with_tax": total_with_tax,  # 👈 Updated total with tax
+        "delivery_method": delivery_method,
+        "address_info": address_info,  # 🏠 Shipping Address (Only if delivery)
+    })
+    
+    text_content = strip_tags(html_content)
 
-            email_message = EmailMultiAlternatives(subject, text_content, from_email, recipient_list)
-            email_message.attach_alternative(html_content, "text/html")
-            email_message.send()
+    # ✉️ **Send Email**
+    subject = "🛍️ Your MoonWalk Threads Order Confirmation"
+    from_email = "projectmoonwalk01@gmail.com"
+    recipient_list = [customer_email]
 
-            return orderSummary(request)
-            return JsonResponse({"success": True, "message": "Order confirmation email sent."})
+    email_message = EmailMultiAlternatives(subject, text_content, from_email, recipient_list)
+    email_message.attach_alternative(html_content, "text/html")
+    email_message.send()
 
-        except json.JSONDecodeError:
-            return JsonResponse({"success": False, "message": "Invalid data format."}, status=400)
+    return HttpResponse("success", 200)
+    
+def generate_test_tracking():
+    """Generate a fake Shippo test tracking number, tracking URL, and label URL."""
+    tracking_number = "SHIPPO-TRACK-TEST12345"
+    tracking_url = "https://track.goshippo.com/SHIPPO-TRACK-TEST12345"
+    label_url = "https://yourtestserver.com/test-label.pdf"  # Replace with your placeholder URL
+    return tracking_number, tracking_url, label_url
 
-    return JsonResponse({"success": False, "message": "Invalid request."}, status=405)
 def profile(request):
     # Check if a user is logged in
     if request.user.is_authenticated:
         user_data = {
             "email": request.user.email,
             "password": "********",  # Hidden for security
-            "address": request.user.customer.address if hasattr(request.user, "customer") else "No address available",
+            "address": request.user.customer.street_address if hasattr(request.user, "customer") else "No address available",
             "orders": [],  # Placeholder for future order retrieval
         }
     else:
@@ -650,3 +773,4 @@ def profile(request):
         }
 
     return render(request, "profile.html", {"user": user_data})
+

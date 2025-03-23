@@ -3,11 +3,10 @@
 <head>
     {% load static %}
     {% csrf_token %}
-    <link rel="stylesheet" href="{% static 'css/checkout.css' %}"/>
+    <title>Checkout</title>
 </head>
 {% block content %}
 <div class="checkout-page">
-
     <div id="cart-summary-column">
         {% include 'cartSummary.html' %}
     </div>
@@ -115,10 +114,9 @@
                     <input type="email" id="customerEmail" name="email" placeholder="Email Address"><br>
                     <input type="text" id="customerPhone" name="phone" placeholder="Phone Number"><br>
                     <input type="hidden" id="delivery-method-items" name="delivery-method-items">-->
-
-
+                    
                     <!--<button type="submit" class="payment-checkout-button" id="payment-proceed-2" onclick="proceed()">
-                        PROCEED TO PAYMENT</button> -->
+                        PROCEED TO PAYMENT</button>-->
                     <!--<button type="submit" class="payment-button">Payment</button>--> <!--For Shippo API Testing purposes-->
                 </div>
             </div>
@@ -131,18 +129,10 @@
                 <input type="tel" id="customerPhone" name="phone" placeholder="Phone Number" required pattern="[0-9]{10}"><br>
                 <input type="hidden" id="delivery-method-items" name="delivery-method-items" required>
             </div>
-            <input type="submit" value="Proceed to Payment" class="payment-checkout-button">
+            <input type="submit" id="payment-proceed" value="Proceed to Payment" class="payment-checkout-button">
         </form>
     </div>
 </div>
-
-
-<!--<div class="payment-stuff" id="payment" style="display:none">
-    <div id="card"></div>
-    <a id="payButtonContainer" href="{% url 'paymentPortal' %}">
-        <button id="pay" type="button">Pay</button>
-    </a>
-</div> -->
 
 <!--Script for the Tabs-->
 <script>
@@ -172,39 +162,62 @@
 </script>
 
 <script>
-    //store variables from shipping address into LOCAL STORAGE
-    document.getElementById('payment-proceed-2').addEventListener('click', function(event) {
+document.addEventListener("DOMContentLoaded", function () {
+    const proceedButton = document.getElementById("payment-proceed");
 
-        console.log("submitting values");
-        var firstName = document.getElementById('customerFirstName').value;
-        var lastName = document.getElementById('customerLastName').value;
-        var streetAddress = document.getElementById('customerStreetAddress').value;
-        var addressOptional = document.getElementById('customerAddressOptional').value;
-        var zipCode = document.getElementById('customerZipCode').value;
-        var city = document.getElementById('customerCity').value;
-        var state = document.getElementById('customerState').value;
+    if (!proceedButton) {
+        console.error("❌ Proceed button not found.");
+        return;
+    }
 
+    proceedButton.addEventListener("click", function (event) {
+        event.preventDefault();
 
-        var email = document.getElementById('customerEmail').value;
-        var phone = document.getElementById('customerPhone').value;
+        const form = document.getElementById("checkout-form");
 
+        if (!form.checkValidity()) {
+            alert("❌Form validation failed. Please fill in all required fields.");
+            return;
+        }
 
-        localStorage.setItem('customerFirstName', firstName);
-        localStorage.setItem('customerLastName', lastName);
-        localStorage.setItem('customerStreetAddress', streetAddress);
-        localStorage.setItem('customerAddressOptional', addressOptional);
-        localStorage.setItem('customerZipCode', zipCode);
-        localStorage.setItem('customerCity', city);
-        localStorage.setItem('customerState', state);
+        console.log("🚀 Storing user details before proceeding to payment...");
 
+        // 🔹 Get the selected delivery method from localStorage
+        const deliveryMethod = localStorage.getItem("deliveryMethod") || "delivery";
+        localStorage.setItem("deliveryMethod", deliveryMethod);
 
-        localStorage.setItem('customerEmail', email);
-        localStorage.setItem('customerPhone', phone);
+        // 🔹 Store basic customer details
+        const firstName = document.getElementById("customerFirstName")?.value || "";
+        const lastName = document.getElementById("customerLastName")?.value || "";
+        const email = document.getElementById("customerEmail")?.value || "";
+        const phone = document.getElementById("customerPhone")?.value || "";
 
-        //this.submit();
+        localStorage.setItem("customerFirstName", firstName);
+        localStorage.setItem("customerLastName", lastName);
+        localStorage.setItem("customerEmail", email);
+        localStorage.setItem("customerPhone", phone);
 
+        // 🔹 Store address info only if Delivery is selected
+        if (deliveryMethod === "delivery") {
+            const streetAddress = document.getElementById("customerStreetAddress")?.value || "";
+            const addressOptional = document.getElementById("customerAddressOptional")?.value || "";
+            const zipCode = document.getElementById("customerZipCode")?.value || "";
+            const city = document.getElementById("customerCity")?.value || "";
+            const state = document.getElementById("customerState")?.value || "";
+
+            localStorage.setItem("customerStreetAddress", streetAddress);
+            localStorage.setItem("customerAddressOptional", addressOptional);
+            localStorage.setItem("customerZipCode", zipCode);
+            localStorage.setItem("customerCity", city);
+            localStorage.setItem("customerState", state);
+        }
+
+        console.log(`✅ Stored Data | Delivery Method: ${deliveryMethod}`);
+        
+        // 🔹 Redirect to Payment Page
         window.location.href = "{% url 'paymentPortal' %}";
     });
+});
 </script>
 
 <!-- Shippo Shippment API-->
@@ -357,4 +370,6 @@
         window.location.href = "{% url 'paymentPortal' %}";
     }
 </script>
+
+
 {% endblock %}
