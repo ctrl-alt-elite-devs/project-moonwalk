@@ -27,6 +27,10 @@ from datetime import timedelta
 from .decorator import authenticated_user
 from .decorator import checkout_required
 from .decorator import payment_required
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
+from django.contrib.auth.password_validation import validate_password
+import re
 
 
 
@@ -456,10 +460,10 @@ def login_user(request):
             messages.success(request, ("YOU LOGGED IN"))
             return redirect('home')
         else:
-            messages.success(request, ("ERROR TRY AGAIN"))
-            return redirect('home')
+            context = {"login_error": "Incorrect email or password"}
+            return render(request, 'home.html', context)
     else:
-        return render(request, 'login.html', {})   
+        return render(request, 'home.html', {})   
 #logout request
 def logout_user(request):
     logout(request)
@@ -479,36 +483,87 @@ def register_user(request):
         text_messages = request.POST.get("text-checkbox") == "on"
         email_messages = request.POST.get("email-checkbox") == "on"
 
-        # Check if username already exists
-        if User.objects.filter(username=username).exists():
-            messages.success(request, "Email is already in use. Try Logging in.")
-            return redirect('home')
-        
-        # Check if passwords match
-        if password != confirm_password:
-            messages.success(request, f"Passwords do not match. Entered: {password} and {confirm_password}")
-            return redirect('home')
-          
+        errors = {}
+
+        # Validate email format
         try:
-            user = User.objects.create_user(username=username, password=password, email=email, first_name=first_name, last_name=last_name)
+            validate_email(email)
+        except ValidationError:
+            errors["email_error"] = "Please enter a valid email address."
+
+        # Check that passwords match and that password is strong enough
+        if password != confirm_password:
+            errors["password_match_error"] = "Passwords do not match."
+        else:
+            try:
+                custom_password_validator(password)
+            except ValidationError as e:
+                errors["password_strength_error"] = " ".join(e.messages)
+
+        # Validate phone number (example regex: 9 to 15 digits, optional +)
+        phone_regex = r"^\+?1?\d{9,15}$"
+        if phone and not re.match(phone_regex, phone):
+            errors["phone_error"] = "Please enter a valid phone number (9-15 digits, may include country code)."
+
+        # Check if email is already registered
+        if User.objects.filter(username=username).exists():
+            errors["username_error"] = "Email is already in use. Try logging in."
+
+        if errors:
+            # Re-render the home page (or the signup page) with the errors in the context.
+            context = {
+                "signup_errors": errors,
+                "signup_data": {
+                    "email": request.POST.get("email"),
+                    "first_name": request.POST.get("first-name"),
+                    "last_name": request.POST.get("last-name"),
+                    "phone": request.POST.get("phone"),
+                    "text_checkbox": request.POST.get("text-checkbox"),
+                    "email_checkbox": request.POST.get("email-checkbox"),
+                }
+            }
+            return render(request, 'home.html', context)
+
+        try:
+            user = User.objects.create_user(username=username, password=password, email=email,
+                                            first_name=first_name, last_name=last_name)
             user.save()
 
-            # Get or create customer, then update phone number
+            # Create or update customer info
             customer, created = Customer.objects.get_or_create(user=user)
-            customer.phone = phone  # Update phone field
-            customer.text_messages = text_messages
-            customer.email_messages = email_messages
+            customer.phone = phone
             customer.save()
+
+            if email_messages:
+                Subscriber.objects.get_or_create(email=email)
 
             user = authenticate(request, username=username, password=password)
             login(request, user)
             messages.success(request, "Registration successful! You are now logged in.")
             return redirect('home')
         except Exception as e:
-            messages.success(request, f"Error creating account: {e}")
-            return redirect('home')
-
+            errors["server_error"] = f"Error creating account: {e}"
+            context = {"signup_errors": errors}
+            return render(request, 'home.html', context)
     return redirect('home')
+
+def custom_password_validator(password):
+    # Check for a minimum length of 8 characters
+    if len(password) < 8:
+        raise ValidationError("Password must be at least 8 characters long.")
+    
+    # Check for at least one uppercase letter
+    if not any(c.isupper() for c in password):
+        raise ValidationError("Password must contain at least one uppercase letter.")
+    
+    # Check for at least one lowercase letter
+    if not any(c.islower() for c in password):
+        raise ValidationError("Password must contain at least one lowercase letter.")
+    
+    # Check for at least one digit
+    if not any(c.isdigit() for c in password):
+        raise ValidationError("Password must contain at least one number.")
+
 
 #shippo to create label (accept user address input)
 
