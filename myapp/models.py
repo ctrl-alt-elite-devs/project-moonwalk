@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.utils import timezone
 import datetime
-
+from storages.backends.s3boto3 import S3Boto3Storage
 # Create your models here.
 
 #Categories of products
@@ -32,18 +32,25 @@ class Customer(models.Model):
     city = models.CharField(max_length=100, blank=True)
     state = models.CharField(max_length=100, blank=True)
     zip_code = models.CharField(max_length=20, blank=True)
- 
- 
+
+
     def __str__(self):
         return self.user.username
-     
+
     def create_customer(sender, instance, created, **kwargs):
         if created:
             user_customer = Customer(user=instance)
             user_customer.save()
     
     post_save.connect(create_customer, sender=User)
-    
+
+class Subscriber(models.Model):
+    email = models.EmailField(unique=True)
+    date_subscribed = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.email
+
 
 class Product(models.Model):
     name = models.CharField(max_length=100)
@@ -51,7 +58,7 @@ class Product(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, default=1)
     size = models.CharField(max_length=20)
     description = models.CharField(max_length=250, default='', blank=True, null=True)
-    image = models.ImageField(upload_to='uploads/product/')
+    image = models.ImageField(storage=S3Boto3Storage(), upload_to='products/')
     featured = models.BooleanField(default=False)
 
     def __str__(self):

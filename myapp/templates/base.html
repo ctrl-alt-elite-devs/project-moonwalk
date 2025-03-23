@@ -15,7 +15,7 @@
 
     <!-- Load static files -->
     {% load static %}
-    <script type="text/javascript" src="{% static 'scripts/events.js' %}"></script>
+    <!--<script type="text/javascript" src="{% static 'scripts/events.js' %}"></script>-->
     <!-- Link to your custom CSS file -->
     <link rel="stylesheet" href="{% static 'css/homestyles.css' %}">
     <link rel="stylesheet" href="{% static 'css/shopstyles.css' %}">
@@ -30,6 +30,7 @@
     <link rel="stylesheet" href="{% static 'css/contact.css' %}">
     <link rel="stylesheet" href="{% static 'css/payment.css' %}">
     <link rel="stylesheet" href="{% static 'css/profile.css' %}">
+    <link rel="stylesheet" href="{% static 'css/order-summary.css' %}">
 
 
     <script src="https://kit.fontawesome.com/34f0afb215.js" crossorigin="anonymous"></script>
@@ -152,13 +153,13 @@
 
             <label for="password">Password</label>
             <input type="password" id="password" name="password" required>
-    
+
             <button type="submit" class="login-btn" >Log In</button>
 
             <ul id="locations-list"></ul>
             
             <div class="forgot-create-container">
-                <a href="#" class="forgot-password open_forgot">Forgot Password</a>
+                <a href="#" class="forgot-password open_forgot">Forgot Password?</a>
                 <a href="#" class="create-account open_signup">Create Account</a>
             </div>
 
@@ -220,21 +221,24 @@
             </div>
     </div>
 
-     <!-- The Forgot Password Popup -->
-     <div id="forgot-modal" class="login-modal">
-             
+     <!-- Forgot Password Popup -->
+    <div id="forgot-modal" class="login-modal">
         <div class="login-content">
             <span class="login-x forgot-close">&times;</span>
-            <form id="forgot-form" >
-
-                <label for="email">Enter email to recover password</label>
-                <input type="email" id="email" name="email" required>
         
-                <button type="submit" class="login-btn" >Submit</button>
+            <form id="forgot-form" method="POST" action="{% url 'password_reset' %}">
+                {% csrf_token %}
+                <label for="email">Enter your email to reset password</label>
+                <input type="email" id="forgot-email" name="email" required>
 
+                <button type="submit" class="login-btn">Submit</button>
+
+                <p class="password-reset-message" style="display:none; color: green;">
+                </p>
             </form>
         </div>
     </div>
+
 
     <div id="terms-modal" class="login-modal">
         <div class="login-content">
