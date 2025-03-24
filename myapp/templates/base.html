@@ -157,16 +157,11 @@
                 <a href="#" class="create-account open_signup">Create Account</a>
             </div>
 
-            <!-- Placeholder for the Google Sign-In button -->
-            <div class="g-signin2" data-onsuccess="onSignIn"></div>
-
-            <div class="g_id_signin"
-                data-type="standard"
-                data-size="large"
-                data-theme="outline"
-                data-text="sign_in_with"
-                data-shape="rectangular"
-                data-logo_alignment="left">
+            <div class="social-signup">
+                <p>Or sign up with:</p>
+                <a href="{% provider_login_url 'google' %}?next={{ request.path }}">
+                  <button type="button" class="google-login-btn">Google</button>
+                </a>
             </div>
 
         </form>
