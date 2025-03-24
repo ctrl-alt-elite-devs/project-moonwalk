@@ -140,19 +140,9 @@
                     if (data.status === 'success') {
                         alert("✅ Payment successful!");
 
-                        // 🛒 Clear LocalStorage after successful payment
-                        localStorage.removeItem('cartItems');
-                        localStorage.removeItem('totalAmount');
-                        localStorage.removeItem('customerFirstName');
-                        localStorage.removeItem('customerLastName');
-                        localStorage.removeItem('customerEmail');
-                        localStorage.removeItem('customerPhone');
-                        localStorage.removeItem('customerStreetAddress');
-                        localStorage.removeItem('customerAddressOptional');
-                        localStorage.removeItem('customerCity');
-                        localStorage.removeItem('customerState');
-                        localStorage.removeItem('customerZipCode');
-                        localStorage.removeItem('deliveryMethod');
+                        if (data.order_number) {
+                            localStorage.setItem("orderNumber", data.order_number);
+                        }
 
                         // Redirect to order summary page
                         document.location.href = "{% url 'orderSummary' %}";

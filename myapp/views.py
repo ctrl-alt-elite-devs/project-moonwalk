@@ -474,23 +474,26 @@ def process_payment(request):
 
         if payment_result.is_success():
             # ✅ Payment Successful, Send Confirmation Email
-            '''/*send_order_email(
-                email=customer_email,
-                first_name=user_first_name,
-                order_items=[{
-                    "name": item.product.name,
-                    "price": item.product.price,
-                    "image_url": item.product.image.url
-                } for item in cart_queryset],
-                total_price=total_amount / 100,  # Convert cents to dollars
-                delivery_method=delivery_method,
-                address_details=data.get("address", {}) if delivery_method == "delivery" else {}
-            )'''
+            order_number = str(uuid.uuid4())[:8]  # simple short ID for now
 
-            # 🛒 Clear the cart after successful payment
-            cart_queryset.delete()
+            email_context = {
+                **customerInfo,  # expands: first_name, last_name, email, phone, address
+                "delivery_method": delivery_method.lower(),
+                "address_details": customerInfo["address"] if delivery_method.lower() == "delivery" else {},
+                "order_items": [
+                    {
+                        "name": item.product.name,
+                        "price": item.product.price,
+                        "image_url": item.product.image.url if item.product.image else ""
+                    } for item in cart_queryset
+                ],
+                "total_price": total_amount / 100,  # cents to dollars
+                "order_number": order_number,
+            }
 
-            return JsonResponse({"status": "success", "message": "Payment successful!"})
+            send_order_email(email_context)
+
+            return JsonResponse({"status": "success", "message": "Payment successful!","order_number": order_number})
 
         else:
             return JsonResponse({"status": "error", "message": payment_result.errors}, status=400)
@@ -778,47 +781,20 @@ def subscribe(request):
 
     return JsonResponse({"success": False, "message": "Invalid request."}, status=405)
 
-def send_order_email(request):
-    #used to have these parameters: customer_email, user_first_name, order_items, _total_price, delivery_method, address_info
-    """Send order confirmation email with tax and delivery method adjustments."""
+def send_order_email(context):
+    """Send order confirmation email to the customer with tax info."""
 
-    data = json.loads(request.body)
-
-    user_first_name = data.get("user_first_name")
-    customer_email = data.get("customer_email")
-    order_items = data.get("order_items")
-    delivery_method = data.get("delivery_method")
-    address_info = data.get("address_info")
-    total_price = data.get("total_price")
-
-    # 🏷️ **Tax Calculation (7.25%)**
-    tax_amount = round(total_price * 0.0725, 2)
-    total_with_tax = round(total_price + tax_amount, 2)
-
-    # 🎨 **Render HTML Email Template**
-    html_content = render_to_string("order_confirmation_email.html", {
-        "first_name": user_first_name,
-        "email": customer_email,
-        "order_items": order_items,
-        "total_price": total_price,
-        "tax_amount": tax_amount,  # 👈 Added tax amount
-        "total_with_tax": total_with_tax,  # 👈 Updated total with tax
-        "delivery_method": delivery_method,
-        "address_info": address_info,  # 🏠 Shipping Address (Only if delivery)
-    })
-    
+    # Render email
+    html_content = render_to_string("order_confirmation_email.html", context)
     text_content = strip_tags(html_content)
 
-    # ✉️ **Send Email**
-    subject = "🛍️ Your MoonWalk Threads Order Confirmation"
+    subject = f"Order #{context['order_number']} Confirmation"
     from_email = "projectmoonwalk01@gmail.com"
-    recipient_list = [customer_email]
+    recipient_list = [context["email"]]
 
-    email_message = EmailMultiAlternatives(subject, text_content, from_email, recipient_list)
-    email_message.attach_alternative(html_content, "text/html")
-    email_message.send()
-
-    return HttpResponse("success", 200)
+    email = EmailMultiAlternatives(subject, text_content, from_email, recipient_list)
+    email.attach_alternative(html_content, "text/html")
+    email.send()
     
 def generate_test_tracking():
     """Generate a fake Shippo test tracking number, tracking URL, and label URL."""
