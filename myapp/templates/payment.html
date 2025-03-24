@@ -97,6 +97,11 @@
                         state: localStorage.getItem('customerState') || '',
                         zipCode: localStorage.getItem('customerZipCode') || '',
                     };
+                    let streetAddress = addressDetails.streetAddress;
+                    let addressOptional = addressDetails.addressOptional || '';
+                    let city = addressDetails.city;
+                    let state = addressDetails.state;
+                    let zipCode = addressDetails.zipCode;
                 }
 
                     // 🔍 **Check what is being sent to Square**

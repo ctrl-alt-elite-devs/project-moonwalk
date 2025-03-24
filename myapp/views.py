@@ -321,6 +321,14 @@ def create_square_customer(customerInfo):
         "family_name": customerInfo["last_name"],
         "email_address": customerInfo["email"],
         "phone_number": customerInfo["phone"],
+        "address" : {
+            "address_line_1": customerInfo["address"]["streetAddress"],
+            "address_line_2": customerInfo["address"]["addressOptional"],
+            "administrative_district_level_1": customerInfo["address"]["state"],
+            "country": "US",
+            "locality": customerInfo["address"]["city"],
+            "postal_code": customerInfo["address"]["zipCode"],
+        }
     })
 
     customer = result.body["customer"]
