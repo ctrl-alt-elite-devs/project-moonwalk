@@ -47,12 +47,12 @@
                     <!--Shipping Address Information-->
                     <h4>Shipping Address</h4>
                     <input type="text" id="autocomplete" class="typeAddress" name="autocomplete" placeholder="Search for your address here"><br>
-                    <input type="text" id="customerStreetAddress" name="streetAddress" placeholder="Street Address" title="Please enter your street address."><br>
-                    <input type="text" id="customerAddressOptional" name="addressOptional" placeholder="Apt, Suite, Building (Optional)"><br>
-                    <input type="text" id="customerZipCode" name="zipCode" placeholder="Zip Code"><br>
-                    <input type="text" id="customerCity" name="city" placeholder="City"><br>
+                    <input type="text" id="customerStreetAddress" name="streetAddress" placeholder="Street Address" title="Please enter your street address." pattern="^(?!\s*$)[A-Za-z0-9 ]+" required><br>
+                    <input type="text" id="customerAddressOptional" name="addressOptional" placeholder="Apt, Suite, Building (Optional)" pattern="^(?!\s*$)[A-Za-z0-9 ]+"><br>
+                    <input type="text" id="customerZipCode" name="zipCode" placeholder="Zip Code" pattern="^(?!\s*$)[0-9]+" required><br>
+                    <input type="text" id="customerCity" name="city" placeholder="City" pattern="^(?!\s*$)[A-Za-z ]+" required><br>
                     <!--Select States from Drop Down-->
-                    <select class="states" id="customerState" required>
+                    <select class="states" id="customerState" name="state" required>
                         <option value="AL">Alabama</option>
                         <option value="AK">Alaska</option>
                         <option value="AZ">Arizona</option>
@@ -105,7 +105,7 @@
                         <option value="WI">Wisconsin</option>
                         <option value="WY">Wyoming</option>
                     </select>
-                    <input type="text" id="customerCountry" name="country" placeholder="Country"><br>
+                    <input type="text" id="customerCountry" name="country" placeholder="Country" pattern="^(?!\s*$)[A-Za-z ]+" required><br>
 
                     <!--Contact Information-->
                     <!--<h4>Contact Information</h4>
@@ -123,13 +123,16 @@
 
             <div class="contact-information">
                 <h4>Contact Information</h4>
-                <input type="text" id="customerFirstName" name="firstName" placeholder="First Name" required><br>
-                <input type="text" id="customerLastName" name="lastName" placeholder="Last Name" required><br>
+                <input type="text" id="customerFirstName" name="firstName" placeholder="First Name" pattern="^(?!\s*$)[A-Za-z]+" required><br>
+                <input type="text" id="customerLastName" name="lastName" placeholder="Last Name" pattern="^(?!\s*$)[A-Za-z]+" required><br>
                 <input type="email" id="customerEmail" name="email" placeholder="Email Address" required><br>
-                <input type="tel" id="customerPhone" name="phone" placeholder="Phone Number" required pattern="[0-9]{10}"><br>
+                <input type="tel" id="customerPhone" name="phone" placeholder="Phone Number" required pattern="^(?!\s*$)[0-9]{10}"><br>
                 <input type="hidden" id="delivery-method-items" name="delivery-method-items" required>
             </div>
             <input type="submit" id="payment-proceed" value="Proceed to Payment" class="payment-checkout-button">
+            
+            <!-- For testing purposes only: Will be hidden-->
+            <input type="submit" id="checkout_button" value="Test Submit Button" name="checkout_submit" style="display: none;" onclick=checkout_test_validation()>
         </form>
     </div>
 </div>
@@ -376,6 +379,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
 <script
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBbRI4-FqDpXwb71COuZZsvi921b6nott8&loading=async&libraries=places&callback=initAutocomplete">
+</script>
+
+<!-- script for submit button for checkout test validation-->
+<script>
+    function checkout_test_validation() {
+        const form = document.getElementById("checkout-form");
+        let is_valid = true;
+
+        if (!form.checkValidity()) {
+            //alert("Failed Verification");
+            is_valid = false;
+        }
+
+        return is_valid
+    }
 </script>
 
 {% endblock %}
