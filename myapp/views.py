@@ -222,9 +222,6 @@ def checkout(request):
     }
     return render(request, 'checkout.html', context)
 
-def process_checkout(request):
-    return
-
 def store_order_data(request):
     if request.user.is_authenticated:
         cart_items = Cart.objects.filter(customer=request.user.customer)
@@ -232,11 +229,18 @@ def store_order_data(request):
         session_key = request.session.session_key
         cart_items = Cart.objects.filter(session_key=session_key)
 
-    request.session['checkout_data'] = {
-        'email': request.POST.get('email'),
-        'phone': request.POST.get('phone'),
-        'address': request.POST.get('address') if 'address' in request.POST else None,
-    }
+    if request.method == "POST":
+        data = json.loads(request.body)
+    else:
+        return HttpResponse("Failed tp create order")
+
+    '''customerInfo = {
+        'first_name': data.get("customerFirstName"),
+        'last_name': data.get('customerLastName'),
+        'email': data.get('customerEmail'),
+        'phone': data.get('customerPhone'),
+        'address': data.get('address', None),
+    }'''
 
     order_id, total_amount = create_square_order(cart_items)
 
@@ -303,7 +307,30 @@ def paymentPortal(request):
 
     return render(request, 'payment.html', context)
 
-def create_square_order(cart_items):
+def create_square_customer(customerInfo):
+    id = str(uuid.uuid4())
+
+    result = client.customers.create_customer(
+    body = {
+        "idempotency_key": id,
+        "given_name": customerInfo["first_name"],
+        "family_name": customerInfo["last_name"],
+        "email_address": customerInfo["email"],
+        "phone_number": customerInfo["phone"],
+    })
+
+    customer = result.body["customer"]
+    customer_id = customer["id"]
+
+    if result.is_success():
+        return customer_id
+    elif result.is_error():
+        return None
+
+def create_square_order(cart_items, customerInfo, delivery_method):
+    #create customer to associate with order
+    customer_id = create_square_customer(customerInfo)
+
     line_items = []
 
     for item in cart_items:
@@ -317,9 +344,37 @@ def create_square_order(cart_items):
         }
         line_items.append(line_item)
 
+    if delivery_method == "Pickup":
+        fulfillments = [
+            {
+                "type": "PICKUP",
+                "state": "PROPOSED",
+                "pickup_details": {
+                    "recipient": {
+                        "customer_id": customer_id
+                    },
+                    "schedule_type": "ASAP"
+                }
+            }
+        ]
+    else:
+        fulfillments = [
+                    {
+                        "type": "SHIPMENT",
+                        "state": "PROPOSED",
+                        "shipment_details": {
+                            "recipient": {
+                                "customer_id": customer_id
+                            },
+                            "schedule_type": "ASAP"
+                        }
+                    }
+                ]
+
     order_payload = {
         "order": {
             "location_id": "LNG128XEAPR21",
+            "customer_id": customer_id,
             "line_items": line_items,
             "taxes": [
                 {
@@ -332,7 +387,8 @@ def create_square_order(cart_items):
             ],
             "pricing_options": {
                 "auto_apply_taxes" : True
-            }
+            },
+            "fulfillments": fulfillments
         },
         "idempotency_key": str(uuid.uuid4())
     }
@@ -356,9 +412,21 @@ def process_payment(request):
     try:
         data = json.loads(request.body)
         token = data.get("token")
-        delivery_method = data.get("delivery_method", "pickup")
-        customer_email = data.get("email", "guest@moonwalkthreads.com")
-        user_first_name = data.get("first_name", "Guest")
+        delivery_method = data.get("delivery_method")
+        customer_email = data.get("email")
+        customer_first_name = data.get("first_name")
+        customer_last_name = data.get("last_name")
+        customer_phone = data.get("phone")
+        customer_address = data.get("address")
+
+        customerInfo = {
+            "first_name": customer_first_name,
+            "last_name": customer_last_name,
+            "email": customer_email,
+            "phone": customer_phone,
+            "address": customer_address
+        }
+
 
         # 🛒 Retrieve Cart Items
         if request.user.is_authenticated:
@@ -373,10 +441,10 @@ def process_payment(request):
             return JsonResponse({"status": "error", "message": "Cart is empty"}, status=400)
 
         # **Step 1: Create Order in Square**
-        square_order_id, total_amount = create_square_order(cart_queryset)
+        square_order_id, total_amount = create_square_order(cart_queryset, customerInfo, delivery_method)
 
         if not square_order_id:
-            return JsonResponse({"status": "error", "message": "Failed to create Square order"}, status=500)
+            return JsonResponse({"status": "error", "message": "Failed to create Square order"}, status=505)
 
         # **Step 2: Process Payment Using Square Order ID**
         payment_request = {
@@ -418,7 +486,7 @@ def process_payment(request):
     except json.JSONDecodeError:
         return JsonResponse({"status": "error", "message": "Invalid JSON format"}, status=400)
     except Exception as e:
-        return JsonResponse({"status": "error", "message": str(e)}, status=500)
+        return JsonResponse({"status": "error", "message": str(e)}, status=501)
 
 #@authenticated_user
 def checkout(request):

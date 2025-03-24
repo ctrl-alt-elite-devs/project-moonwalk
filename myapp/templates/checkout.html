@@ -212,6 +212,20 @@ document.addEventListener("DOMContentLoaded", function () {
             localStorage.setItem("customerState", state);
         }
 
+        fetch("store_order_data", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: JSON.stringify({
+                customerFirstName: firstName,
+                customerLastName: lastName,
+                customerEmail: email,
+                customerPhone: phone,
+            })
+        })
+
         console.log(`✅ Stored Data | Delivery Method: ${deliveryMethod}`);
         
         // 🔹 Redirect to Payment Page
@@ -359,17 +373,9 @@ document.addEventListener("DOMContentLoaded", function () {
     };
 
 </script>
+
 <script
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBbRI4-FqDpXwb71COuZZsvi921b6nott8&loading=async&libraries=places&callback=initAutocomplete">
 </script>
-
-<!-- script for payment card-->
-<script>
-    function proceed() {
-        //check if form filled out and send to payment portal
-        window.location.href = "{% url 'paymentPortal' %}";
-    }
-</script>
-
 
 {% endblock %}

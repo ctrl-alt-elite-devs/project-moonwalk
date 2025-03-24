@@ -152,7 +152,8 @@
                         // Redirect to order summary page
                         document.location.href = "{% url 'orderSummary' %}";
                     } else {
-                        alert("❌ Payment failed.");
+                        alert("❌ Payment failed. Most likely invalid phone number.");
+                        alert(data.message);
                     }
                 })
                 .catch(error => console.error('Error:', error));
@@ -227,5 +228,5 @@
     })()
 </script>
 
-<script src="{% static 'scripts/sendOrder.js' %}"></script>
+<!--<script src="{% static 'scripts/sendOrder.js' %}"></script>-->
 {% endblock %}
