@@ -201,7 +201,7 @@ document.addEventListener("DOMContentLoaded", function () {
         localStorage.setItem("customerPhone", phone);
 
         // 🔹 Store address info only if Delivery is selected
-        if (deliveryMethod === "delivery") {
+        if (deliveryMethod === "Delivery") {
             const streetAddress = document.getElementById("customerStreetAddress")?.value || "";
             const addressOptional = document.getElementById("customerAddressOptional")?.value || "";
             const zipCode = document.getElementById("customerZipCode")?.value || "";
