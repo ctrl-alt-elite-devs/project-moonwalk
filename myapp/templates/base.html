@@ -154,6 +154,11 @@
             <label for="password">Password</label>
             <input type="password" id="password" name="password" required>
 
+            <!-- Error message display -->
+            {% if login_error %}
+                <div class="login-error-message">{{ login_error }}</div>
+            {% endif %}
+
             <button type="submit" class="login-btn" >Log In</button>
 
             <ul id="locations-list"></ul>
@@ -181,45 +186,98 @@
         </form>
         </div>
     </div>
+
+    {% if login_error %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById("login-modal").style.display = "flex";
+        });
+    </script>
+    {% endif %}
+
     <!-- The Create Account Popup -->
 
-    <div id="signup-modal" class="signup-modal">
-        <div class="signup-content login-content">
-            <span class="login-x signup-close">&times;</span>
-            <form id="signup-form" method="POST" action="{% url 'register' %}">
-                {% csrf_token %}
-                <label for="signup-email">Email</label>
-                <input type="email" id="signup-email" name="email" required>
+   <!-- The Create Account Popup -->
+<div id="signup-modal" class="signup-modal">
+    <div class="signup-content login-content">
+        <span class="login-x signup-close">&times;</span>
+        <form id="signup-form" method="POST" action="{% url 'register' %}">
+            {% csrf_token %}
+            <label for="signup-email">Email</label>
+            <input type="email" id="signup-email" name="email" required
+                   value="{{ signup_data.email|default:'' }}"maxlength="64">
+            {% if signup_errors %}
+                {% if signup_errors.email_error %}
+                    <div class="signup-error-message">{{ signup_errors.email_error }}</div>
+                {% elif signup_errors.username_error %}
+                    <div class="signup-error-message">{{ signup_errors.username_error }}</div>
+                {% endif %}
+            {% endif %}
 
-                <div class = "name-row-container">
-                    <div class = "name-container">
-                        <label for="first-name">First Name</label>
-                        <input type="first-name" id="first-name" name="first-name" required>
-                    </div>
-                    <div class = "name-container">
-                        <label for="last-name">Last Name</label>
-                        <input type="last-name" id="last-name" name="last-name" required>
-                    </div>
+            <div class="name-row-container">
+                <div class="name-container">
+                    <label for="first-name">First Name</label>
+                    <input type="first-name" id="first-name" name="first-name" required
+                           value="{{ signup_data.first_name|default:'' }}" maxlength="30">
                 </div>
-               
-                <label for="password">Password</label>
-                <input type="password" id="signup-password" name="password" required>
-
-                <label for="password">Confirm Password</label>
-                <input type="password" id="confirm-password" name="confirm-password" required>
-
-                <label for="phoneNum">(Optional) Phone Number</label>
-                <input type="tel" id="signup-phone" name="phone" >
-
-                <div class="checkbox-container">
-                    <label class="checkbox-label"><input type="checkbox" id="text-checkbox" name="text-checkbox"> Would you like to receive updates via text message?</label><br>
-                    <label class="checkbox-label"><input type="checkbox" id="email-checkbox" name="email-checkbox"> Would you like to receive updates via email?</label><br>
-                    <label class="checkbox-label"><input type="checkbox" id="agreement-checkbox" required> Do you agree to the <a href="#" class="terms-link">Terms of Service</a></label><br>
+                <div class="name-container">
+                    <label for="last-name">Last Name</label>
+                    <input type="last-name" id="last-name" name="last-name" required
+                           value="{{ signup_data.last_name|default:'' }}" maxlength="30">
                 </div>
-                <button type="submit" class="create-account-btn login-btn">Create Account</button>
-            </form>
             </div>
+
+            <label for="password">Password</label>
+            <input type="password" id="signup-password" name="password" maxlength="32" required>
+            {% if signup_errors and signup_errors.password_strength_error %}
+                <div class="signup-error-message">{{ signup_errors.password_strength_error }}</div>
+            {% endif %}
+
+            <label for="password">Confirm Password</label>
+            <input type="password" id="confirm-password" name="confirm-password" maxlength="32" required>
+            {% if signup_errors and signup_errors.password_match_error %}
+                <div class="signup-error-message">{{ signup_errors.password_match_error }}</div>
+            {% endif %}
+
+            <label for="phoneNum">(Optional) Phone Number</label>
+            <input type="tel" id="signup-phone" name="phone"
+                   value="{{ signup_data.phone|default:'' }}">
+            {% if signup_errors and signup_errors.phone_error %}
+                <div class="signup-error-message">{{ signup_errors.phone_error }}</div>
+            {% endif %}
+
+            <div class="checkbox-container">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="text-checkbox" name="text-checkbox"
+                           {% if signup_data.text_checkbox %}checked{% endif %}>
+                    Would you like to receive updates via text message?
+                </label>
+                <br>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="email-checkbox" name="email-checkbox"
+                           {% if signup_data.email_checkbox %}checked{% endif %}>
+                    Would you like to receive updates via email?
+                </label>
+                <br>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="agreement-checkbox" required>
+                    Do you agree to the <a href="#" class="terms-link">Terms of Service</a>
+                </label>
+                <br>
+            </div>
+            <button type="submit" class="create-account-btn login-btn">Create Account</button>
+        </form>
     </div>
+</div>
+
+
+    {% if signup_errors %}
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                document.getElementById("signup-modal").style.display = "flex";
+            });
+        </script>
+    {% endif %}
 
      <!-- Forgot Password Popup -->
     <div id="forgot-modal" class="login-modal">
