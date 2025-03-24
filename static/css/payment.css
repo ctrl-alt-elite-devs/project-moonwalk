@@ -1,0 +1,121 @@
+/* styling for payment.css */
+
+.payment-page {
+    margin: 10px;
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+}
+
+#payment-column {
+    min-width: 50%;
+    margin: 10px;
+    text-align: center;
+    align-content: center;
+    justify-content: center;
+}
+
+#order-column-payment-page {
+    min-width: 50%;
+    margin: 10px;
+}
+
+@media screen and (max-width: 768px) {
+    .payment-page {
+        margin: 10px;
+        display: inline;
+
+        align-content: center;
+        justify-content: center;
+    }
+
+    #payment-column {
+        text-align: center;
+        align-content: center;
+        justify-content: center;
+    }
+
+    #order-column-payment-page {
+        text-align: center;
+        align-content: center;
+        justify-content: center;
+    }
+
+}
+
+#pay-header {
+    text-align: center;
+}
+
+.digital-payment-container {
+    margin: 5px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#google-pay-button {
+    max-width: 240px;
+    align-self: center;
+}
+
+#apple-pay {
+    max-width: 240px;
+}
+
+#card-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#card {
+    width: 480px;
+}
+
+.sq-card-iframe-container {
+    min-height: 158px;
+}
+
+#pay {
+    position: relative;
+
+    min-height: 50px;
+    width: 480px;
+    max-width: 100%;
+
+    font-size: 24px;
+    color: black;
+
+    background-color: white;
+
+    box-sizing: border-box;
+    border: 1px solid black;
+    border-radius: 10px;
+
+    cursor: pointer;
+    align-self: center;
+    justify-content: center;
+}
+
+#pay:hover {
+    background-color: #F46471;
+}
+
+#pay:active {
+    background-color: #F46471;
+}
+
+/*.paymentInput {
+    min-width: 100%;
+    min-height: 10%;
+    max-width: 100%;
+
+    font-size: 16px;
+    margin: 10px;
+    border-color: black;
+    border-radius: 20px;
+}*/
+

@@ -1,0 +1,173 @@
+/* Style the modal (background) */
+.login-modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
+  justify-content: center;
+    align-items: center;
+  }
+  .signup-modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
+    justify-content: center;
+    align-items: center;
+  }
+  
+  /* Modal content */
+  .login-content {
+    background-color: white;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 350px;
+    border-radius: 10px;
+    text-align: center;
+    max-height: 80vh; /* Set the max height for the modal content */
+    overflow-y: auto; /* Allow vertical scrolling */
+  }
+  .signup-content {
+    margin: 10% auto;
+  }
+
+  #login-form label{
+    text-align: left;
+    display: block;
+    margin-top: 15px;
+  }
+  #signup-form label{
+    text-align: left;
+    display: block;
+    margin-top: 15px;
+  }
+  
+  /* The Close Button */
+  .login-x {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    margin-top: -8px;
+  }
+  
+  .login-x:hover,
+  .login-x:focus {
+    color: black;
+    cursor: pointer;
+  }
+  
+  input[type="email"], input[type="password"], input[type="first-name"], input[type="last-name"], input[type="tel"] {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+  }
+  
+  button.login-btn {
+    background-color: #F46471;
+    color: white;
+    border: none;
+    padding: 12px;
+    width: 100%;
+    margin-top: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  button.login-btn:hover {
+    background-color: #f24c5a;
+  }
+  
+  a.forgot-password {
+    text-decoration: underline;
+  }
+
+  a.create-account {
+    text-decoration: underline;
+  }
+
+  a.create-account:hover {
+    color: #f07680;
+  }
+
+  a.forgot-password:hover {
+    color: #f07680;
+  }
+
+  .forgot-create-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 35px; 
+    margin-top: 20px;
+    margin-bottom: 15px;
+}
+  .name-row-container {
+  display: flex;
+  gap: 20px;
+}
+.checkbox-container{
+  margin-bottom: 30px;
+}
+.checkbox-label{
+  font-size: 12px;
+  margin-bottom: -30px;
+}
+.terms-link {
+  font-size: 12px;
+  text-decoration: underline;
+}
+.terms-link:hover {
+  color: #f07680;
+}
+
+/* Ensure the content doesn't overflow the modal */
+#terms-modal .login-content {
+  max-height: 80vh; /* Adjust the max-height based on your design */
+  overflow-y: auto; /* Adds vertical scroll */
+}
+
+#terms-modal p,
+#terms-modal h3,
+#terms-modal h2 {
+    text-align: left;
+}
+
+.logAlert {
+  padding: 15px;
+  background-color:#F46471;
+  color: black;
+  border-radius: 5px;
+  position: relative;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+.login-error-message{
+  color:red;
+  padding: 10px;
+  font-size: 14px;
+}
+
+.signup-error-message{
+  color:red;
+  font-size: 12px;
+  text-align: left;
+}

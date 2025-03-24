@@ -1,0 +1,230 @@
+/* Root Variables */
+:root {
+    --border-color: #E0E0E0;
+    --font-color: #333333;
+    --hover-scale: 1.05;
+    --button-color: #333333;
+    --button-border-color: #333333;
+    --button-hover-color: #F46471;
+}
+
+/* Ensure Search Bar & Buttons Are Side by Side */
+.shop-search-filter {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+/* Search Input */
+.shop-search-input {
+    padding: 6px;
+    font-size: 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    width: 250px;
+}
+
+/* Button Container (Search + Filter) */
+.shop-button-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* Filter Button Wrapper (Ensures Dropdown Appears Below) */
+.shop-filter-wrapper {
+    position: relative; /* Ensures dropdown is positioned relative to this */
+}
+
+/* Search & Filter Buttons */
+.shop-button {
+    font-size: 16px;
+    background-color: #F46471;
+    color: #000;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    min-width: 100px;
+    min-height: 32px;
+    cursor: pointer;
+}
+
+.shop-button:hover {
+    background-color: #F46471;
+    color: white;
+    transform: scale(var(--hover-scale));
+}
+
+/* Dropdown Menu (Now Directly Below the Filter Button) */
+.shop-filter-content {
+    display: none;
+    position: absolute;
+    top: 100%; /* Positions dropdown directly below filter button */
+    left: 0;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 100;
+    border-radius: 5px;
+    padding: 5px 0;
+}
+
+/* Dropdown Links */
+.shop-filter-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.shop-filter-content a:hover {
+    background-color: #f1f1f1;
+}
+
+/* Show dropdown when active */
+.show {
+    display: block;
+}
+
+/* Section Styling */
+.shop-product-section {
+    padding: 1rem 0;
+}
+
+/* Scrollable Row Layout */
+.shop-product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); /* Larger cards and adjust column size */
+    justify-items: center;
+    gap: 16px; /* Reduced gap between cards */
+}
+
+/* Product Card Styling */
+.shop-product-card {
+    flex: 0 0 auto; /* Prevent shrinking and allow card to fit content */
+    width: 250px; /* Increased width for larger cards */
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    text-align: center;
+    scroll-snap-align: center; /* Snap cards to center on scroll */
+    background-color: #fff; /* Ensure a consistent background color */
+}
+
+/* Hover Effect */
+.shop-product-card:hover {
+    transform: scale(var(--hover-scale));
+}
+
+/* Image Styling */
+.shop-product-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+/* Title Styling */
+.shop-product-title {
+    font-size: 1.2rem;
+    color: var(--font-color);
+    margin: 0.5rem 0 0.3rem; /* Top and bottom spacing */
+    font-weight: 600;
+}
+
+/* Price Styling */
+.shop-product-price {
+    font-size: 1rem;
+    color: var(--font-color);
+    margin-bottom: 0.5rem; /* Add spacing before buttons */
+}
+
+/* Button Styling */
+.shop-product-footer {
+    display: flex;
+    flex-direction: column; /* Stack buttons vertically */
+    gap: 12px; /* Space between buttons */
+    padding: 0.5rem; /* Padding inside the footer */
+}
+
+.shop-product-footer .btn {
+    width: 100%; /* Full width of the card */
+    padding: 0.5rem 1rem;
+    text-align: center;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--button-color);
+    transition: background-color 0.3s, color 0.3s;
+    text-transform: uppercase;
+}
+
+.shop-product-footer .btn:hover {
+    background-color: var(--button-hover-color);
+    color: #FFFFFF;
+}
+
+.shop-add-to-cart-btn {
+    background-color: transparent;
+    color: #000; /* Dark text */
+    cursor: pointer;
+}
+
+.shop-add-to-cart-btn:hover {
+    background-color: #000; /* Dark background on hover */
+    color: #fff; /* White text on hover */
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .shop-search-filter {
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .shop-search-input {
+        max-width: 400px;
+    }
+
+    .shop-button-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .shop-button {
+        width: auto;
+        min-width: 100px;
+        text-align: center;
+    }
+
+    .shop-product-grid {
+        grid-template-columns: repeat(2, 1fr); /* Two columns for small screens */
+        gap: 10px; /* Even smaller gap for mobile screens */
+    }
+
+    .shop-product-card {
+        width: 200px; /* Take up most of the screen width on mobile */
+    }
+
+    .shop-product-title {
+        font-size: 1rem; /* Slightly smaller font size */
+    }
+
+    .shop-product-price {
+        font-size: 0.9rem; /* Adjust price font size */
+    }
+
+    .shop-product-footer .btn {
+        padding: 0.4rem 0.8rem; /* Smaller buttons */
+    }
+}

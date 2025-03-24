@@ -1,0 +1,139 @@
+/* Root Variables */
+:root {
+    --border-color: #E0E0E0;
+    --font-color: #333333;
+    --hover-scale: 1.05;
+    --button-color: #333333;
+    --button-border-color: #333333;
+    --button-hover-color: #F46471;
+}
+
+/* Section Styling */
+.product-section {
+    padding: 1rem 0;
+    overflow-x: hidden; /* Prevent horizontal overflow */
+}
+
+/* Scrollable Row Layout */
+.product-grid {
+    display: flex;
+    gap: 24px; /* Space between product cards */
+    overflow-x: auto; /* Allow horizontal scrolling */
+    padding: 0 1rem; /* Add padding on left and right */
+    scroll-snap-type: x mandatory; /* Smooth snap scrolling */
+}
+
+.product-grid::-webkit-scrollbar {
+    height: 8px; /* Customize scrollbar height */
+}
+
+.product-grid::-webkit-scrollbar-thumb {
+    background: var(--border-color); /* Scrollbar color */
+    border-radius: 8px;
+}
+
+.product-grid::-webkit-scrollbar-track {
+    background: transparent; /* Track color */
+}
+
+/* Product Card Styling */
+.product-card {
+    flex: 0 0 auto; /* Prevent shrinking and allow card to fit content */
+    width: 200px; /* Fixed width for uniformity */
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    text-align: center;
+    scroll-snap-align: center; /* Snap cards to center on scroll */
+    background-color: #fff; /* Ensure a consistent background color */
+}
+
+/* Hover Effect */
+.product-card:hover {
+    transform: scale(var(--hover-scale));
+}
+
+/* Image Styling */
+.product-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+/* Title Styling */
+.product-title {
+    font-size: 1.2rem;
+    color: var(--font-color);
+    margin: 0.5rem 0 0.3rem; /* Top and bottom spacing */
+    font-weight: 600;
+}
+
+/* Price Styling */
+.product-price {
+    font-size: 1rem;
+    color: var(--font-color);
+    margin-bottom: 0.5rem; /* Add spacing before buttons */
+}
+
+/* Button Styling */
+.product-footer {
+    display: flex;
+    flex-direction: column; /* Stack buttons vertically */
+    gap: 12px; /* Space between buttons */
+    padding: 0.5rem; /* Padding inside the footer */
+}
+
+.product-footer .btn {
+    width: 100%; /* Full width of the card */
+    padding: 0.5rem 1rem;
+    text-align: center;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--button-color);
+    transition: background-color 0.3s, color 0.3s;
+    text-transform: uppercase;
+}
+
+.product-footer .btn:hover {
+    background-color: var(--button-hover-color);
+    color: #FFFFFF;
+}
+
+.add-to-cart-btn {
+    background-color: transparent;
+    color: #000; /* Dark text */
+    cursor: pointer;
+}
+
+.add-to-cart-btn:hover {
+    background-color: #000; /* Dark background on hover */
+    color: #fff; /* White text on hover */
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .product-card {
+        width: 160px; /* Adjust width for smaller screens */
+    }
+
+    .product-image {
+        height: 150px; /* Adjust image height */
+    }
+
+    .product-title {
+        font-size: 1rem;
+    }
+
+    .product-price {
+        font-size: 0.9rem;
+    }
+
+    .product-footer .btn {
+        padding: 0.4rem 0.8rem; /* Smaller buttons */
+    }
+}

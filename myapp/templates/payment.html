@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% block title %}Payment{% endblock %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment</title>
+    {% load static %}
+    {% csrf_token %}
+</head>
+{% block content %}
+<div class="payment-page">
+    <div id="order-column-payment-page">
+        {% include 'cartSummary.html' %}
+    </div>
+    <div id="payment-column">
+        <div id="pay-header-container">
+            <h1 id="pay-header">Payment</h1>
+        </div>
+        <div id="paymentWrapper">
+            <div class="digital-payment-container">
+                <div id="google-pay-button"></div>
+                <!--<div id="apple-pay"></div>      Implement once site is deployed. otherwise, messes with styling and functionality-->
+            </div>
+
+            <div id="card-container">
+                <div id="card"></div>
+            </div>
+            <button id="pay" type="button">Pay</button>
+        </div>
+    </div>
+
+</div>
+
+<!-- For testing Shippo API purposes-->
+<!--{% if label_url %}
+    <p>Your shipping label is ready! <a href="{{ label_url }}" target="_blank">View Label</a></p>
+    <p>You can track your shipment here: <a href="{{ tracking_url }}" target="_blank">Track Shipment</a></p>
+    <p>To view your shipment in Shippo, click here: <a href="{{ shippo_url }}" target="_blank">View in Shippo Portal</a></p>
+{% else %}
+    <p>There was an error creating the shipping label.</p>
+{% endif %}-->
+
+<!-- credit card payment script -->
+<script>
+    (async()=>{
+        const payments = Square.payments(
+            '{{ square_app_id }}',
+            '{{ square_location_id }}'
+        );
+        const cardOptions = {
+            style: {
+                input: {
+                    backgroundColor: 'white'
+                },
+            }
+        };
+        try {
+            const card = await payments.card(cardOptions);
+            await card.attach('#card');
+            const payButton = document.getElementById('pay');
+            payButton.addEventListener('click', async ()=>{
+                const result = await card.tokenize();
+                if (result) {
+                    fetch("{% url 'process_payment' %}", {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        body: JSON.stringify({token: result.token})
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                alert("Payment successful");
+                                document.location.href = "{% url 'orderSummary' %}"
+                            } else {
+                                alert("Payment failed");
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
+                }
+            })
+        } catch (e) {
+            console.error(e);
+        }
+    })()
+</script>
+
+<!-- google-pay payment option script -->
+<script>
+    (async()=>{
+        const payments = Square.payments(
+            'sandbox-sq0idb-8IPgsCCDGo1xxuoCMh0SSQ',
+            'LNG128XEAPR21'
+        );
+
+        const paymentRequest = payments.paymentRequest({
+            total: {
+                amount: "1.00",
+                label: "Total"
+            },
+            countryCode: "US",
+            currencyCode: "USD"
+        });
+
+        try{
+            const googlePay = await payments.googlePay(paymentRequest);
+            await googlePay.attach('#google-pay-button');
+
+            const googlePayButton = document.getElementById('google-pay-button');
+            googlePayButton.addEventListener('click', async () => {
+                const result = await googlePay.tokenize();
+                alert(JSON.stringify(result, null, 2));
+            })
+        } catch (e) {
+            console.error(e);
+        }
+    })()
+</script>
+
+<!-- apple-pay payment option-->
+<script>
+    (async()=>{
+        const payments = Square.payments(
+            'sandbox-sq0idb-8IPgsCCDGo1xxuoCMh0SSQ',
+            'LNG128XEAPR21'
+        );
+
+        const paymentRequest = payments.paymentRequest({
+            total: {
+                amount: "1.00",
+                label: "Total"
+            },
+            countryCode: "US",
+            currencyCode: "USD"
+        });
+
+        try{
+            const applePay = await payments.applePay(paymentRequest);
+
+            const applePayButton = document.getElementById('apple-pay');
+            applePayButton.style.display = 'inherit';
+            applePayButton.addEventListener('click', async () => {
+                const result = await applePay.tokenize();
+                alert(JSON.stringify(result, null, 2));
+            })
+        } catch (e) {
+            console.error(e);
+        }
+    })()
+</script>
+
+{% endblock %}

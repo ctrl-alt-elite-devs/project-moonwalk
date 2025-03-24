@@ -1,0 +1,225 @@
+{% extends 'base.html' %}
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart View</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/cart.css' %}" />
+    {% csrf_token %}
+</head>
+<body>
+    <div class="cart-container">
+
+        <!-- Timer Section -->
+ <div class="countdown-container">
+        <div class="countdown-title">Time Left to Buy Items</div>
+        <div class="countdown-timer">
+            <div class="time-box">
+                <span id="number_Days">00</span>
+                <p>Days</p>
+            </div>
+            <div class="colon">:</div>
+            <div class="time-box">
+                <span id="number_Hours">00</span>
+                <p>Hrs</p>
+            </div>
+            <div class="colon">:</div>
+            <div class="time-box">
+                <span id="number_Minutes">00</span>
+                <p>Mins</p>
+            </div>
+            <div class="colon">:</div>
+            <div class="time-box">
+                <span id="number_Seconds">00</span>
+                <p>Secs</p>
+            </div>
+        </div>
+         
+        <script>
+            // Get the time from python using django
+            var remainingTime_str = "{{ total_time }}";
+            var remainingTime = parseFloat(remainingTime_str);
+            console.log(remainingTime);
+            
+        
+            // Define the function that will update the html values
+            function updateCountdown(){
+                console.log("Entered the function");
+                // Get each time units values
+                var days = Math.floor(remainingTime / 86400);
+                var hours = Math.floor((remainingTime % 86400) / 3600);
+                var minutes = Math.floor((remainingTime % 3600) / 60);
+                var seconds = Math.floor(remainingTime % 60);
+        
+                console.log(days)
+                console.log(hours)
+                
+                // Format each unit
+                //days_str = String.format("%02d", days);
+                //hours_str = String.format("%02d", hours);
+                //minutes_str = String.format("%02d", minutes);
+                //seconds_str = String.format("%02d", seconds);
+        
+                // Update the values here
+                document.getElementById("number_Days").innerHTML = days;
+                document.getElementById("number_Hours").innerHTML = hours;
+                document.getElementById("number_Minutes").innerHTML = minutes;
+                document.getElementById("number_Seconds").innerHTML = seconds;
+        
+                // Check to see if no time remains
+                if (remainingTime <= 0) {
+                        // Set values to 00
+                        clearInterval(update);
+                        document.getElementById("number_Days").innerHTML = "00";
+                        document.getElementById("number_Hours").innerHTML = "00";
+                        document.getElementById("number_Minutes").innerHTML = "00";
+                        document.getElementById("number_Seconds").innerHTML = "00";
+        
+                } else {
+                        remainingTime--;
+                }
+            }
+            
+            // Update the timer every second
+            var update = setInterval(updateCountdown, 1000);
+        </script>
+    </div>
+<!-- Cart items section -->
+<div class="cart-items">
+    <h2><center>Your Cart</center></h2>
+    <!-- Loop through cart items from the context -->
+    {% for item in cart_items %}
+    <div class="cart-item" id="cart-item-{{ item.id }}">
+        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" width="200" height="200">
+        <div class="item-details">
+            <h4>{{ item.product.name }}</h4>
+            <p>Price: ${{ item.product.price|floatformat:2 }} | Size: {{ item.product.size }}</p>
+        </div>
+
+        <div class="remove-item">
+            <button class="remove-btn" data-id="{{ item.id }}">
+                <img src="{% static 'icons/Trash1.svg' %}" alt="Remove" class="trash-icon">
+            </button>
+        </div>
+        <script>
+            $(document).ready(function () {
+                $('.remove-btn').off('click').on('click', function (event) {
+                    event.preventDefault();
+
+                    const cartItemId = $(this).data('id'); // Get the item ID
+
+                    $.ajax({
+                        url: `/remove-from-cart/${cartItemId}/`,
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}', // Include CSRF token
+                        },
+                        success: function () {
+                            // Reload the page to ensure total price and UI updates
+                            location.reload();
+                        },
+                        error: function (xhr) {
+                            alert(`Error: ${xhr.responseJSON.message}`); // Show error message
+                        },
+                    });
+                });
+            });
+        </script>
+    </div>
+    {% empty %}
+        <p>Your cart is empty.</p>
+    {% endfor %}
+
+    {% if cart_items %}
+        <div class="total-section">
+            <p>Items: ${{ total_price|floatformat:2 }}</p>
+            <p>Shipping & Taxes Calculated at Checkout</p>
+            <!-- Custom divider -->
+            <div class="divider"></div>
+            <p>Total: ${{ total_price|floatformat:2 }}</p>
+        </div>
+     {% endif %}
+            <!-- Checkout Button -->
+        <div class="checkout">
+            <div>
+                <button class="checkout-button" onclick="window.location.href = {% url 'checkout' %}">CHECKOUT</button>
+            </div>
+
+            <!-- Digital Payment Options -->
+            <div class="digitalPayment">
+                <div id="google-pay-button"></div>
+                <div id="apple-pay"></div>
+            </div>
+        </div>
+
+</div>
+
+    </div>
+</body>
+
+<!-- google-pay payment option script -->
+<script>
+    (async()=>{
+        const payments = Square.payments(
+            'sandbox-sq0idb-8IPgsCCDGo1xxuoCMh0SSQ',
+            'LNG128XEAPR21'
+        );
+
+        const paymentRequest = payments.paymentRequest({
+            total: {
+                amount: "1.00",
+                label: "Total"
+            },
+            countryCode: "US",
+            currencyCode: "USD"
+        });
+
+        try{
+            const googlePay = await payments.googlePay(paymentRequest);
+            await googlePay.attach('#google-pay-button');
+
+            const googlePayButton = document.getElementById('google-pay-button');
+            googlePayButton.addEventListener('click', async () => {
+                const result = await googlePay.tokenize();
+                alert(JSON.stringify(result, null, 2));
+            })
+        } catch (e) {
+            console.error(e);
+        }
+    })()
+</script>
+
+<!-- apple-pay payment option-->
+<script>
+    (async()=>{
+        const payments = Square.payments(
+            'sandbox-sq0idb-8IPgsCCDGo1xxuoCMh0SSQ',
+            'LNG128XEAPR21'
+        );
+
+        const paymentRequest = payments.paymentRequest({
+            total: {
+                amount: "1.00",
+                label: "Total"
+            },
+            countryCode: "US",
+            currencyCode: "USD"
+        });
+
+        try{
+            const applePay = await payments.applePay(paymentRequest);
+
+            const applePayButton = document.getElementById('apple-pay');
+            applePayButton.style.display = 'inherit';
+            applePayButton.addEventListener('click', async () => {
+                const result = await applePay.tokenize();
+                alert(JSON.stringify(result, null, 2));
+            })
+        } catch (e) {
+            console.error(e);
+        }
+    })()
+</script>
+
+{% endblock %}

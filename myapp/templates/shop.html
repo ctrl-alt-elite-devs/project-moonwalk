@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+{% block title %}Shop{% endblock %}
+{% block content %}
+<h1>Shop</h1>
+
+<div class="shop-search-filter">
+    <!-- Search Form -->
+    <form id="search-form" method="GET" action="{% if category %}{% url 'shop-category' category.name %}{% else %}{% url 'shop' %}{% endif %}">
+        <input type="text" name="q" placeholder="Search for products..." value="{{ search_query }}" class="shop-search-input">
+    </form>
+
+    <!-- Button Container -->
+    <div class="shop-button-container">
+        <button class="shop-button" type="button" onclick="submitSearch()">Search</button>
+
+        <!-- Filter Button Wrapper-->
+        <div class="shop-filter-wrapper">
+            <button class="shop-button" onclick="toggleDropdown()">Filter</button>
+
+            <!-- Filter Dropdown-->
+            <div class="shop-filter-content" id="shop-filter-content">
+                <a href="{% url 'shop' %}">All Products</a>
+                {% for category in categories %}
+                    <a href="{% url 'shop-category' category.name %}?q={{ search_query }}">{{ category.name }}</a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+<section class="shop-product-section">
+    <div class="shop-product-grid">
+        {% for product in products %}
+        <div class="shop-product-card">
+            <!-- Image -->
+            <img class="shop-product-image" src="{{ product.image.url }}" alt="Product Image" />
+            <!-- Details -->
+            <div class="shop-product-body">
+                <h5 class="shop-product-title">{{ product.name }}</h5>
+                <p class="shop-product-price">${{ product.price }}</p>
+                <p class="shop-product-price">{{ product.size }}</p>
+            </div>
+            <!-- Actions -->
+            <div class="shop-product-footer">
+                <a class="btn btn-outline-dark" href="{% url 'productDetails' product.id %}">View Product</a>
+                <button class="btn btn-outline-dark shop-add-to-cart-btn" data-id="{{ product.id }}">Add to Cart</button>
+            </div>
+
+
+        </div>
+        {% endfor %}
+    </div>
+
+</section>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $(".shop-add-to-cart-btn").off("click").on("click", function (event) {
+            event.preventDefault();
+
+            const productId = $(this).data("id");
+            console.log(`🛒 Adding product ID: ${productId}`);
+
+            $.ajax({
+                url: `/add-to-cart/${productId}/`,
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value,
+                },
+                success: function (response) {
+                    console.log("✅ AJAX Success:", response);
+
+                    if (response.message.includes("already in your cart")) {
+                        showCartNotification("This item is already in your cart.", "warning");
+                    } else {
+                        showCartNotification("Item added to cart!", "success");
+
+                        // Ensure cart counter is present
+                        let cartCounter = $("#cart-icon .cart-count");
+
+                        // If cart was empty before, force refresh
+                        if (!cartCounter.length || parseInt(cartCounter.text()) === 0) {
+                            location.reload();
+                            return;
+                        }
+
+                        if (cartCounter.length === 0) {
+                            $("#cart-icon").append(`<span class="cart-count">${response.cart_item_count}</span>`);
+                        } else {
+                            cartCounter.text(response.cart_item_count);
+                        }
+
+                        // Ensure cart dropdown exists
+                        let cartDropdown = $("#cart-dropdown");
+                        if (cartDropdown.length === 0) {
+                            $(".cart-container").append(`
+                                <div class="cart-dropdown" id="cart-dropdown">
+                                    <ul class="cart-items"></ul>
+                                    <div class="cart-footer">
+                                        <a href="/cart/" class="checkout-button">Go to Cart</a>
+                                    </div>
+                                </div>
+                            `);
+                        }
+
+                        // Update the cart dropdown dynamically
+                        updateCartDropdown(response.cart_items);
+                    }
+                },
+                error: function (xhr) {
+                    console.error("❌ AJAX Error:", xhr.responseText);
+                    showCartNotification(`${xhr.responseJSON.message}`);
+                },
+            });
+        });
+
+
+        function updateCartDropdown(cartItems) {
+        console.log("🔄 Updating cart dropdown...", cartItems);
+        let cartDropdown = $("#cart-dropdown");
+        let cartList = cartDropdown.find(".cart-items");
+        let cartFooter = cartDropdown.find(".cart-footer");
+
+        // Clear existing items and footer to prevent duplication
+        cartList.empty();
+        cartFooter.remove();
+
+        if (cartItems.length > 0) {
+            cartItems.slice(0, 4).forEach(item => {
+                cartList.append(`
+                    <li class="cart-item">
+                        <img src="${item.product.image_url}" alt="${item.product.name}" width="40">
+                        <div>
+                            <p>${item.product.name}</p>
+                            <p>$${item.product.price.toFixed(2)}</p>
+                        </div>
+                    </li>
+                `);
+            });
+
+            // Append a fresh footer only once
+            cartDropdown.append(`
+                <div class="cart-footer">
+                    <a href="/cart/" class="checkout-button">Go to Cart</a>
+                </div>
+            `);
+        } else {
+            cartList.html(`<p class="empty-cart">Your cart is empty.</p>`);
+        }
+    }
+
+                function showCartNotification(message, type = "success") {
+                let notification = document.getElementById("cart-notification");
+
+
+                notification.textContent = message;
+                notification.style.opacity = "1";
+                notification.style.visibility = "visible";
+                notification.style.transform = "translateY(0px)";
+
+                // Hide notification after 3 seconds
+                setTimeout(() => {
+                notification.style.opacity = "0";
+                notification.style.visibility = "hidden";
+                notification.style.transform = "translateY(-10px)";
+                }, 3000);
+                }
+    });
+</script>
+<script>
+    // Function to toggle the dropdown menu
+    function toggleDropdown() {
+        var dropdown = document.getElementById("shop-filter-content");
+        dropdown.classList.toggle("show");
+
+        // Ensure dropdown is positioned correctly below the button
+        var button = document.querySelector(".shop-button-container");
+        var buttonRect = button.getBoundingClientRect();
+        
+        dropdown.style.top = buttonRect.height + "px"; // Adjust position
+        dropdown.style.left = "0px"; // Align it directly below the button
+    }
+
+    // Close the dropdown if the user clicks outside of it
+    window.onclick = function(event) {
+        if (!event.target.matches('.shop-button')) {
+            var dropdowns = document.getElementsByClassName("shop-filter-content");
+            for (var i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (openDropdown.classList.contains('show')) {
+                    openDropdown.classList.remove('show');
+                }
+            }
+        }
+    };
+
+    function submitSearch() {
+        document.getElementById("search-form").submit();
+    }
+</script>
+
+
+
+{% endblock %}
