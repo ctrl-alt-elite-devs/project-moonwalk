@@ -1,4 +1,5 @@
 myapp/__pycache__/
+moonwalk/__pycache__/
 myapp/migrations/__pycache__/
 *db.sqlite3
 .env

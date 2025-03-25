@@ -20,9 +20,11 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm
+from django.views.generic.edit import FormView
 from django.contrib import messages
 from django.utils import timezone
+from django.conf import settings
 from datetime import timedelta
 from .decorator import authenticated_user
 from .decorator import checkout_required
@@ -639,6 +641,18 @@ def register_user(request):
             return render(request, 'home.html', context)
     return redirect('home')
 
+class password_reset(FormView):
+    form_class = PasswordResetForm  # Built-in Django form
+
+    def form_valid(self, form):
+        form.save(
+            use_https=self.request.is_secure(),
+            request=self.request,
+            email_template_name="registration/password_reset_email.txt",       # plain text fallback
+            html_email_template_name="registration/password_reset_email.html", 
+        )
+        return JsonResponse({"success": True}) # Return JSON response to be checked in login-script
+
 def custom_password_validator(password):
     # Check for a minimum length of 8 characters
     if len(password) < 8:
@@ -794,28 +808,30 @@ def subscribe(request):
 
     return JsonResponse({"success": False, "message": "Invalid request."}, status=405)
 
-def send_order_email(context):
-    """Send order confirmation email to the customer with tax info."""
+#def send_order_email(context):
+#    """Send order confirmation email to the customer with tax info."""
 
-    # Render email
-    html_content = render_to_string("order_confirmation_email.html", context)
-    text_content = strip_tags(html_content)
+#    # Render email
+#    html_content = render_to_string("order_confirmation_email.html", context)
+#   text_content = strip_tags(html_content)
 
-    subject = f"Order #{context['order_number']} Confirmation"
-    from_email = "projectmoonwalk01@gmail.com"
-    recipient_list = [context["email"]]
+#    subject = f"Order #{context['order_number']} Confirmation"
+#    from_email = "projectmoonwalk01@gmail.com"
+#    recipient_list = [context["email"]]
 
-    email = EmailMultiAlternatives(subject, text_content, from_email, recipient_list)
-    email.attach_alternative(html_content, "text/html")
-    email.send(fail_silently=False)
-    
-def generate_test_tracking():
-    """Generate a fake Shippo test tracking number, tracking URL, and label URL."""
-    tracking_number = "SHIPPO-TRACK-TEST12345"
-    tracking_url = "https://track.goshippo.com/SHIPPO-TRACK-TEST12345"
-    label_url = "https://yourtestserver.com/test-label.pdf"  # Replace with your placeholder URL
-    return tracking_number, tracking_url, label_url
+#        email_message = EmailMultiAlternatives(subject, text_content, from_email, recipient_list)
+#        email_message.attach_alternative(html_content, "text/html")
+#        email_message.send()
 
+#        return orderSummary(request)
+#       return JsonResponse({"success": True, "message": "Order confirmation email sent."})
+#
+#    except json.JSONDecodeError:
+#        return JsonResponse({"success": False, "message": "Invalid data format."}, status=400)
+
+#    return JsonResponse({"success": False, "message": "Invalid request."}, status=405)
+
+@login_required
 def profile(request):
     # Check if a user is logged in
     if request.user.is_authenticated:
@@ -837,5 +853,5 @@ def profile(request):
             ],
         }
 
-    return render(request, "profile.html", {"user": user_data})
+    return render(request, "profile.html", {"user_data": user_data})
 

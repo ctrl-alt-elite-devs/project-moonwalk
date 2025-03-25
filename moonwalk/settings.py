@@ -160,7 +160,7 @@ SESSION_COOKIE_AGE = 1800
 # Email Backend
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 465  # 465 for SSL, 587 for TLS
+EMAIL_PORT = 587  # 465 for SSL, 587 for TLS
 EMAIL_USE_TLS = True # Use TLS for security
 EMAIL_USE_SSL = False  # Use SSL instead of TLS (not recommended for Gmail)
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')

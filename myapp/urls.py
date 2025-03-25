@@ -1,4 +1,6 @@
 from django.urls import path
+from django.contrib.auth import views as auth_views
+from django.contrib.auth.decorators import login_required
 from . import views
 
 urlpatterns = [
@@ -33,7 +35,7 @@ urlpatterns = [
     path('product/<int:pk>/', views.productDetails, name='productDetails'),
     
         #send order
-    path("send-order-email/", views.send_order_email, name="send_order_email"),
+    #path("send-order-email/", views.send_order_email, name="send_order_email"),
     
 
     # Address Submission (Shippo)
@@ -43,6 +45,11 @@ urlpatterns = [
     path('login/', views.login_user, name='login'),
     path('logout/', views.logout_user, name='logout'),
     path('register/', views.register_user, name='register'),
+    path('password_reset/', views.password_reset.as_view(), name='password_reset'),
+    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    path('reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
+    path('password_change/', login_required(auth_views.PasswordChangeView.as_view()), name='password_change'),
+    path('password_change/done/', login_required(auth_views.PasswordChangeDoneView.as_view()), name='password_change_done'),
 
     # Payment Portal (Testing)
     path('payment/', views.paymentPortal, name='paymentPortal'),
