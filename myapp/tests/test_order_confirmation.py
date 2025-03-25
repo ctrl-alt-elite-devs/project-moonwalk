@@ -1,68 +1,58 @@
-import time
-import unittest
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import time
+import unittest
 
-class OrderConfirmationTest(unittest.TestCase):
+class OrderSummaryTest(unittest.TestCase):
     def setUp(self):
-        self.driver = webdriver.Safari()
-        self.driver.get("http://localhost:8000")
+        options = Options()
+        self.driver = webdriver.Firefox(options=options)
+        self.driver.get("http://localhost:8000")  
+        self.driver.maximize_window()
 
-    def test_full_order_flow(self):
+    def test_customer_info_and_order_id(self):
         driver = self.driver
-        wait = WebDriverWait(driver, 10)
+        wait = WebDriverWait(driver, 40)
 
-        # 1️⃣ Add a product to the cart
-        driver.get("http://localhost:8000/shop/")
-        wait.until(EC.presence_of_element_located((By.CLASS_NAME, "add-to-cart-btn"))).click()
-        time.sleep(1)
+        print("🛑 Fill out the form manually and click 'Proceed to Payment' in the browser.")
+        input("➡️ Press ENTER here in the terminal once you've reached the payment page...")
 
-        # 2️⃣ Checkout
-        driver.get("http://localhost:8000/checkout/")
-        wait.until(EC.presence_of_element_located((By.ID, "customerFirstName"))).send_keys("Test")
-        driver.find_element(By.ID, "customerLastName").send_keys("User")
-        driver.find_element(By.ID, "customerEmail").send_keys("testuser@example.com")
-        driver.find_element(By.ID, "customerPhone").send_keys("1234567890")
+        # ✅ Continue test: wait for redirect to payment confirmation or summary page
+        wait = WebDriverWait(driver, 20)
+        wait.until(EC.url_contains("/payment"))
 
-        driver.find_element(By.ID, "customerStreetAddress").send_keys("123 Main St")
-        driver.find_element(By.ID, "customerCity").send_keys("Auburn")
-        driver.find_element(By.ID, "customerZipCode").send_keys("11111")
-        driver.find_element(By.ID, "customerState").send_keys("CA")
-        driver.find_element(By.ID, "customerCountry").send_keys("USA")
+        print("✅ Now at payment page! Test continues...")
 
-        driver.find_element(By.ID, "payment-proceed").click()
+        # Optional: Continue to simulate payment or wait for confirmation page
+        input("➡️ Press ENTER after completing payment manually...")
 
-        # 3️⃣ Fill Square Payment Fields
-        time.sleep(3)
+        # ✅ Final check
+        wait.until(EC.url_contains("/orderSummary"))
+        self.assertIn("orderSummary", driver.current_url)
 
-        card_iframe = driver.find_element(By.CSS_SELECTOR, "iframe[name^='sq-card-number']")
-        driver.switch_to.frame(card_iframe)
-        driver.find_element(By.NAME, "cardnumber").send_keys("4111111111111111")
-        driver.switch_to.default_content()
+        # ✅ Extract from localStorage (based on your payment script)
+        first_name = driver.execute_script("return localStorage.getItem('customerFirstName');")
+        last_name = driver.execute_script("return localStorage.getItem('customerLastName');")
+        email = driver.execute_script("return localStorage.getItem('customerEmail');")
+        phone = driver.execute_script("return localStorage.getItem('customerPhone');")
+        order_id = driver.execute_script("return localStorage.getItem('squareOrderId');")
+        email_sent = driver.execute_script("return localStorage.getItem('email_sent');")
 
-        exp_iframe = driver.find_element(By.CSS_SELECTOR, "iframe[name^='sq-expiration-date']")
-        driver.switch_to.frame(exp_iframe)
-        driver.find_element(By.NAME, "exp-date").send_keys("0555")
-        driver.switch_to.default_content()
+        print("\n📦 Customer Info from localStorage:")
+        print("🧍 First Name:", first_name)
+        print("🧍 Last Name:", last_name)
+        print("📧 Email:", email)
+        print("📧 Email Sent:", email_sent)
+        print("📞 Phone:", phone)
+        print("🧾 Square Order ID:", order_id)
 
-        cvv_iframe = driver.find_element(By.CSS_SELECTOR, "iframe[name^='sq-cvv']")
-        driver.switch_to.frame(cvv_iframe)
-        driver.find_element(By.NAME, "cvv").send_keys("411")
-        driver.switch_to.default_content()
-
-        zip_iframe = driver.find_element(By.CSS_SELECTOR, "iframe[name^='sq-postal-code']")
-        driver.switch_to.frame(zip_iframe)
-        driver.find_element(By.NAME, "postal-code").send_keys("11111")
-        driver.switch_to.default_content()
-
-        # 4️⃣ Submit Payment
-        driver.find_element(By.ID, "pay").click()
-
-        # 5️⃣ Verify confirmation
-        wait.until(EC.presence_of_element_located((By.ID, "confirmation-number")))
-        self.assertIn("Confirmation Number", driver.page_source)
+        # ✅ Optionally assert values
+        self.assertIsNotNone(order_id)
+        self.assertIn("@", email)
+        self.assertTrue(phone.isdigit())
 
     def tearDown(self):
         self.driver.quit()

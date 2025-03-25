@@ -136,6 +136,12 @@
                             localStorage.setItem("squareOrderId", data.square_order_id);
                         }
 
+
+                        // ✅ Add this line to indicate email was sent
+                     //   if (data.email_sent) {
+                     //       localStorage.setItem("email_sent", "true");
+                     //   }
+
                         // Redirect to order summary page
                         document.location.href = "{% url 'orderSummary' %}";
                     } else {
