@@ -36,7 +36,8 @@ ALLOWED_HOSTS = [
     "localhost",
     "10.117.75.248",
     "10.0.0.42",
-    "127.0.0.1"
+    "127.0.0.1",
+    "192.168.1.13"
 ]
 
 # Application definition
@@ -160,7 +161,7 @@ SESSION_COOKIE_AGE = 1800
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587  # 465 for SSL, 587 for TLS
-EMAIL_USE_TLS = True  # Use TLS for security
+EMAIL_USE_TLS = True # Use TLS for security
 EMAIL_USE_SSL = False  # Use SSL instead of TLS (not recommended for Gmail)
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')

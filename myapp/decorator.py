@@ -23,10 +23,7 @@ def checkout_required(view_func):
     def wrapper_func(request, *args, **kwargs):
         if not request.session.get('from_checkout'): # if NOT at checkout previously
             return redirect('checkout') # redirect to checkout
-        referer = request.META.get('HTTP_REFERER', '')
-        if 'checkout' not in referer:
-            return redirect('checkout')
-        del request.session['from_checkout']
+        request.session.pop('from_checkout', None)
         return view_func(request, *args, **kwargs)
     return wrapper_func
 
@@ -36,11 +33,8 @@ def checkout_required(view_func):
 def payment_required(view_func):
     @wraps(view_func)
     def wrapper_func(request, *args, **kwargs):
-        if not request.session.get('from_payment'): 
+        if not request.session.get('from_paymentPortal'): 
             return redirect('checkout')
-        referer = request.META.get('HTTP_REFERER', '')
-        if 'payment' not in referer:
-            return redirect('checkout')
-        del request.session['from_payment']
+        request.session.pop('from_paymentPortal', None)
         return view_func(request, *args, **kwargs)
     return wrapper_func

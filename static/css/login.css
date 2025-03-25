@@ -148,7 +148,7 @@
 
 .logAlert {
   padding: 15px;
-  background-color: lightblue;
+  background-color:#F46471;
   color: black;
   border-radius: 5px;
   position: relative;
@@ -156,5 +156,18 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  text-align: center;
   font-family: Arial, sans-serif;
+}
+
+.login-error-message{
+  color:red;
+  padding: 10px;
+  font-size: 14px;
+}
+
+.signup-error-message{
+  color:red;
+  font-size: 12px;
+  text-align: left;
 }

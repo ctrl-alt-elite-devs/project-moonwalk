@@ -56,6 +56,7 @@ document.addEventListener("DOMContentLoaded", function () {
 openLogin.forEach(function(button) {
   button.onclick = function() {
       loginModal.style.display = "flex";
+      clearErrorMessages()
   };
 });
 
@@ -64,6 +65,7 @@ openSignup.forEach(function(button) {
   button.onclick = function() {
     loginModal.style.display = "none";
     signupModal.style.display = "flex";
+    clearErrorMessages()
   };
 });
 
@@ -71,6 +73,7 @@ openSignup.forEach(function(button) {
 openTerms.forEach(function(button) {
   button.onclick = function() {
     termsModal.style.display = "flex";
+    clearErrorMessages()
   };
 });
 
@@ -79,27 +82,32 @@ openForgot.forEach(function(button) {
   button.onclick = function() {
     loginModal.style.display = "none";
     forgotModal.style.display = "flex";
+    clearErrorMessages()
   };
 });
 
 // Close login modal when clicking the close button
 closeLogin.onclick = function() {
   loginModal.style.display = "none";
+  clearErrorMessages()
 }
 
 // Close signup modal when clicking the close button
 closeSignup.onclick = function() {
   signupModal.style.display = "none";
+  clearErrorMessages()
 }
 
 // Close signup modal when clicking the close button
 closeTerms.onclick = function() {
   termsModal.style.display = "none";
+  clearErrorMessages()
 }
 
 // Close login modal when clicking the close button
 closeForgot.onclick = function() {
   forgotModal.style.display = "none";
+  clearErrorMessages()
 }
 
 closeSent.onclick = function() {
@@ -110,14 +118,13 @@ closeSent.onclick = function() {
 window.onclick = function(event) {
   if (event.target == loginModal) {
     loginModal.style.display = "none";
+    clearErrorMessages()
   }
 }
 
-
-/*
-function handleCredentialResponse(response) {
-  // Decode and handle the token (ID Token)
-  alert("Encoded JWT ID token: " + response.credential);
-  // Here you could send the ID token to your server for further verification or processing
+function clearErrorMessages() {
+  document.querySelectorAll("#login-modal .login-error-message, #signup-modal .signup-error-message")
+    .forEach(function(el) {
+      el.parentNode.removeChild(el);
+    });
 }
-*/

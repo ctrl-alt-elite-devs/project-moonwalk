@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 <head>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'css/order-summary.css' %}"/>
     {% csrf_token %}
+    <title>Order Summary</title>
 </head>
 {% block content %}
 <div class="summary">
@@ -11,7 +11,7 @@
     </div>
     <div class="order-summary-column">
         <h1 class="order-summary-title">Order Summary</h1>
-        <h3> Confirmation Number: #123456</h3>
+        <h3 id="confirmation-number">Confirmation Number: #...</h3>
         <h3>Your Order Details</h3>
         <span id="display-method-items"></span>
         <p id="display-details"></p>
@@ -29,7 +29,6 @@
             <p>490 High St, Auburn, CA 95603</p>
         </div>
 
-
         <!--<h4 class="payment-title">Payment</h4>
         <hr>
         <h3>Your Order Total Summary</h3>
@@ -44,6 +43,12 @@
 <script>
 window.onload = function() {
     var deliveryMethod = localStorage.getItem('deliveryMethod');
+
+        // ✅ Inject the order number at the top
+        const orderNumber = localStorage.getItem("orderNumber");
+        if (orderNumber) {
+            document.getElementById("confirmation-number").innerText = `Confirmation Number: #${orderNumber}`;
+        }
 
 
     if (deliveryMethod === 'Delivery') {
