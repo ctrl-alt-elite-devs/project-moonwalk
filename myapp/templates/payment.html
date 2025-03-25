@@ -132,8 +132,8 @@
                     if (data.status === 'success') {
                         alert("✅ Payment successful!");
 
-                        if (data.order_number) {
-                            localStorage.setItem("orderNumber", data.order_number);
+                        if (data.square_order_id) {
+                            localStorage.setItem("squareOrderId", data.square_order_id);
                         }
 
                         // Redirect to order summary page

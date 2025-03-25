@@ -44,11 +44,10 @@
 window.onload = function() {
     var deliveryMethod = localStorage.getItem('deliveryMethod');
 
-        // ✅ Inject the order number at the top
-        const orderNumber = localStorage.getItem("orderNumber");
-        if (orderNumber) {
-            document.getElementById("confirmation-number").innerText = `Confirmation Number: #${orderNumber}`;
-        }
+    const orderId = localStorage.getItem("squareOrderId");
+    if (orderId) {
+        document.getElementById("confirmation-number").innerText = `Order ID: #${orderId}`;
+    }
 
 
     if (deliveryMethod === 'Delivery') {

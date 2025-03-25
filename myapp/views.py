@@ -489,7 +489,7 @@ def process_payment(request):
 
         if payment_result.is_success():
             # ✅ Payment Successful, Send Confirmation Email
-            order_number = str(uuid.uuid4())[:8]  # simple short ID for now
+            square_order_id = payment_result.body['payment']['order_id']  # or wherever the order ID is
 
             email_context = {
                 **customerInfo,  # expands: first_name, last_name, email, phone, address
@@ -503,12 +503,12 @@ def process_payment(request):
                     } for item in cart_queryset
                 ],
                 "total_price": total_amount / 100,  # cents to dollars
-                "order_number": order_number,
+                "square_order_id": square_order_id,  # ✅ ADD THIS
             }
 
             send_order_email(email_context)
 
-            return JsonResponse({"status": "success", "message": "Payment successful!","order_number": order_number})
+            return JsonResponse({"status": "success", "message": "Payment successful!","square_order_id": square_order_id})
 
         else:
             return JsonResponse({"status": "error", "message": payment_result.errors}, status=400)
@@ -808,28 +808,22 @@ def subscribe(request):
 
     return JsonResponse({"success": False, "message": "Invalid request."}, status=405)
 
-#def send_order_email(context):
-#    """Send order confirmation email to the customer with tax info."""
+# def send_order_email(context):
+#     """Send order confirmation email to the customer with tax info."""
 
-#    # Render email
-#    html_content = render_to_string("order_confirmation_email.html", context)
-#   text_content = strip_tags(html_content)
+#     # Render email
+#     html_content = render_to_string("order_confirmation_email.html", context)
+#     text_content = strip_tags(html_content)
 
-#    subject = f"Order #{context['order_number']} Confirmation"
-#    from_email = "projectmoonwalk01@gmail.com"
-#    recipient_list = [context["email"]]
+#     subject = f"Order #{context['square_order_id']}"
+#     from_email = "projectmoonwalk01@gmail.com"
+#     recipient_list = [context["email"]]
 
-#        email_message = EmailMultiAlternatives(subject, text_content, from_email, recipient_list)
-#        email_message.attach_alternative(html_content, "text/html")
-#        email_message.send()
-
-#        return orderSummary(request)
-#       return JsonResponse({"success": True, "message": "Order confirmation email sent."})
-#
-#    except json.JSONDecodeError:
-#        return JsonResponse({"success": False, "message": "Invalid data format."}, status=400)
-
-#    return JsonResponse({"success": False, "message": "Invalid request."}, status=405)
+#     email = EmailMultiAlternatives(subject, text_content, from_email, recipient_list)
+#     email.attach_alternative(html_content, "text/html")
+    
+#     # ✉️ Commented out email sending for testing
+#     # email.send()
 
 @login_required
 def profile(request):
