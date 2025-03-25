@@ -88,21 +88,13 @@
                 const totalAmount = localStorage.getItem('totalAmount') || 0;
 
                 // 📦 If delivery is selected, include shipping address
-                let addressDetails = {};
-                if (deliveryMethod === "Delivery") {
-                    addressDetails = {
-                        streetAddress: localStorage.getItem('customerStreetAddress') || '',
-                        addressOptional: localStorage.getItem('customerAddressOptional') || '',
-                        city: localStorage.getItem('customerCity') || '',
-                        state: localStorage.getItem('customerState') || '',
-                        zipCode: localStorage.getItem('customerZipCode') || '',
-                    };
-                    let streetAddress = addressDetails.streetAddress;
-                    let addressOptional = addressDetails.addressOptional || '';
-                    let city = addressDetails.city;
-                    let state = addressDetails.state;
-                    let zipCode = addressDetails.zipCode;
-                }
+                let addressDetails = {
+                    streetAddress: localStorage.getItem('customerStreetAddress') || '',
+                    addressOptional: localStorage.getItem('customerAddressOptional') || '',
+                    city: localStorage.getItem('customerCity') || '',
+                    state: localStorage.getItem('customerState') || '',
+                    zipCode: localStorage.getItem('customerZipCode') || '',
+                };
 
                     // 🔍 **Check what is being sent to Square**
     console.log("🛒 Sending Order Data to Square API:", {

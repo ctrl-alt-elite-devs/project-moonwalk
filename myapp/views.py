@@ -314,6 +314,18 @@ def paymentPortal(request):
 def create_square_customer(customerInfo):
     id = str(uuid.uuid4())
 
+    if customerInfo["delivery_method"] == "Pickup":
+        address_details = {}
+    else:
+        address_details = {
+            "address_line_1": customerInfo["address"]["streetAddress"],
+            "address_line_2": customerInfo["address"]["addressOptional"],
+            "administrative_district_level_1": customerInfo["address"]["state"],
+            "country": "US",
+            "locality": customerInfo["address"]["city"],
+            "postal_code": customerInfo["address"]["zipCode"],
+        }
+
     result = client.customers.create_customer(
     body = {
         "idempotency_key": id,
@@ -436,7 +448,8 @@ def process_payment(request):
             "last_name": customer_last_name,
             "email": customer_email,
             "phone": customer_phone,
-            "address": customer_address
+            "address": customer_address,
+            "delivery_method": delivery_method
         }
 
 
@@ -794,7 +807,7 @@ def send_order_email(context):
 
     email = EmailMultiAlternatives(subject, text_content, from_email, recipient_list)
     email.attach_alternative(html_content, "text/html")
-    email.send()
+    email.send(fail_silently=False)
     
 def generate_test_tracking():
     """Generate a fake Shippo test tracking number, tracking URL, and label URL."""
