@@ -266,8 +266,11 @@
     {% if messages %}
         {% for message in messages %}
             <div class="logAlert">
-                {{ message}}
+                {{ message }}
                 <button class="close-btn" onclick="this.parentElement.style.display='none'">&times;</button>
+                <script>
+                    console.log("{{ request.user.username }}");
+                </script>
             </div>
         {% endfor %}
     {% endif %}
