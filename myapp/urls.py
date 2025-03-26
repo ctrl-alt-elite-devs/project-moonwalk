@@ -39,7 +39,7 @@ urlpatterns = [
     
 
     # Address Submission (Shippo)
-    path('submit-address/', views.submit_address, name='submit_address'),
+    path('get-shipping-rates/', views.get_shipping_rates, name='get_shipping_rates'),
 
     # Authentication
     path('login/', views.login_user, name='login'),
