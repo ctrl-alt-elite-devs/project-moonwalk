@@ -39,7 +39,7 @@ import re
 from django import template
 
 register = template.Library()
-
+shippo_sdk = shippo.Shippo(api_key_header="shippo_test_f3cb884569acedbe9a0860114d181ec57bed5277")
 client = Client(
     access_token='EAAAl0SURxUVKdImTqVNcvdSXqEg2AkVROJnO5TplGkliAUkGAwOkqTkqyBrUvG8',
     environment='sandbox'
@@ -473,7 +473,22 @@ def process_payment(request):
         if not square_order_id:
             return JsonResponse({"status": "error", "message": "Failed to create Square order"}, status=505)
 
-        # **Step 2: Process Payment Using Square Order ID**
+        # **Step 2: Fetch Shipping Rate (if delivery) Add shipping with total**
+
+        # ** Need to actually pass amount through correctly
+        cheapest_rate = None
+        if delivery_method.lower() == "delivery":
+            rates = get_shipping_rates(customerInfo)
+            if rates:
+                cheapest_rate = get_cheapest_shipping_rate(rates)
+                if cheapest_rate:
+                    print(total_amount)
+                    #total_amount += int(float(cheapest_rate.amount) * 100)  # Convert dollars to cents
+
+                else:
+                    return JsonResponse({"status": "error", "message": "Failed to retrieve shipping rates"}, status=400)
+
+        # **Step 3: Process Payment Using Square Order ID**
         payment_request = {
             "source_id": token,
             "idempotency_key": str(uuid.uuid4()),  # Generate unique key
@@ -487,10 +502,37 @@ def process_payment(request):
 
         payment_result = client.payments.create_payment(body=payment_request)
 
+        # **Step 4: Payment Successful, Send Confirmation Email**
         if payment_result.is_success():
-            # ✅ Payment Successful, Send Confirmation Email
             square_order_id = payment_result.body['payment']['order_id']  # or wherever the order ID is
-            
+
+        # **Step 5: Purchase Shipping Label (Only After Payment)**
+            if delivery_method.lower() == "delivery":
+                try:
+                    if cheapest_rate:
+                        transaction = shippo_sdk.transactions.create(
+                            components.TransactionCreateRequest(
+                                rate=cheapest_rate.object_id,  # Using the rate object_id
+                                label_file_type=components.LabelFileTypeEnum.PDF,
+                                async_=False
+                            )
+                        )
+
+                    if transaction.status == "SUCCESS":
+                        shipping_label_url = transaction.label_url
+                        tracking_number = transaction.tracking_number
+                        print(transaction.label_url)
+                        print(transaction.tracking_number)
+                    else:
+                        shipping_label_url = None
+                        tracking_number = None
+                except Exception as e:
+                    shipping_label_url = None
+                    tracking_number = None
+                    print("Error purchasing shipping label:", str(e))
+            else:
+                shipping_label_url = None
+                tracking_number = None
 
             email_context = {
                 **customerInfo,  # expands: first_name, last_name, email, phone, address
@@ -505,14 +547,17 @@ def process_payment(request):
                 ],
                 "total_price": total_amount / 100,  # cents to dollars
                 "square_order_id": square_order_id,  # ✅ ADD THIS
+                "shipping_cost": float(cheapest_rate.amount) if cheapest_rate else 0.00,
+                "shipping_label_url": shipping_label_url,
+                "tracking_number": tracking_number,
             }
-            
-                        # After Square payment is processed(uncomment to make it work)
-            # email_sent = False
-            # try:
+
+            # After Square payment is processed(uncomment to make it work)
+            email_sent = False
+            #try:
             #     send_order_email(email_context)
             #     email_sent = True
-            # except Exception as e:
+            #except Exception as e:
             #     print("❌ Email failed to send:", str(e))
 
 
@@ -681,16 +726,9 @@ def custom_password_validator(password):
 
 #shippo to create label (accept user address input)
 
-shippo_sdk = shippo.Shippo(api_key_header="shippo_test_f3cb884569acedbe9a0860114d181ec57bed5277")
+
 @csrf_exempt
-def submit_address(request):
-    if request.method != "POST":
-        return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
-
-    try:
-        '''data = json.loads(request.body)
-        print(f"Received data: {data}")
-
+def get_shipping_rates(customerInfo):
         address_from = components.AddressCreateRequest(
             name="MoonWalk Threads",
             company="",
@@ -704,21 +742,20 @@ def submit_address(request):
         )
 
         address_to = components.AddressCreateRequest(
-            name=data.get("customerFirstName") + " " + data.get("customerLastName"),
-            company="",  # Optional; can be added if needed
-            street1=data.get("customerStreetAddress"),
-            street2=data.get("customerAddressOptional", ""),  # Optional address field
-            city=data.get("customerCity"),
-            state=data.get("customerState"),
-            zip=data.get("customerZipCode"),
+            name=customerInfo["first_name"] + " " + customerInfo["last_name"],
+            street1=customerInfo["address"].get("streetAddress", ""),
+            street2=customerInfo["address"].get("addressOptional", ""),
+            city=customerInfo["address"].get("city", ""),
+            state=customerInfo["address"].get("state", ""),
+            zip=customerInfo["address"].get("zipCode", ""),
             country="US",
-            phone=data.get("customerPhone"),
-            email=data.get("customerEmail"),
+            phone=customerInfo["phone"],
+            email=customerInfo["email"]
         )
 
         print(f"Address from: {address_from}")
         print(f"Address to: {address_to}")
-
+        # Need to get box dimensions from lily and rough weight
         parcel = components.ParcelCreateRequest(
             length="5",
             width="5",
@@ -728,51 +765,27 @@ def submit_address(request):
             mass_unit=components.WeightUnitEnum.LB
         )
 
-        shipment = components.ShipmentCreateRequest(
-            address_from=address_from,
-            address_to=address_to,
-            parcels=[parcel]
-        )
-
-        print(f"Shipment request: {shipment}")
-
-        transaction = shippo_sdk.transactions.create(
-            components.InstantTransactionCreateRequest(
-                shipment=shipment,
-                carrier_account="273e3a39e2884adc99f44020d3863b95", #Need Lili's shipping carrier acc for the API to work
-                servicelevel_token="ontrac_ground" #Need Lili's info
+        shipment = shippo_sdk.shipments.create(
+            components.ShipmentCreateRequest(
+                address_from=address_from,
+                address_to=address_to,
+                parcels=[parcel],
+                async_=False
             )
         )
-        if transaction.status == "SUCCESS":
-            return JsonResponse({
-                'status': 'success',
-                'tracking_number': transaction.tracking_number,
-                'tracking_url': transaction.tracking_url,
-                'label_url': transaction.label_url
-            })
+        if shipment.status == "SUCCESS":
+                # Retrieve and return the list of rates
+                return shipment.rates
         else:
-            error_message = ""
+                print(f"Error fetching shipping rates: {shipment.messages}")
+                return None
 
-            if hasattr(transaction, 'messages'):
-                try:
-                    if isinstance(transaction.messages, list):
-                        error_message = [str(msg) for msg in transaction.messages]
-                    else:
-                        error_message = str(transaction.messages)
-                except Exception as e:
-                    error_message = f"Error processing messages: {str(e)}"
-            else:
-                error_message = "Unknown error"
-
-            return JsonResponse({
-                'status': 'error',
-                'message': error_message
-            }, status=400)'''
-
-    except json.JSONDecodeError:
-        return JsonResponse({'status': 'error', 'message': 'Invalid JSON format'}, status=400)
-    except Exception as e:
-        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+def get_cheapest_shipping_rate(rates):
+    """Find the cheapest shipping rate from available rates."""
+    if rates:
+        return min(rates, key=lambda x: float(x.amount))  # Returns cheapest rate object
+        print(f"Cost: {cheapest_rate.amount} {cheapest_rate.currency}")
+    return None
 
 @register.inclusion_tag('orderCartSummary.html', takes_context=True)
 def orderCartSummary(context):
