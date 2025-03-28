@@ -22,14 +22,17 @@
         .header-box {
             background-color: #ff6f72;
             color: white;
+            padding: 10px 20px;
             text-align: center;
             margin-bottom: 20px;
-            padding-bottom: 1px;
-            padding-top: 10px;
         }
-        h2 {
+        .header-box h2 {
             margin: 0;
-            font-size: 22px;
+            font-size: 18px;
+        }
+        .header-box p {
+            font-size: 14px;
+            margin: 5px 0 0 0;
         }
         .order-summary {
             margin-top: 20px;
@@ -62,6 +65,14 @@
             margin-top: 20px;
             text-align: center;
             font-size: 16px;
+        }
+        .track-btn,
+        .track-btn:link,
+        .track-btn:visited,
+        .track-btn:hover,
+        .track-btn:active {
+            color: white !important;
+            text-decoration: none;
         }
         .track-btn {
             display: inline-block;
@@ -96,7 +107,10 @@
         </div>
 
         <div class="order-summary">
-            <h3>Order Summary:</h3>
+            <h3>🛍 Order Summary</h3>
+            <div style="text-align: center; margin-top: 10px;">
+                <p style="font-size: 16px;"><strong>Order #: {{ square_order_id }}</strong></p>
+            </div>
             
             {% for item in order_items %}
             <div class="product-item">
@@ -108,23 +122,18 @@
             </div>
             {% endfor %}
 
-            <div class="price-details">
-              <p><strong>Subtotal:</strong> ${{ total_price }}</p>
-              <p><strong>Sales Tax:</strong> ${{ tax_amount }}</p>
-          </div>
-          <p class="total-price"><strong>Total :</strong> ${{ total_with_tax }}</p>
-
+            <p class="total-price">Total: ${{ total_price }}</p>
         </div>
 
         <!-- 🚚 DELIVERY MODE -->
-        {% if delivery_method == "delivery" %}
+        {% if delivery_method|lower == "delivery" %}
         <div class="shipping-details">
             <h3>📦 Shipping Details</h3>
-            <p><strong>Address:</strong> {{ address_info.street_address }}</p>
-            {% if address_info.address_optional %}
-            <p><strong>Apartment/Suite:</strong> {{ address_info.address_optional }}</p>
+            <p><strong>Address:</strong> {{ address_details.streetAddress }}</p>
+            {% if address_details.addressOptional %}
+            <p><strong>Apartment/Suite:</strong> {{ address_details.addressOptional }}</p>
             {% endif %}
-            <p><strong>City, State, ZIP:</strong> {{ address_info.city }}, {{ address_info.state }} {{ address_info.zip_code }}</p>
+            <p><strong>City, State, ZIP:</strong> {{ address_details.city }}, {{ address_details.state }} {{ address_details.zipCode }}</p>
             <p>You'll receive an email once your package is shipped!</p>
             
             <!-- 🔹 Track Order Button (Placeholder) -->
