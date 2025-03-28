@@ -58,9 +58,8 @@ def home(request):
     total_time = countdown_date - today
     # Convert the total time to seconds
     total_time = total_time.total_seconds()
-    products = Product.objects.all()
-    featured = Product.objects.filter(featured=True)
-    return render(request, 'home.html', {'total_time': total_time, 'products':products, 'featured':featured})
+    featured = Product.objects.filter(featured=True,  quantity__gt=0)
+    return render(request, 'home.html', {'total_time': total_time, 'featured':featured})
     # return render(request, 'home.html')
 
 
@@ -86,13 +85,13 @@ def shop(request, foo=None):
         foo = foo.replace('-', ' ')
         try:
             category = Category.objects.get(name=foo)
-            products = Product.objects.filter(category=category)
+            products = Product.objects.filter(category=category,  quantity__gt=0)
         except Category.DoesNotExist:
             messages.success(request, ("Category Doesn't Exist!"))
             return redirect('shop')
     else:
         # No category, show all products
-        products = Product.objects.all()
+        products = Product.objects.filter(quantity__gt=0)
         category = None  # No category selected
 
     categories = Category.objects.all()  # Pass all categories to the template
