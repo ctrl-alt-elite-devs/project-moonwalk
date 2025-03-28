@@ -1,7 +1,9 @@
+from decimal import Decimal
 from django.shortcuts import render, redirect
 import datetime
 from django.contrib import messages
-from .models import Cart, Customer, Product, Category, Subscriber
+from django.urls import reverse
+from .models import Cart, Customer, Product, Category, Subscriber, Order, OrderItem
 from .square_service import client
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -120,7 +122,7 @@ def cart(request):
     else:
         cart_items = Cart.objects.filter(session_key=request.session.session_key)
 
-    total_price = sum(item.product.price for item in cart_items)
+    total_price = sum(item.product.price * item.quantity for item in cart_items)
     tax_amount = float(total_price) * 0.0725
     tax_total = float(total_price) + tax_amount
 
@@ -128,57 +130,48 @@ def cart(request):
     return render(request, 'cart.html', {'total_time': total_time,'cart_items': cart_items,
         'total_price': total_price, 'tax_amount': tax_amount, 'tax_total': tax_total})
 
-
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
+    quantity = int(request.POST.get("quantity", 1))  # default to 1 if not passed
 
     if request.user.is_authenticated:
-        customer, created = Customer.objects.get_or_create(user=request.user)
+        customer, _ = Customer.objects.get_or_create(user=request.user)
         cart_item, created = Cart.objects.get_or_create(customer=customer, product=product)
-        cart_items = Cart.objects.filter(customer=customer)  # Only count current user's cart
     else:
-        session_key = request.session.session_key
-        if not session_key:
-            request.session.create()
+        session_key = request.session.session_key or request.session.create()
         cart_item, created = Cart.objects.get_or_create(session_key=request.session.session_key, product=product)
-        cart_items = Cart.objects.filter(session_key=request.session.session_key)  # Only count session cart
 
     if not created:
-        return JsonResponse({
-            'message': 'Product is already in the cart!',
-            'cart_item_count': cart_items.count(),  # Fix: Count only the user's/session cart items
-            'cart_items': []
-        }, status=400)
-
+        cart_item.quantity += quantity
+    else:
+        cart_item.quantity = quantity
     cart_item.save()
 
-    # Fetch the latest cart items
-    cart_items_data = [
-        {
-            "product": {
-                "image_url": item.product.image.url if item.product.image else "",
-                "name": item.product.name,
-                "price": float(item.product.price),
-            }
-        }
-        for item in cart_items[:4]  # Limit to first 4 for mini cart
-    ]
-
-    print("📦 Updated Cart Count:", cart_items.count())  # Debugging
+    cart_items = Cart.objects.filter(customer=customer) if request.user.is_authenticated else Cart.objects.filter(session_key=request.session.session_key)
 
     return JsonResponse({
         'message': 'Product added to cart successfully!',
-        'cart_item_count': cart_items.count(),  # Fix: Return correct count
-        'cart_items': cart_items_data
+        'cart_item_count': sum(item.quantity for item in cart_items),
+        'cart_items': [
+            {
+                "product": {
+                    "image_url": item.product.image.url if item.product.image else "",
+                    "name": item.product.name,
+                    "price": float(item.product.price),
+                    "quantity": item.quantity
+                }
+            }
+            for item in cart_items[:4]
+        ]
     })
 
-
-
 def remove_from_cart(request, cart_item_id):
-    if request.method == 'POST':  # Ensure the method is POST for safety
+    if request.method == 'POST':
         cart_item = get_object_or_404(Cart, id=cart_item_id)
+        delete_all = request.POST.get("delete_all", "false") == "true"
+        quantity_to_remove = int(request.POST.get("quantity", 1))
 
-        # Check if the user is authorized to remove this item
+        # Auth check
         if request.user.is_authenticated:
             if cart_item.customer != request.user.customer:
                 return JsonResponse({'message': 'Unauthorized access.'}, status=403)
@@ -186,11 +179,17 @@ def remove_from_cart(request, cart_item_id):
             if cart_item.session_key != request.session.session_key:
                 return JsonResponse({'message': 'Unauthorized access.'}, status=403)
 
-        cart_item.delete()  # Remove the item from the cart
-        return JsonResponse({'message': 'Item removed successfully!'})
+        # Adjust quantity or delete
+        if delete_all:
+            cart_item.delete()
+        elif cart_item.quantity > quantity_to_remove:
+            cart_item.quantity -= quantity_to_remove
+            cart_item.save()
+        else:
+            cart_item.delete()
 
+        return JsonResponse({'message': 'Item quantity updated or removed.'})
     return JsonResponse({'message': 'Invalid request method.'}, status=400)
-
 
 def merge_cart(sender, request, user, **kwargs):
     session_key = request.session.session_key
@@ -238,7 +237,7 @@ def store_order_data(request):
     if request.method == "POST":
         data = json.loads(request.body)
     else:
-        return HttpResponse("Failed tp create order")
+        return HttpResponse("Failed to create order")
 
     '''customerInfo = {
         'first_name': data.get("customerFirstName"),
@@ -270,17 +269,28 @@ def create_order(request):
 
 #@authenticated_user
 @payment_required
-def orderSummary(request):
-    #send_order_email(request)
-    if request.user.is_authenticated:
-        cart_items = Cart.objects.filter(customer = Customer.objects.filter(user=request.user).first())
+def orderSummary(request, order_id=None):
+    if order_id:
+        order = get_object_or_404(Order, id=order_id)
+        items = OrderItem.objects.filter(order=order)
+        pre_tax_total = order.pre_tax_total
+        tax_amount = order.tax_amount
+        total_amount = order.total_amount
     else:
-        cart_items = Cart.objects.filter(session_key=request.session.session_key)
+        if request.user.is_authenticated:
+            cart_items = Cart.objects.filter(customer = Customer.objects.filter(user=request.user).first())
+        else:
+            cart_items = Cart.objects.filter(session_key=request.session.session_key)
 
-    total_price = sum(item.product.price for item in cart_items)
-    tax_amount = float(total_price) * 0.0725
-    tax_total = float(total_price) + tax_amount
-    return render(request, 'orderSummary.html',{'tax_amount': tax_amount, 'tax_total': tax_total})
+        items = cart_items  # So template doesn't break
+
+    return render(request, 'orderSummary.html', {
+        'items': items,
+        'pre_tax_total': pre_tax_total,
+        'tax_amount': tax_amount,
+        'total_amount': total_amount,
+        'is_order': bool(order_id),  # helpful flag in template
+    })
 
 # Creating the request for product details
 def productDetails(request,pk):
@@ -300,13 +310,14 @@ def paymentPortal(request):
     else:
         cart_items = Cart.objects.filter(session_key=request.session.session_key)
 
-    total_price = sum(item.product.price for item in cart_items)
+    total_price = sum(item.product.price * item.quantity for item in cart_items)
     tax_amount = float(total_price) * 0.0725
     tax_total = float(total_price) + tax_amount
 
     context = {
         "square_app_id": square_app_id,
         "square_location_id": square_location_id,
+        'total_price': total_price,
         'tax_amount': tax_amount,
         'tax_total': tax_total
     }
@@ -497,7 +508,7 @@ def process_payment(request):
                 "currency": "USD"
             },
             "autocomplete": True,
-            "order_id": square_order_id  # ✅ Use Square's Order ID
+            "order_id": square_order_id
         }
 
         payment_result = client.payments.create_payment(body=payment_request)
@@ -505,6 +516,55 @@ def process_payment(request):
         # **Step 4: Payment Successful, Send Confirmation Email**
         if payment_result.is_success():
             square_order_id = payment_result.body['payment']['order_id']  # or wherever the order ID is
+
+            shipping_label_url = None
+            tracking_number = None
+
+            customer_obj = customer if request.user.is_authenticated else None
+            pre_tax_total = sum(item.product.price * item.quantity for item in cart_queryset)
+            tax_amount = float(pre_tax_total) * 0.0725
+            total_amount = float(pre_tax_total) + tax_amount
+
+            #Save Order in DB
+            order = Order.objects.create(
+                customer=customer_obj,
+                square_order_id=square_order_id,
+                pre_tax_total=pre_tax_total,
+                tax_amount=tax_amount,
+                total_amount=total_amount,
+                delivering=(delivery_method.lower() == "delivery"),
+                shipping_label_url=shipping_label_url,
+                tracking_number=tracking_number,
+            )
+            #Update order status
+            order.status = "paid"
+            order.save()
+
+            #Save each cart item to OrderItem
+            for item in cart_queryset:
+                product = item.product
+                quantity_ordered = item.quantity
+
+                # Update inventory only if enough stock exists
+                if product.quantity >= quantity_ordered:
+                    product.quantity -= quantity_ordered
+                    product.save()
+
+                    # Create the order item with correct quantity
+                    OrderItem.objects.create(
+                        order=order,
+                        product=product,
+                        quantity=quantity_ordered,
+                        price_at_purchase=product.price
+                    )
+                else:
+                    # You could raise an error or handle partial inventory here
+                    return JsonResponse({
+                        "status": "error",
+                        "message": f"Insufficient stock for {product.name}."
+                    }, status=400)
+            #Clear the cart
+            cart_queryset.delete()
 
         # **Step 5: Purchase Shipping Label (Only After Payment)**
             if delivery_method.lower() == "delivery":
@@ -523,6 +583,12 @@ def process_payment(request):
                         tracking_number = transaction.tracking_number
                         print(transaction.label_url)
                         print(transaction.tracking_number)
+                        #Update order status to shipped
+                        order.status = "label created"
+                        order.tracking_number = tracking_number
+                        order.shipping_label_url = shipping_label_url
+                        order.save()
+
                     else:
                         shipping_label_url = None
                         tracking_number = None
@@ -561,7 +627,10 @@ def process_payment(request):
             #     print("❌ Email failed to send:", str(e))
 
 
-            return JsonResponse({"status": "success", "message": "Payment successful!","square_order_id": square_order_id,"email_sent": email_sent})
+            return JsonResponse({"status": "success",
+                                "message": "Payment successful!",
+                                "redirect_url": reverse("view_order_summary",args=[order.id]),
+                                "email_sent": email_sent})
 
         else:
             return JsonResponse({"status": "error", "message": payment_result.errors}, status=400)
@@ -583,15 +652,16 @@ def checkout(request):
     else:
         cart_items = Cart.objects.filter(session_key=request.session.session_key)
 
-    total_price = sum(item.product.price for item in cart_items)
+    total_price = sum(item.product.price * item.quantity for item in cart_items)
     tax_amount = float(total_price) * 0.0725
     tax_total = float(total_price) + tax_amount
 
     context = {
-       "square_app_id": square_app_id,
-       "square_location_id": square_location_id,
-       'tax_amount': tax_amount,
-       'tax_total': tax_total
+        "square_app_id": square_app_id,
+        "square_location_id": square_location_id,
+        'total_price': total_price,
+        'tax_amount': tax_amount,
+        'tax_total': tax_total
     }
 
     return render(request, 'checkout.html', context)

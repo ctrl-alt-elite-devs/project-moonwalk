@@ -58,32 +58,51 @@ class Product(models.Model):
     description = models.CharField(max_length=250, default='', blank=True, null=True)
     image = models.ImageField(storage=S3Boto3Storage(), upload_to='products/')
     featured = models.BooleanField(default=False)
+    quantity = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.name
 
 class Order(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
-    quantity = models.IntegerField(default=1)
-    address = models.CharField(max_length=100, default='', blank=True)
-    zipCode = models.CharField(max_length=10, default='00000')
-    city = models.CharField(max_length=20, default='')
-    phone = models.CharField(max_length=20, default='', blank=True)
-    delivering = models.BooleanField(default = False)
+    customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True)
     idempotency_key = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-    amount = models.IntegerField(default=0)
-    created_at = models.DateTimeField(default=timezone.now)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    pre_tax_total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    tax_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    delivering = models.BooleanField(default=False)
+    address = models.CharField(max_length=255, blank=True)
+    zip_code = models.CharField(max_length=10, default='00000')
+    city = models.CharField(max_length=100, blank=True)
+    phone = models.CharField(max_length=20, blank=True)
     status = models.CharField(max_length=20, default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+    shipping_label_url = models.URLField(max_length=1000, blank=True, null=True)
+    tracking_number = models.CharField(max_length=100, blank=True, null=True)
+    square_order_id = models.CharField(max_length=100, unique=True, default='unknown')
 
     def __str__(self):
-        return f"Order {self.id} - {self.customer}"
+        if self.customer and self.customer.user:
+            return f"Order #{self.id} - {self.customer.user.username}"
+        return f"Order #{self.id} - Guest"
+    
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, related_name="items", on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
+    quantity = models.PositiveIntegerField(default=1)
+    price_at_purchase = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def total_price(self):
+        return self.quantity * self.price_at_purchase
+
+    def __str__(self):
+        return f"{self.product.name} x {self.quantity} in Order #{self.order.id}"
     
 class Cart(models.Model):
     session_key = models.CharField(max_length=40, blank=True, null=True)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, blank=True, null=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     added_at = models.DateTimeField(auto_now_add=True)
+    quantity = models.PositiveIntegerField(default=1)
 
     def __str__(self):
         return f'Cart for {self.customer or self.session_key}'
