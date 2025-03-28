@@ -301,7 +301,7 @@ body {
     cursor: pointer;
     position: absolute;
     right: .5rem;
-    display: inline-flex;
+    display: flex;
     pointer-events: auto;
 }
 

@@ -7,11 +7,39 @@
 {% block content %}
 <div class="summary">
     <div class="cart-summary-column">
-        {% include 'cartSummary.html' %}
+        <div class="cart-summary-container">
+            <div class="cart-items">
+                <h2><center>Your Items</center></h2>
+
+                {% for item in items %}
+                    <div class="cart-item">
+                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" width="200" height="200">
+                        <div class="item-details">
+                            <h4>{{ item.product.name }}</h4>
+                            <p>Price: ${{ item.product.price|floatformat:2 }} | Size: {{ item.product.size }}</p>
+                            {% if item.quantity %}
+                                <p>Quantity: {{ item.quantity }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% empty %}
+                    <p>Your cart is empty.</p>
+                {% endfor %}
+
+                {% if items %}
+                <div class="total-section">
+                    <p>Items: ${{ pre_tax_total|floatformat:2 }}</p>
+                    <p>Tax: ${{ tax_amount|floatformat:2 }}</p>
+                    <div class="divider"></div>
+                    <p>Total: ${{ total_amount|floatformat:2 }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
     </div>
     <div class="order-summary-column">
         <h1 class="order-summary-title">Order Summary</h1>
-        <h3> Confirmation Number: #123456</h3>
+        <h3 id="confirmation-number">Confirmation Number: #...</h3>
         <h3>Your Order Details</h3>
         <span id="display-method-items"></span>
         <p id="display-details"></p>
@@ -43,6 +71,11 @@
 <script>
 window.onload = function() {
     var deliveryMethod = localStorage.getItem('deliveryMethod');
+
+    const orderId = localStorage.getItem("squareOrderId");
+    if (orderId) {
+        document.getElementById("confirmation-number").innerText = `Order ID: #${orderId}`;
+    }
 
 
     if (deliveryMethod === 'Delivery') {

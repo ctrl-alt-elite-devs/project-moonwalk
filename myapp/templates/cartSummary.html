@@ -15,6 +15,7 @@
             <div class="item-details">
                 <h4>{{ item.product.name }}</h4>
                 <p>Price: ${{ item.product.price|floatformat:2 }} | Size: {{ item.product.size }}</p>
+                <p>Quantity: {{ item.quantity }}</p>
             </div>
 
             <script>
