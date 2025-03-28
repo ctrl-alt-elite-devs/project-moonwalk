@@ -28,13 +28,14 @@ urlpatterns = [
     path('checkout/', views.checkout, name='checkout'),
     path('checkout/store_data', views.store_order_data, name='store_order_data'),
     path('checkout/payment/', views.paymentPortal, name='payment'),
-    path('orderSummary/', views.orderSummary, name='orderSummary'),
+    path('order-summary/', views.orderSummary, name='orderSummary'),
+    path("order-summary/<int:order_id>/", views.orderSummary, name="view_order_summary"),
     path('process_payment/', views.process_payment, name='process_payment'),
 
     # Product Details
     path('product/<int:pk>/', views.productDetails, name='productDetails'),
     
-        #send order
+    #send order
     #path("send-order-email/", views.send_order_email, name="send_order_email"),
     
 

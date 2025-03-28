@@ -143,7 +143,7 @@
                      //   }
 
                         // Redirect to order summary page
-                        document.location.href = "{% url 'orderSummary' %}";
+                        document.location.href = data.redirect_url;
                     } else {
                         alert("❌ Payment failed. Most likely invalid phone number.");
                         alert(data.message);
