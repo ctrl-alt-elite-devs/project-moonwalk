@@ -9,13 +9,13 @@
 
     <script src="https://sandbox.web.squarecdn.com/v1/square.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script> 
+    <script>
         var data = "{{ total_time }}";
     </script>
 
     <!-- Load static files -->
     {% load static %}
-    <script type="text/javascript" src="{% static 'scripts/events.js' %}"></script>
+    <!--<script type="text/javascript" src="{% static 'scripts/events.js' %}"></script>-->
     <!-- Link to your custom CSS file -->
     <link rel="stylesheet" href="{% static 'css/homestyles.css' %}">
     <link rel="stylesheet" href="{% static 'css/shopstyles.css' %}">
@@ -29,7 +29,9 @@
     <link rel="stylesheet" href="{% static 'css/about.css' %}">
     <link rel="stylesheet" href="{% static 'css/contact.css' %}">
     <link rel="stylesheet" href="{% static 'css/payment.css' %}">
+    <link rel="stylesheet" href="{% static 'css/profile.css' %}">
     <link rel="stylesheet" href="{% static 'css/order-summary.css' %}">
+
 
     <script src="https://kit.fontawesome.com/34f0afb215.js" crossorigin="anonymous"></script>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Edu+AU+VIC+WA+NT+Dots:wght@400..700&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
@@ -90,10 +92,18 @@
 
 
         
-        <div class="profile_btn open_login">
-            <a href="{% url 'profile' %}"></a>
-            <i class="fa-solid fa-user"></i>
+        <div class="my-profile">
+            <div class="profile_btn">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'profile' %}">
+                        <i class="fa-solid fa-user"></i>
+                    </a>
+                {% else %}
+                    <i class="fa-solid fa-user open_login"></i>
+                {% endif %}
+            </div>
         </div>
+        
 
         <script>
                     document.addEventListener("DOMContentLoaded", function () {
@@ -118,6 +128,7 @@
         </script>
 
 <script src="{% static 'scripts/cart_hover.js' %}"></script>
+<script src="{% static 'scripts/profile_hover.js' %}"></script>
 
 
     </div>
@@ -142,13 +153,18 @@
 
             <label for="password">Password</label>
             <input type="password" id="password" name="password" required>
-    
+
+            <!-- Error message display -->
+            {% if login_error %}
+                <div class="login-error-message">{{ login_error }}</div>
+            {% endif %}
+
             <button type="submit" class="login-btn" >Log In</button>
 
             <ul id="locations-list"></ul>
             
             <div class="forgot-create-container">
-                <a href="#" class="forgot-password open_forgot">Forgot Password</a>
+                <a href="#" class="forgot-password open_forgot">Forgot Password?</a>
                 <a href="#" class="create-account open_signup">Create Account</a>
             </div>
 
@@ -170,61 +186,127 @@
         </form>
         </div>
     </div>
+
+    {% if login_error %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById("login-modal").style.display = "flex";
+        });
+    </script>
+    {% endif %}
+
     <!-- The Create Account Popup -->
 
-    <div id="signup-modal" class="signup-modal">
-        <div class="signup-content login-content">
-            <span class="login-x signup-close">&times;</span>
-            <form id="signup-form" method="POST" action="{% url 'register' %}">
-                {% csrf_token %}
-                <label for="signup-email">Email</label>
-                <input type="email" id="signup-email" name="email" required>
+   <!-- The Create Account Popup -->
+<div id="signup-modal" class="signup-modal">
+    <div class="signup-content login-content">
+        <span class="login-x signup-close">&times;</span>
+        <form id="signup-form" method="POST" action="{% url 'register' %}">
+            {% csrf_token %}
+            <label for="signup-email">Email</label>
+            <input type="email" id="signup-email" name="email" required
+                   value="{{ signup_data.email|default:'' }}"maxlength="64">
+            {% if signup_errors %}
+                {% if signup_errors.email_error %}
+                    <div class="signup-error-message">{{ signup_errors.email_error }}</div>
+                {% elif signup_errors.username_error %}
+                    <div class="signup-error-message">{{ signup_errors.username_error }}</div>
+                {% endif %}
+            {% endif %}
 
-                <div class = "name-row-container">
-                    <div class = "name-container">
-                        <label for="first-name">First Name</label>
-                        <input type="first-name" id="first-name" name="first-name" required>
-                    </div>
-                    <div class = "name-container">
-                        <label for="last-name">Last Name</label>
-                        <input type="last-name" id="last-name" name="last-name" required>
-                    </div>
+            <div class="name-row-container">
+                <div class="name-container">
+                    <label for="first-name">First Name</label>
+                    <input type="first-name" id="first-name" name="first-name" required
+                           value="{{ signup_data.first_name|default:'' }}" maxlength="30">
                 </div>
-               
-                <label for="password">Password</label>
-                <input type="password" id="signup-password" name="password" required>
-
-                <label for="password">Confirm Password</label>
-                <input type="password" id="confirm-password" name="confirm-password" required>
-
-                <label for="phoneNum">(Optional) Phone Number</label>
-                <input type="tel" id="signup-phone" name="phone" >
-
-                <div class="checkbox-container">
-                    <label class="checkbox-label"><input type="checkbox" id="text-checkbox" name="text-checkbox"> Would you like to receive updates via text message?</label><br>
-                    <label class="checkbox-label"><input type="checkbox" id="email-checkbox" name="email-checkbox"> Would you like to receive updates via email?</label><br>
-                    <label class="checkbox-label"><input type="checkbox" id="agreement-checkbox" required> Do you agree to the <a href="#" class="terms-link">Terms of Service</a></label><br>
+                <div class="name-container">
+                    <label for="last-name">Last Name</label>
+                    <input type="last-name" id="last-name" name="last-name" required
+                           value="{{ signup_data.last_name|default:'' }}" maxlength="30">
                 </div>
-                <button type="submit" class="create-account-btn login-btn">Create Account</button>
-            </form>
             </div>
-    </div>
 
-     <!-- The Forgot Password Popup -->
-     <div id="forgot-modal" class="login-modal">
-             
+            <label for="password">Password</label>
+            <input type="password" id="signup-password" name="password" maxlength="32" required>
+            {% if signup_errors and signup_errors.password_strength_error %}
+                <div class="signup-error-message">{{ signup_errors.password_strength_error }}</div>
+            {% endif %}
+
+            <label for="password">Confirm Password</label>
+            <input type="password" id="confirm-password" name="confirm-password" maxlength="32" required>
+            {% if signup_errors and signup_errors.password_match_error %}
+                <div class="signup-error-message">{{ signup_errors.password_match_error }}</div>
+            {% endif %}
+
+            <label for="phoneNum">(Optional) Phone Number</label>
+            <input type="tel" id="signup-phone" name="phone"
+                   value="{{ signup_data.phone|default:'' }}">
+            {% if signup_errors and signup_errors.phone_error %}
+                <div class="signup-error-message">{{ signup_errors.phone_error }}</div>
+            {% endif %}
+
+            <div class="checkbox-container">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="text-checkbox" name="text-checkbox"
+                           {% if signup_data.text_checkbox %}checked{% endif %}>
+                    Would you like to receive updates via text message?
+                </label>
+                <br>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="email-checkbox" name="email-checkbox"
+                           {% if signup_data.email_checkbox %}checked{% endif %}>
+                    Would you like to receive updates via email?
+                </label>
+                <br>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="agreement-checkbox" required>
+                    Do you agree to the <a href="#" class="terms-link">Terms of Service</a>
+                </label>
+                <br>
+            </div>
+            <button type="submit" class="create-account-btn login-btn">Create Account</button>
+        </form>
+    </div>
+</div>
+
+
+    {% if signup_errors %}
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                document.getElementById("signup-modal").style.display = "flex";
+            });
+        </script>
+    {% endif %}
+
+    <!-- Forgot Password Popup -->
+    <div id="forgot-modal" class="login-modal">
         <div class="login-content">
             <span class="login-x forgot-close">&times;</span>
-            <form id="forgot-form" >
+            <form id="forgot-form" method="POST" action="{% url 'password_reset' %}">
+                {% csrf_token %}
+                <label for="email">Enter your email to reset password</label>
+                <input type="email" id="forgot-email" name="email" required>
 
-                <label for="email">Enter email to recover password</label>
-                <input type="email" id="email" name="email" required>
-        
-                <button type="submit" class="login-btn" >Submit</button>
+                <button type="submit" class="login-btn">Submit</button>
 
+                <p class="password-reset-message" style="display:none; color: green;">
+                </p>
             </form>
         </div>
     </div>
+
+    <!-- Email Sent Modal (Initially Hidden) -->
+    <div id="sent-modal" class="login-modal">
+        <div class="login-content">
+            <span class="login-x sent-close">&times;</span>
+            
+            <h3>Password Reset Email Sent</h3>
+            <p>If an account exists with that email, you will receive a reset link shortly.</p>
+
+        </div>
+    </div>
+
 
     <div id="terms-modal" class="login-modal">
         <div class="login-content">

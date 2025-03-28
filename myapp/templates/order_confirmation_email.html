@@ -1,108 +1,160 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Order Confirmation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation - MoonWalk Threads</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f8f8f8;
+            background-color: #f9f9f9;
             margin: 0;
-            padding: 20px;
+            padding: 0;
         }
         .email-container {
             max-width: 600px;
-            background: white;
-            margin: auto;
+            margin: 20px auto;
+            background-color: #ffffff;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
         }
-        .header {
-            text-align: center;
-            background: #ff6f72;
+        .header-box {
+            background-color: #ff6f72;
             color: white;
-            padding: 8px;
+            padding: 10px 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header-box h2 {
+            margin: 0;
+            font-size: 18px;
+        }
+        .header-box p {
+            font-size: 14px;
+            margin: 5px 0 0 0;
+        }
+        .order-summary {
+            margin-top: 20px;
+            border-top: 2px solid #ddd;
+            padding-top: 10px;
+        }
+        .product-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        .product-item img {
+            width: 80px;
+            height: auto;
+            margin-right: 15px;
+            border-radius: 5px;
+        }
+        .product-info {
+            flex-grow: 1;
+        }
+        .total-price {
+            font-size: 18px;
             font-weight: bold;
-            border-radius: 8px 8px 0 0;
+            text-align: right;
+            margin-top: 10px;
         }
-        .content {
-            padding: 20px;
-            text-align: left;
-            color: #333;
+        .pickup-message, .shipping-details {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 16px;
         }
-        .cta-button {
+        .track-btn,
+        .track-btn:link,
+        .track-btn:visited,
+        .track-btn:hover,
+        .track-btn:active {
+            color: white !important;
+            text-decoration: none;
+        }
+        .track-btn {
             display: inline-block;
             background-color: #ff6f72;
             color: white;
-            padding: 12px 25px;
-            font-size: 16px;
-            border-radius: 5px;
+            padding: 10px 15px;
             text-decoration: none;
+            border-radius: 5px;
+            font-size: 14px;
+            margin-top: 10px;
             font-weight: bold;
-            margin-top: 15px;
         }
         .footer {
             text-align: center;
-            font-size: 14px;
-            color: #666;
-            margin-top: 20px;
-        }
-
-        .social-links {
-            text-align: center;
-            margin-top: 20px;
-        }
-        .social-links img {
-            width: 20px; /* Adjust the size of the Instagram logo */
-            height: 20px;
-            vertical-align: middle;
-            margin-right: 5px;
+            margin-top: 30px;
+            font-size: 12px;
+            color: #777;
         }
     </style>
 </head>
 <body>
+
     <div class="email-container">
         <div style="text-align: center;">
             <img src="https://i.imgur.com/ewx2zck.jpeg" referrerpolicy="no-referrer" alt="MoonWalk Threads Logo" width="300">
         </div>
-        <div class="content">
-            <p>Hi {{ first_name }},</p>
-            <p>Thank you for your order from <strong>MoonWalk Threads</strong>! 🎉</p>
 
-            <h3>Order Summary:</h3>
-            <ul>
-                {% for item in order_items %}
-                    <li>{{ item }}</li>
-                {% endfor %}
-            </ul>
-            <p><strong>Total Price:</strong> ${{ total_price }}</p>
-
-            <p>Your order will be processed shortly, and you’ll receive another update when it’s shipped.</p>
-
-            <p>Want to browse more? Click below to return to our shop:</p>
-
-            <div style="text-align: center;">
-                <a href="https://yourwebsite.com/shop" 
-                   class="cta-button" 
-                   style="color: white !important; text-decoration: none !important; display: inline-block; padding: 12px 25px; background-color: #ff6f72; border-radius: 5px; font-weight: bold;">
-                    Vist Shop
-                </a>
-            </div>
+        <!-- 🔹 Thank You Message Box -->
+        <div class="header-box">
+            <h2>Thank You for Your Order, {{ first_name }}! </h2>
+            <p>We’ve received your order, and we're getting it ready!</p>
         </div>
+
+        <div class="order-summary">
+            <h3>🛍 Order Summary</h3>
+            <div style="text-align: center; margin-top: 10px;">
+                <p style="font-size: 16px;"><strong>Order #: {{ square_order_id }}</strong></p>
+            </div>
+            
+            {% for item in order_items %}
+            <div class="product-item">
+                <img src="{{ item.image_url }}" alt="{{ item.name }}">
+                <div class="product-info">
+                    <p><strong>{{ item.name }}</strong></p>
+                    <p>${{ item.price }}</p>
+                </div>
+            </div>
+            {% endfor %}
+
+            <p class="total-price">Total: ${{ total_price }}</p>
+        </div>
+
+        <!-- 🚚 DELIVERY MODE -->
+        {% if delivery_method|lower == "delivery" %}
+        <div class="shipping-details">
+            <h3>📦 Shipping Details</h3>
+            <p><strong>Address:</strong> {{ address_details.streetAddress }}</p>
+            {% if address_details.addressOptional %}
+            <p><strong>Apartment/Suite:</strong> {{ address_details.addressOptional }}</p>
+            {% endif %}
+            <p><strong>City, State, ZIP:</strong> {{ address_details.city }}, {{ address_details.state }} {{ address_details.zipCode }}</p>
+            <p>You'll receive an email once your package is shipped!</p>
+            
+            <!-- 🔹 Track Order Button (Placeholder) -->
+            <a href="#" class="track-btn">Track Order</a>
+        </div>
+        {% endif %}
+
+        <!-- 🏬 PICKUP MODE -->
+        {% if delivery_method == "pickup" %}
+        <div class="pickup-message">
+            <h3>🏬 Store Pickup</h3>
+            <p>Your order will be ready for pickup soon!</p>
+            <p>You’ll receive a notification when it's available at the store.</p>
+        </div>
+        {% endif %}
 
         <div class="footer">
-
-        <div class="social-links">
-            <p>Follow Us on Instagram!
-                <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram Logo">
-                <a href="https://instagram.com/moonwalkthreads">@moonwalkthreads</a>
-            </p>
-            <p>Want to unsubscribe? <a href="{{ unsubscribe_link }}">Click here</a></p>
-        </div>
             <p>Need help? Contact us at <a href="mailto:support@moonwalkthreads.com">support@moonwalkthreads.com</a></p>
+            <p>MoonWalk Threads © 2025</p>
         </div>
-        
     </div>
+
 </body>
 </html>

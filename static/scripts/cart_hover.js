@@ -1,6 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
     const cartIcon = document.getElementById("cart-icon");
     const cartDropdown = document.getElementById("cart-dropdown");
+    const currentPath = window.location.pathname;
+    const productDetailPattern = /^\/product\/\d+\/$/;
 
     if (!cartIcon || !cartDropdown) {
         console.warn("Cart icon or dropdown not found!");
@@ -9,7 +11,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // Enable hover effect only on the home page
-    if (window.location.pathname === "/" || window.location.pathname === "/base/" || window.location.pathname  === "/shop/") {
+    if (
+        currentPath === "/" ||
+        currentPath === "/base/" ||
+        currentPath === "/shop/" ||
+        productDetailPattern.test(currentPath)
+      ) {
         console.log("Mini cart hover enabled on home page and shop");
 
         if (window.innerWidth > 768) { // Desktop Behavior

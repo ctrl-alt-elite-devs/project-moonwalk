@@ -42,7 +42,18 @@
 
 <!-- credit card payment script -->
 <script>
-    (async()=>{
+
+    document.addEventListener("DOMContentLoaded", function () {
+        console.log("📌 Confirming Local Storage Data in `payment.html`...");
+    
+        console.log("🔍 Delivery Method:", localStorage.getItem("deliveryMethod"));
+        console.log("🔍 First Name:", localStorage.getItem("customerFirstName"));
+        console.log("🔍 Last Name:", localStorage.getItem("customerLastName"));
+        console.log("🔍 Email:", localStorage.getItem("customerEmail"));
+        console.log("🔍 Phone:", localStorage.getItem("customerPhone"));
+    });
+
+    (async () => {
         const payments = Square.payments(
             '{{ square_app_id }}',
             '{{ square_location_id }}'
@@ -57,33 +68,93 @@
         try {
             const card = await payments.card(cardOptions);
             await card.attach('#card');
+
             const payButton = document.getElementById('pay');
-            payButton.addEventListener('click', async ()=>{
+            payButton.addEventListener('click', async () => {
                 const result = await card.tokenize();
-                if (result) {
-                    fetch("{% url 'process_payment' %}", {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRFToken': '{{ csrf_token }}'
-                        },
-                        body: JSON.stringify({token: result.token})
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.status === 'success') {
-                                alert("Payment successful");
-                                document.location.href = "{% url 'orderSummary' %}"
-                            } else {
-                                alert("Payment failed");
-                            }
-                        })
-                        .catch(error => console.error('Error:', error));
+                console.log("result: " + result);
+                if (result.status !== "OK") {
+                    alert("⚠️ Payment failed. Please try again.");
+                    return;
                 }
-            })
+
+                // 🛒 Fetch Order Details from LocalStorage
+                const deliveryMethod = localStorage.getItem('deliveryMethod') || 'pickup';
+                const firstName = localStorage.getItem('customerFirstName') || 'Guest';
+                const lastName = localStorage.getItem('customerLastName') || '';
+                const email = localStorage.getItem('customerEmail') || 'guest@moonwalkthreads.com';
+                const phone = localStorage.getItem('customerPhone') || '';
+                const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+                const totalAmount = localStorage.getItem('totalAmount') || 0;
+
+                // 📦 If delivery is selected, include shipping address
+                let addressDetails = {
+                    streetAddress: localStorage.getItem('customerStreetAddress') || '',
+                    addressOptional: localStorage.getItem('customerAddressOptional') || '',
+                    city: localStorage.getItem('customerCity') || '',
+                    state: localStorage.getItem('customerState') || '',
+                    zipCode: localStorage.getItem('customerZipCode') || '',
+                };
+
+                    // 🔍 **Check what is being sent to Square**
+    console.log("🛒 Sending Order Data to Square API:", {
+        token: result.token,
+        first_name: firstName,
+        last_name: lastName,
+        email: email,
+        phone: phone,
+        delivery_method: deliveryMethod,
+        address: addressDetails,
+        total_amount: totalAmount
+    });
+
+                // 🚀 Send Data to Django Backend
+                fetch("{% url 'process_payment' %}", {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        token: result.token,
+                        first_name: firstName,
+                        last_name: lastName,
+                        email: email,
+                        phone: phone,
+                        delivery_method: deliveryMethod,
+                        address: addressDetails,
+                        cart_items: cartItems,
+                        total_amount: totalAmount
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert("✅ Payment successful!");
+
+                        if (data.square_order_id) {
+                            localStorage.setItem("squareOrderId", data.square_order_id);
+                        }
+
+
+                        // ✅ Add this line to indicate email was sent
+                     //   if (data.email_sent) {
+                     //       localStorage.setItem("email_sent", "true");
+                     //   }
+
+                        // Redirect to order summary page
+                        document.location.href = data.redirect_url;
+                    } else {
+                        alert("❌ Payment failed. Most likely invalid phone number.");
+                        alert(data.message);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
         } catch (e) {
-            console.error(e);
+            console.error("Payment Initialization Error:", e);
         }
-    })()
+    })();
 </script>
 
 <!-- google-pay payment option script -->
@@ -150,4 +221,5 @@
     })()
 </script>
 
+<!--<script src="{% static 'scripts/sendOrder.js' %}"></script>-->
 {% endblock %}

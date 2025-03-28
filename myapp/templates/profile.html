@@ -5,9 +5,9 @@
 {% block content %}
 <div class="profile-container">
     <h2>My Profile</h2>
-    <p><strong>Email:</strong> {{ user.email }}</p>
-    <p><strong>Password:</strong> {{ user.password }}</p>
-    <p><strong>Address:</strong> {{ user.address }}</p>
+    <p><strong>Email:</strong> {{ user_data.email }}</p>
+    <p><strong>Password:</strong> {{ user_data.password }}</p>
+    <p><strong>Address:</strong> {{ user_data.address }}</p>
 
     <h3>Order History</h3>
     <ul>
@@ -18,8 +18,9 @@
         {% endfor %}
     </ul>
 
-    <button class="update-btn">Change Password</button>
+    <button class="update-btn" onclick="window.location.href='{% url 'password_change' %}';">Change Password</button>
     <button class="update-btn">Update Address</button>
+    <button class="update-btn" onclick="window.location.href='{% url 'logout' %}';">Logout</button>
 </div>
 
 <style>

@@ -3,57 +3,65 @@
 <head>
     {% load static %}
     {% csrf_token %}
-    <link rel="stylesheet" href="{% static 'css/checkout.css' %}"/>
+    <title>Checkout</title>
 </head>
 {% block content %}
 <div class="checkout-page">
-
     <div id="cart-summary-column">
         {% include 'cartSummary.html' %}
     </div>
 
     <div id="checkout-column">
-        {% for field in form %}
-        {{ field.as_hidden }}
-        {% endfor %}
-        <form id="checkout-form" action="{% url 'store_order_data' %}" method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="order-type">
-                <h1>How Would You Like To Get Your Order?</h1>
-            </div>
+        <div class="order-type">
+            <h1>How Would You Like To Get Your Order?</h1>
+        </div>
 
 
-            <!--Tabs for Delivery and Pick Up: Choose which delivery method-->
-            <div class="delivery-selection">
-                <button class="tablinks" onclick="openTab(event, 'Delivery')">Delivery</button>
-                <button class="tablinks" onclick="openTab(event, 'Pickup')">Pick Up at Store</button>
-            </div>
+        <!--Tabs for Delivery and Pick Up: Choose which delivery method-->
+        <div class="delivery-selection">
+            <button class="tablinks" onclick="openTab(event, 'Delivery')">Delivery</button>
+            <button class="tablinks" onclick="openTab(event, 'Pickup')">Pick Up at Store</button>
+        </div>
 
 
-            <!--PickUp Method-->
-            <div class="tabinfo" id="Pickup">
+        <!--PickUp Method-->
+        <div class="tabinfo" id="Pickup">
+            <form id="pickup-checkout-form" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
                 <div class="store-pickup">
                     <h4>Store Pickup At</h4>
                     <br>
                     <p>MoonWalk Threads</p>
                     <p>Address: 490 High St, Auburn, CA 95603</p>
                 </div>
-            </div>
+                <div class="contact-information">
+                    <h4>Contact Information</h4>
+                    <input type="text" id="customerFirstNamePickup" name="firstName" placeholder="First Name" pattern="^(?!\s*$)[A-Za-z]+" required><br>
+                    <input type="text" id="customerLastNamePickup" name="lastName" placeholder="Last Name" pattern="^(?!\s*$)[A-Za-z]+" required><br>
+                    <input type="email" id="customerEmailPickup" name="email" placeholder="Email Address" required><br>
+                    <input type="tel" id="customerPhonePickup" name="phone" placeholder="Phone Number" required pattern="^(?!\s*$)[0-9]{10}"><br>
+                    <input type="hidden" id="delivery-method-items-pickup" name="delivery-method-items" required>
+                </div>
+                <input type="submit" id="payment-proceed-pickup" value="Proceed to Payment" class="payment-checkout-button">
+            </form>
+        </div>
 
 
-            <!--Delivery Method-->
-            <div class="tabinfo" id="Delivery">
+        <!--Delivery Method-->
+        <div class="tabinfo" id="Delivery">
+            <form id="delivery-checkout-form" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
                 <div class="deliver-home">
                     {% csrf_token %}
                     <!--Shipping Address Information-->
                     <h4>Shipping Address</h4>
                     <input type="text" id="autocomplete" class="typeAddress" name="autocomplete" placeholder="Search for your address here"><br>
-                    <input type="text" id="customerStreetAddress" name="streetAddress" placeholder="Street Address" title="Please enter your street address."><br>
-                    <input type="text" id="customerAddressOptional" name="addressOptional" placeholder="Apt, Suite, Building (Optional)"><br>
-                    <input type="text" id="customerZipCode" name="zipCode" placeholder="Zip Code"><br>
-                    <input type="text" id="customerCity" name="city" placeholder="City"><br>
+                    <input type="text" id="customerStreetAddress" name="streetAddress" placeholder="Street Address" title="Please enter your street address." pattern="^(?!\s*$)[A-Za-z0-9 ]+" required><br>
+                    <input type="text" id="customerAddressOptional" name="addressOptional" placeholder="Apt, Suite, Building (Optional)" pattern="^(?!\s*$)[A-Za-z0-9 ]+"><br>
+                    <input type="text" id="customerZipCode" name="zipCode" placeholder="Zip Code" pattern="^(?!\s*$)[0-9]+" required><br>
+                    <input type="text" id="customerCity" name="city" placeholder="City" pattern="^(?!\s*$)[A-Za-z ]+" required><br>
                     <!--Select States from Drop Down-->
-                    <select class="states" id="customerState" required>
+                    <select class="states" id="customerState" name="state" required>
                         <option value="AL">Alabama</option>
                         <option value="AK">Alaska</option>
                         <option value="AZ">Arizona</option>
@@ -106,43 +114,36 @@
                         <option value="WI">Wisconsin</option>
                         <option value="WY">Wyoming</option>
                     </select>
-                    <input type="text" id="customerCountry" name="country" placeholder="Country"><br>
+                    <input type="text" id="customerCountry" name="country" placeholder="Country" pattern="^(?!\s*$)[A-Za-z ]+" required><br>
 
                     <!--Contact Information-->
                     <!--<h4>Contact Information</h4>
-                    <input type="text" id="customerFirstName" name="firstName" placeholder="First Name"><br>
-                    <input type="text" id="customerLastName" name="lastName" placeholder="Last Name"><br>
-                    <input type="email" id="customerEmail" name="email" placeholder="Email Address"><br>
-                    <input type="text" id="customerPhone" name="phone" placeholder="Phone Number"><br>
-                    <input type="hidden" id="delivery-method-items" name="delivery-method-items">-->
-
+                       <input type="text" id="customerFirstName" name="firstName" placeholder="First Name"><br>
+                       <input type="text" id="customerLastName" name="lastName" placeholder="Last Name"><br>
+                       <input type="email" id="customerEmail" name="email" placeholder="Email Address"><br>
+                       <input type="text" id="customerPhone" name="phone" placeholder="Phone Number"><br>
+                       <input type="hidden" id="delivery-method-items" name="delivery-method-items">-->
 
                     <!--<button type="submit" class="payment-checkout-button" id="payment-proceed-2" onclick="proceed()">
-                        PROCEED TO PAYMENT</button> -->
+                           PROCEED TO PAYMENT</button>-->
                     <!--<button type="submit" class="payment-button">Payment</button>--> <!--For Shippo API Testing purposes-->
                 </div>
-            </div>
+                <div class="contact-information">
+                    <h4>Contact Information</h4>
+                    <input type="text" id="customerFirstName" name="firstName" placeholder="First Name" pattern="^(?!\s*$)[A-Za-z]+" required><br>
+                    <input type="text" id="customerLastName" name="lastName" placeholder="Last Name" pattern="^(?!\s*$)[A-Za-z]+" required><br>
+                    <input type="email" id="customerEmail" name="email" placeholder="Email Address" required><br>
+                    <input type="tel" id="customerPhone" name="phone" placeholder="Phone Number" required pattern="^(?!\s*$)[0-9]{10}"><br>
+                    <input type="hidden" id="delivery-method-items" name="delivery-method-items" required>
+                </div>
+                <input type="submit" id="payment-proceed" value="Proceed to Payment" class="payment-checkout-button">
+            </form>
+        </div>
 
-            <div class="contact-information">
-                <h4>Contact Information</h4>
-                <input type="text" id="customerFirstName" name="firstName" placeholder="First Name" required><br>
-                <input type="text" id="customerLastName" name="lastName" placeholder="Last Name" required><br>
-                <input type="email" id="customerEmail" name="email" placeholder="Email Address" required><br>
-                <input type="tel" id="customerPhone" name="phone" placeholder="Phone Number" required pattern="[0-9]{10}"><br>
-                <input type="hidden" id="delivery-method-items" name="delivery-method-items" required>
-            </div>
-            <input type="submit" value="Proceed to Payment" class="payment-checkout-button">
-        </form>
+            <!-- For testing purposes only: Will be hidden-->
+            <input type="submit" id="checkout_button" value="Test Submit Button" name="checkout_submit" style="display: none;" onclick=checkout_test_validation()>
     </div>
 </div>
-
-
-<!--<div class="payment-stuff" id="payment" style="display:none">
-    <div id="card"></div>
-    <a id="payButtonContainer" href="{% url 'paymentPortal' %}">
-        <button id="pay" type="button">Pay</button>
-    </a>
-</div> -->
 
 <!--Script for the Tabs-->
 <script>
@@ -172,38 +173,106 @@
 </script>
 
 <script>
-    //store variables from shipping address into LOCAL STORAGE
-    document.getElementById('payment-proceed-2').addEventListener('click', function(event) {
+document.addEventListener("DOMContentLoaded", function () {
+    const proceedButton = document.getElementById("payment-proceed");
 
-        console.log("submitting values");
-        var firstName = document.getElementById('customerFirstName').value;
-        var lastName = document.getElementById('customerLastName').value;
-        var streetAddress = document.getElementById('customerStreetAddress').value;
-        var addressOptional = document.getElementById('customerAddressOptional').value;
-        var zipCode = document.getElementById('customerZipCode').value;
-        var city = document.getElementById('customerCity').value;
-        var state = document.getElementById('customerState').value;
+    if (!proceedButton) {
+        console.error("❌ Proceed button not found.");
+        return;
+    }
 
+    proceedButton.addEventListener("click", function (event) {
+        event.preventDefault();
 
-        var email = document.getElementById('customerEmail').value;
-        var phone = document.getElementById('customerPhone').value;
+        const form = document.getElementById("delivery-checkout-form");
 
+        if (!form.checkValidity()) {
+            alert("❌Form validation failed. Please fill in all required fields.");
+            return;
+        }
 
-        localStorage.setItem('customerFirstName', firstName);
-        localStorage.setItem('customerLastName', lastName);
-        localStorage.setItem('customerStreetAddress', streetAddress);
-        localStorage.setItem('customerAddressOptional', addressOptional);
-        localStorage.setItem('customerZipCode', zipCode);
-        localStorage.setItem('customerCity', city);
-        localStorage.setItem('customerState', state);
+        console.log("🚀 Storing user details before proceeding to payment...");
 
+        // 🔹 Get the selected delivery method from localStorage
+        const deliveryMethod = localStorage.getItem("deliveryMethod") || "delivery";
+        localStorage.setItem("deliveryMethod", deliveryMethod);
 
-        localStorage.setItem('customerEmail', email);
-        localStorage.setItem('customerPhone', phone);
+        // 🔹 Store basic customer details
+        const firstName = document.getElementById("customerFirstName")?.value || "";
+        const lastName = document.getElementById("customerLastName")?.value || "";
+        const email = document.getElementById("customerEmail")?.value || "";
+        const phone = document.getElementById("customerPhone")?.value || "";
 
-        //this.submit();
+        localStorage.setItem("customerFirstName", firstName);
+        localStorage.setItem("customerLastName", lastName);
+        localStorage.setItem("customerEmail", email);
+        localStorage.setItem("customerPhone", phone);
 
+        // 🔹 Store address info only if Delivery is selected
+        if (deliveryMethod === "Delivery") {
+            const streetAddress = document.getElementById("customerStreetAddress")?.value || "";
+            const addressOptional = document.getElementById("customerAddressOptional")?.value || "";
+            const zipCode = document.getElementById("customerZipCode")?.value || "";
+            const city = document.getElementById("customerCity")?.value || "";
+            const state = document.getElementById("customerState")?.value || "";
+
+            localStorage.setItem("customerStreetAddress", streetAddress);
+            localStorage.setItem("customerAddressOptional", addressOptional);
+            localStorage.setItem("customerZipCode", zipCode);
+            localStorage.setItem("customerCity", city);
+            localStorage.setItem("customerState", state);
+        }
+
+        console.log(`✅ Stored Data | Delivery Method: ${deliveryMethod}`);
+        
+        // 🔹 Redirect to Payment Page
         window.location.href = "{% url 'paymentPortal' %}";
+    });
+});
+</script>
+
+<!-- script for taking data from pickup-->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const proceedButton = document.getElementById("payment-proceed-pickup");
+
+        if (!proceedButton) {
+            console.error("❌ Proceed button not found.");
+            return;
+        }
+
+        proceedButton.addEventListener("click", function (event) {
+            event.preventDefault();
+
+            const form = document.getElementById("pickup-checkout-form");
+
+            if (!form.checkValidity()) {
+                alert("❌Form validation failed. Please fill in all required fields.");
+                return;
+            }
+
+            console.log("🚀 Storing user details before proceeding to payment...");
+
+            // 🔹 Get the selected delivery method from localStorage
+            const deliveryMethod = localStorage.getItem("deliveryMethod") || "delivery";
+            localStorage.setItem("deliveryMethod", deliveryMethod);
+
+            // 🔹 Store basic customer details
+            const firstName = document.getElementById("customerFirstNamePickup")?.value || "";
+            const lastName = document.getElementById("customerLastNamePickup")?.value || "";
+            const email = document.getElementById("customerEmailPickup")?.value || "";
+            const phone = document.getElementById("customerPhonePickup")?.value || "";
+
+            localStorage.setItem("customerFirstName", firstName);
+            localStorage.setItem("customerLastName", lastName);
+            localStorage.setItem("customerEmail", email);
+            localStorage.setItem("customerPhone", phone);
+
+            console.log(`✅ Stored Data | Delivery Method: ${deliveryMethod}`);
+
+            // 🔹 Redirect to Payment Page
+            window.location.href = "{% url 'paymentPortal' %}";
+        });
     });
 </script>
 
@@ -346,15 +415,24 @@
     };
 
 </script>
+
 <script
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBbRI4-FqDpXwb71COuZZsvi921b6nott8&loading=async&libraries=places&callback=initAutocomplete">
 </script>
 
-<!-- script for payment card-->
+<!-- script for submit button for checkout test validation-->
 <script>
-    function proceed() {
-        //check if form filled out and send to payment portal
-        window.location.href = "{% url 'paymentPortal' %}";
+    function checkout_test_validation() {
+        const form = document.getElementById("checkout-form");
+        let is_valid = true;
+
+        if (!form.checkValidity()) {
+            //alert("Failed Verification");
+            is_valid = false;
+        }
+
+        return is_valid
     }
 </script>
+
 {% endblock %}
