@@ -51,6 +51,8 @@ urlpatterns = [
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
     path('password_change/', login_required(auth_views.PasswordChangeView.as_view()), name='password_change'),
     path('password_change/done/', login_required(auth_views.PasswordChangeDoneView.as_view()), name='password_change_done'),
+    path('update-address/', views.update_address, name='update_address'),
+
 
     # Payment Portal (Testing)
     path('payment/', views.paymentPortal, name='paymentPortal'),

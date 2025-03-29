@@ -34,6 +34,7 @@ from .decorator import payment_required
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
+from django.views.decorators.http import require_POST
 import re
 
 
@@ -916,25 +917,54 @@ def subscribe(request):
 
 @login_required
 def profile(request):
-    # Check if a user is logged in
-    if request.user.is_authenticated:
+    customer = getattr(request.user, "customer", None)
+
+    if customer:
+        orders = Order.objects.filter(customer=customer).order_by('-created_at')  # Get user orders
         user_data = {
             "email": request.user.email,
             "password": "********",  # Hidden for security
-            "address": request.user.customer.street_address if hasattr(request.user, "customer") else "No address available",
-            "orders": [],  # Placeholder for future order retrieval
+            "address": customer.street_address,
+            "orders": orders,  # ✅ Add orders here
         }
     else:
-        # Hardcoded data for non-logged-in users
         user_data = {
             "email": "guest@example.com",
             "password": "********",
             "address": "No address available",
-            "orders": [
-                {"id": 1, "status": "Shipped", "total": 59.99},
-                {"id": 2, "status": "Processing", "total": 120.50},
-            ],
+            "orders": [],
         }
 
     return render(request, "profile.html", {"user_data": user_data})
+
+
+@require_POST
+@login_required
+def update_address(request):
+    customer = getattr(request.user, "customer", None)
+    if not customer:
+        messages.error(request, "No customer profile found.")
+        return redirect("profile")
+
+    street = request.POST.get("street_address", "").strip()
+    street2 = request.POST.get("street_address2", "").strip()
+    city = request.POST.get("city", "").strip()
+    state = request.POST.get("state", "").strip()
+    zip_code = request.POST.get("zip_code", "").strip()
+
+    if not street or not city or not state or not zip_code:
+        messages.error(request, "All required address fields must be filled.")
+        return redirect("profile")
+
+    # Save the updated values
+    customer.street_address = street
+    customer.street_address2 = street2
+    customer.city = city
+    customer.state = state
+    customer.zip_code = zip_code
+    customer.save()
+
+    messages.success(request, "Your address has been updated.")
+    return redirect("profile")
+
 
