@@ -1,5 +1,43 @@
 /* styles.css */
 
+/* Custom Fonts */
+/* Believe the current fonts are not royalty free, search for similar royalty free ones */
+/* Fat Kat */
+@font-face {
+    font-family: "Fat Kat";
+    src: url('Fonts/Fat\ Kat\ -\ \(Demo\)\ hanscostudio.com.ttf') format('truetype');
+}
+
+/* Milky Vintage */
+@font-face {
+    font-family: "Milky Vintage";
+    src: url('Fonts/MilkyVintage-Regular.ttf') format('truetype');
+}
+
+/* Million Design */
+@font-face {
+    font-family: "Million Design";
+    src: url('Fonts/MillionDesign.ttf') format('truetype');
+}
+
+/* Modern Prestige Demo */
+@font-face {
+    font-family: "Modern Prestige Demo";
+    src: url('Fonts/Modern\ Prestige\ DEMO.otf') format('truetype');
+}
+
+/* Verve */
+@font-face {
+    font-family: "Verve";
+    src: url('Fonts/Verve.ttf') format('truetype');
+}
+
+/* Vogue */
+@font-face {
+    font-family: "Vogue";
+    src: url('Fonts/Vogue.ttf') format('truetype');
+}
+
 body {
     margin: 0;
     font-family: var(--font);
