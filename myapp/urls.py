@@ -36,7 +36,7 @@ urlpatterns = [
     path('product/<int:pk>/', views.productDetails, name='productDetails'),
     
     #send order
-    #path("send-order-email/", views.send_order_email, name="send_order_email"),
+    path("send-order-email/", views.send_order_email, name="send_order_email"),
     
 
     # Address Submission (Shippo)

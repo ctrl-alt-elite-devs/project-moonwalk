@@ -607,11 +607,12 @@ def process_payment(request):
                 "order_items": [
                     {
                         "name": item.product.name,
-                        "price": item.product.price,
+                        "price": item.price_at_purchase,
                         "image_url": item.product.image.url if item.product.image else ""
-                    } for item in cart_queryset
+                    } for item in order.items.all()
                 ],
-                "total_price": total_amount / 100,  # cents to dollars
+                "total_price": float(order.total_amount),  # or order.total_amount if already Decimal
+                "tax_amount": float(order.tax_amount) if hasattr(order, "tax_amount") else 0.00,
                 "square_order_id": square_order_id,  # ✅ ADD THIS
                 "shipping_cost": float(cheapest_rate.amount) if cheapest_rate else 0.00,
                 "shipping_label_url": shipping_label_url,
@@ -620,11 +621,11 @@ def process_payment(request):
 
             # After Square payment is processed(uncomment to make it work)
             email_sent = False
-            #try:
-            #     send_order_email(email_context)
-            #     email_sent = True
-            #except Exception as e:
-            #     print("❌ Email failed to send:", str(e))
+            try:
+                send_order_email(email_context)
+                email_sent = True
+            except Exception as e:
+                 print("❌ Email failed to send:", str(e))
 
 
             return JsonResponse({"status": "success",
@@ -899,21 +900,21 @@ def subscribe(request):
 
     return JsonResponse({"success": False, "message": "Invalid request."}, status=405)
 
-# def send_order_email(context):(uncomment to try it out)
-#     try:
-#         html_content = render_to_string("order_confirmation_email.html", context)
-#         text_content = strip_tags(html_content)
-#         subject = f"Order #{context['square_order_id']}"
-#         from_email = "projectmoonwalk01@gmail.com"
-#         recipient_list = [context["email"]]
+def send_order_email(context):
+    try:
+        html_content = render_to_string("order_confirmation_email.html", context)
+        text_content = strip_tags(html_content)
+        subject = f"Order #{context['square_order_id']}"
+        from_email = "projectmoonwalk01@gmail.com"
+        recipient_list = [context["email"]]
 
-#         email = EmailMultiAlternatives(subject, text_content, from_email, recipient_list)
-#         email.attach_alternative(html_content, "text/html")
-#         email.send()
-#         return True
-#     except Exception as e:
-#         print("Email Error:", e)
-#         return False
+        email = EmailMultiAlternatives(subject, text_content, from_email, recipient_list)
+        email.attach_alternative(html_content, "text/html")
+        email.send()
+        return True
+    except Exception as e:
+        print("Email Error:", e)
+        return False
 
 @login_required
 def profile(request):

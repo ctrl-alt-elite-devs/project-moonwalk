@@ -6,6 +6,8 @@
     <title>Payment</title>
     {% load static %}
     {% csrf_token %}
+    <!-- ✅ Add this in the <head> -->
+
 </head>
 {% block content %}
 <div class="payment-page">
@@ -30,6 +32,7 @@
     </div>
 
 </div>
+
 
 <!-- For testing Shippo API purposes-->
 <!--{% if label_url %}
@@ -70,7 +73,12 @@
             await card.attach('#card');
 
             const payButton = document.getElementById('pay');
+
+
             payButton.addEventListener('click', async () => {
+
+
+
                 const result = await card.tokenize();
                 console.log("result: " + result);
                 if (result.status !== "OK") {
@@ -132,15 +140,14 @@
                     if (data.status === 'success') {
                         alert("✅ Payment successful!");
 
-                        if (data.square_order_id) {
-                            localStorage.setItem("squareOrderId", data.square_order_id);
-                        }
+                        localStorage.setItem("squareOrderId", data.square_order_id);
 
 
-                        // ✅ Add this line to indicate email was sent
-                     //   if (data.email_sent) {
-                     //       localStorage.setItem("email_sent", "true");
-                     //   }
+
+                    // ✅ Add this line to indicate email was sent
+                       if (data.email_sent) {
+                           localStorage.setItem("email_sent", "true");
+                      }
 
                         // Redirect to order summary page
                         document.location.href = data.redirect_url;
@@ -221,5 +228,4 @@
     })()
 </script>
 
-<!--<script src="{% static 'scripts/sendOrder.js' %}"></script>-->
 {% endblock %}
