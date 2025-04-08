@@ -38,6 +38,8 @@ urlpatterns = [
     #send order
     path("send-order-email/", views.send_order_email, name="send_order_email"),
     
+    path("subscribe/", views.subscribe, name="subscribe"),
+    
 
     # Address Submission (Shippo)
     path('get-shipping-rates/', views.get_shipping_rates, name='get_shipping_rates'),

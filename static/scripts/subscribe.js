@@ -37,7 +37,9 @@ document.addEventListener("DOMContentLoaded", function () {
             console.log("✅ Server Response:", data);
 
             if (data.success) {
-                modalMessage.innerText = "✅ Thank you! A confirmation email has been sent.";
+                modalMessage.innerText = "✅ Thank You for Subscribing!";
+            } else if (data.message.includes("already subscribed")) {
+                modalMessage.innerText = "You’re already Subscribed!";
             } else {
                 modalMessage.innerText = "⚠️ " + data.message;
             }

@@ -276,6 +276,7 @@ def orderSummary(request, order_id=None):
         pre_tax_total = order.pre_tax_total
         tax_amount = order.tax_amount
         total_amount = order.total_amount
+        square_order_id = order.square_order_id  # ✅ Pull it from the order
     else:
         if request.user.is_authenticated:
             cart_items = Cart.objects.filter(customer = Customer.objects.filter(user=request.user).first())
@@ -289,6 +290,7 @@ def orderSummary(request, order_id=None):
         'pre_tax_total': pre_tax_total,
         'tax_amount': tax_amount,
         'total_amount': total_amount,
+        'square_order_id': square_order_id,  # ✅ Add to context
         'is_order': bool(order_id),  # helpful flag in template
     })
 
@@ -871,6 +873,7 @@ def subscribe(request):
         try:
             data = json.loads(request.body)
             email = data.get("email")
+            
 
             if not email:
                 return JsonResponse({"success": False, "message": "Invalid email address."}, status=400)
@@ -886,7 +889,7 @@ def subscribe(request):
 
             # Create Email with HTML and Plain Text
             subject = "🎉 Welcome to MoonWalk Threads!"
-            from_email = "info@yourdomain.com"
+            from_email = "projectmoonwalk01@gmail.com"
             recipient_list = [email]
 
             email_message = EmailMultiAlternatives(subject, text_content, from_email, recipient_list)

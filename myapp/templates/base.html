@@ -30,6 +30,7 @@
     <link rel="stylesheet" href="{% static 'css/contact.css' %}">
     <link rel="stylesheet" href="{% static 'css/payment.css' %}">
     <link rel="stylesheet" href="{% static 'css/profile.css' %}">
+    <link rel="stylesheet" href="{% static 'css/subscribe.css' %}">
     <link rel="stylesheet" href="{% static 'css/order-summary.css' %}">
 
 
@@ -369,12 +370,12 @@
         <div class="subscribe-section">
             <div class="subscribe-subsection">
                 <input class="subscribeInput" type="text" id="emailAddress" placeholder="Your email address" autocomplete="email">
-                <button class="subscribeButton" type="button">SUBSCRIBE</button>
+                <button class="subscribeButton" id="subscribeButton" type="button">SUBSCRIBE</button>            
             </div>
 
             <div class="subscribe-subsection">
                 <input class="subscribeInput" type="text" id="phoneNum" placeholder="Your phone number">
-                <button class="subscribeButton" type="button">SUBSCRIBE</button>
+                <button class="subscribeButton" id="subscribeButton" type="button">SUBSCRIBE</button>
             </div>
         </div>
 
@@ -405,6 +406,18 @@
             dropDownMenu.classList.toggle('open')
         }
     </script>
+
+
+
+    <!-- Subscription Confirmation Modal -->
+<div id="subscription-modal" class="modal-overlay">
+    <div class="modal-content">
+        <p id="modal-message">Thank you for Subscribing!</p>
+        <button id="close-modal">OK</button>
+    </div>
+</div>
+
+<script src="{% static 'scripts/subscribe.js' %}" defer></script>
 
 </body>
 </html>
