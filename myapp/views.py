@@ -819,6 +819,7 @@ def generate_test_tracking():
     label_url = "https://yourtestserver.com/test-label.pdf"  # Replace with your placeholder URL
     return tracking_number, tracking_url, label_url
 
+
 def profile(request):
     # Check if a user is logged in
     if request.user.is_authenticated:

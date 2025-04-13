@@ -62,7 +62,15 @@ SOCIALACCOUNT_PROVIDERS = {
             'client_id': os.getenv('OAUTH_GOOGLE_CLIENT_ID'),
             'secret': os.getenv('OAUTH_GOOGLE_SECRET'),
             'project_id': os.getenv('OAUTH_GOOGLE_PROJECT_ID'),
+            "scope": [
+                        "profile",
+                        "email",
+                    ],
         },
+        'SCOPE': {
+            "profile",
+            "email",
+        }
     },
 }
 
