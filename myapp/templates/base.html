@@ -158,9 +158,9 @@
             </div>
 
             <div class="social-signup">
-                <p>Or sign up with:</p>
-                <a href="{% provider_login_url 'google' %}?next={{ request.path }}">
-                  <button type="button" class="google-login-btn">Google</button>
+                <a href="{% provider_login_url 'google' %}?next={{ request.path }}" class="classic-google-btn">
+                    <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google logo" class="google-icon">
+                    <span>Sign in with Google</span>
                 </a>
             </div>
 
