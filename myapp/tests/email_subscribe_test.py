@@ -1,35 +1,56 @@
-# This tests the advanced search functionality in Firefox.
-import sys, getopt
-import wait
-from time import sleep
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from webdriver_manager.firefox import GeckoDriverManager
-from selenium.webdriver.firefox.service import Service
+from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import time
 
-opts, args = getopt.getopt(sys.argv[1:], "d", ["debug"])
+# Test emails
+new_email = "testuser_selenium_001@example.com"
+existing_email = "testuser_selenium_001@example.com"  # Simulate as existing by submitting twice
 
-print("Running test " + sys.argv[0])
+# Setup Firefox
+options = Options()
+options.headless = False  # Set to True if you want to run in headless mode
+driver = webdriver.Firefox(options=options)
+driver.set_window_size(1200, 900)
 
-# launch
-driver = webdriver.Firefox(service=Service(executable_path=GeckoDriverManager().install()))
+try:
+    driver.get("http://localhost:8000/")  # Replace with your local dev URL if needed
+    wait = WebDriverWait(driver, 10)
 
-# check search page
-driver.get('localhost:8000')
-driver.find_element(by=By.ID, value='emailAddress').send_keys('nazapot@gmail.com' + Keys.ENTER)
-#wait.pause(opts)
+    def submit_email(email):
+        print(f"📧 Submitting email: {email}")
+        email_input = wait.until(EC.presence_of_element_located((By.ID, "emailAddress")))
+        email_input.clear()
+        email_input.send_keys(email)
 
-'''driver.find_element(by=By.NAME, value='emailAddress').clear()
-driver.find_element(by=By.NAME, value='emailAddress').send_keys('Sacramento' + Keys.ENTER)
-wait.pause(opts)
+        subscribe_btn = wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "subscribeButton")))
+        subscribe_btn.click()
 
-driver.find_element(by=By.NAME, value='emailAddress').clear()
-driver.find_element(by=By.NAME, value='emailAddress').send_keys('tina delgado' + Keys.ENTER)
-wait.pause(opts)
+        modal = wait.until(EC.visibility_of_element_located((By.ID, "subscription-modal")))
+        modal_msg = modal.find_element(By.ID, "modal-message").text.strip()
 
-driver.find_element(by=By.NAME, value='emailAddress').clear()
-driver.find_element(by=By.NAME, value='emailAddress').send_keys('' + Keys.ENTER)
-wait.pause(opts)'''
+        # Close modal
+        driver.find_element(By.ID, "close-modal").click()
+        time.sleep(1)
 
-driver.quit()
+        return modal_msg
+
+    # First attempt - should be new
+    first_message = submit_email(new_email)
+    print("🟢 First Submission Result:", first_message)
+
+    # Second attempt - should say already subscribed
+    second_message = submit_email(existing_email)
+    print("🟡 Second Submission Result:", second_message)
+
+    # Verify behavior
+    if "already subscribed" in second_message.lower():
+        print("✅ Existing email test passed.")
+    else:
+        print("❌ Existing email test failed.")
+
+finally:
+    time.sleep(2)
+    driver.quit()

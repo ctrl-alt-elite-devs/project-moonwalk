@@ -901,6 +901,12 @@ def subscribe(request):
 
     return JsonResponse({"success": False, "message": "Invalid request."}, status=405)
 
+
+def unsubscribe(request, token):
+    subscriber = get_object_or_404(Subscriber, unsubscribe_token=token)
+    subscriber.delete()
+    return render(request, "unsubscribe.html", {"email": subscriber.email})
+
 def send_order_email(context):
     try:
         html_content = render_to_string("order_confirmation_email.html", context)

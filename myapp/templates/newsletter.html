@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>{{ subject }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+
+    .email-container {
+      background-color: #ffffff;
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      box-sizing: border-box;
+    }
+
+    .banner {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      max-height: 300px;
+      object-fit: cover;
+    }
+
+    .message {
+      font-size: 16px;
+      color: #333333;
+      margin: 20px 0;
+      line-height: 1.6;
+    }
+
+    .cta-button {
+      display: inline-block;
+      padding: 12px 24px;
+      background-color: #ff6f72;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+
+    .footer {
+      margin-top: 30px;
+      font-size: 13px;
+      color: #999999;
+    }
+
+    @media only screen and (max-width: 600px) {
+      .email-container {
+        padding: 20px;
+        margin: 20px;
+      }
+
+      .message {
+        font-size: 15px;
+      }
+
+      .cta-button {
+        padding: 10px 20px;
+        font-size: 14px;
+      }
+    }
+
+    @media only screen and (max-width: 400px) {
+      .email-container {
+        padding: 15px;
+      }
+
+      .cta-button {
+        width: 100%;
+        box-sizing: border-box;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div style="text-align: center;">
+    <img src="https://i.imgur.com/ewx2zck.jpeg" referrerpolicy="no-referrer" alt="MoonWalk Threads Logo" width="300">
+</div>
+  <div class="email-container">
+    {% if banner_url %}
+      <img src="{{ banner_url }}" alt="Newsletter Banner" class="banner">
+    {% endif %}
+
+    <div class="message">
+      {{ message|linebreaks }}
+    </div>
+
+    {% if button_url %}
+      <a href="{{ button_url }}" class="cta-button" target="_blank">Visit Store!</a>
+    {% endif %}
+
+    <div class="footer">
+        You are receiving this email because you subscribed to updates from MoonWalk Threads.<br>
+        <a href="{{ unsubscribe_url }}" style="color:#999999; text-decoration:underline;">Unsubscribe</a>
+      </div>
+  </div>
+</body>
+</html>

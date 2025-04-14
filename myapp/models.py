@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.utils import timezone
 import datetime
+from django.urls import reverse
 from storages.backends.s3boto3 import S3Boto3Storage
 # Create your models here.
 
@@ -45,10 +46,25 @@ class Customer(models.Model):
 class Subscriber(models.Model):
     email = models.EmailField(unique=True)
     date_subscribed = models.DateTimeField(auto_now_add=True)
+    unsubscribe_token = models.UUIDField(default=uuid.uuid4, null=True, blank=True)  # <- temporarily not unique
 
+    def get_unsubscribe_url(self):
+        return reverse('unsubscribe', args=[str(self.unsubscribe_token)])
+    
     def __str__(self):
         return self.email
 
+# models.py
+
+class Newsletter(models.Model):
+    title = models.CharField(max_length=200)
+    banner_image = models.ImageField(upload_to='newsletter_banners/')
+    description = models.TextField()
+    store_link = models.URLField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
 
 class Product(models.Model):
     name = models.CharField(max_length=100)
