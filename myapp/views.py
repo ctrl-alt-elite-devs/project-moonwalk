@@ -103,6 +103,10 @@ def about(request):
 def contact(request):
     return render(request, 'contact.html')
 
+# theme HTML - Admin CSS Editor
+def theme(request):
+    return render(request, 'theme.html')
+
 def cart(request):
     #mock items
         # Current date is hard coded
