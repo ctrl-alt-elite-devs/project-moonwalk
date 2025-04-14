@@ -50,6 +50,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'myapp',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
 ]
 
 MIDDLEWARE = [
@@ -60,6 +64,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'moonwalk.urls'
@@ -117,7 +122,25 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
-]
+] 
+
+SOCIALACCOUNT_PROVIDERS = {
+     'google': {
+         'APP' : {
+             'client_id': os.getenv('OAUTH_GOOGLE_CLIENT_ID'),
+             'secret': os.getenv('OAUTH_GOOGLE_SECRET'),
+             'project_id': os.getenv('OAUTH_GOOGLE_PROJECT_ID'),
+              "scope": [
+                         "profile",
+                         "email",
+                     ],
+         },
+          'SCOPE': {
+             "profile",
+             "email",
+         }
+     },
+ }
 
 
 # Internationalization
@@ -175,3 +198,5 @@ CSRF_USE_SESSIONS = False
 CSRF_COOKIE_HTTPONLY = True
 CSRF_COOKIE_SECURE = False
 CSRF_COOKIE_SAMESITE = 'Lax'
+
+SOCIALACCOUNT_LOGIN_ON_GET = True
