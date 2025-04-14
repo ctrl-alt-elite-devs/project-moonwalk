@@ -68,8 +68,8 @@ def contact(request):
     return render(request, 'contact.html')
 
 # Adding the view for the adminstylechanges html
-def adminCSS(request):
-    return render(request, 'adminCSS.html')
+def theme(request):
+    return render(request, 'theme.html')
 
 def cart(request):
     #mock items

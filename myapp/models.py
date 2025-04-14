@@ -57,3 +57,8 @@ class Cart(models.Model):
 
     def __str__(self):
         return f'Cart for {self.customer or self.session_key}'
+    
+class Theme(models.Model):
+    background_color = models.CharField(max_length=10)
+    
+    

@@ -4,7 +4,7 @@ from . import views
 urlpatterns = [
     path('', views.home, name='home'),
     # Adding the path used to access the page that allows admin to change CSS
-    path('adminCSS/', views.adminCSS, name='adminCSS'),
+    path('theme/', views.theme, name='theme'),
     path('shop/', views.shop, name='shop'),
     # path('', views.total_time, name='total_time'),
     path('about/', views.about, name='about'),
