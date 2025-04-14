@@ -865,41 +865,47 @@ def orderCartSummary(context):
     }
 
 
-@csrf_exempt  # Only use this for local testing, remove it if using CSRF middleware
 def subscribe(request):
     if request.method == "POST":
         try:
             data = json.loads(request.body)
-            email = data.get("email")
-            
+            email = data.get("email", "").strip()
+            phone = data.get("phone", "").strip()
 
-            if not email:
-                return JsonResponse({"success": False, "message": "Invalid email address."}, status=400)
+            if not email and not phone:
+                return JsonResponse({"success": False, "message": "Please provide an email or phone number."}, status=400)
 
-            subscriber, created = Subscriber.objects.get_or_create(email=email)
+            # Check if subscriber already exists
+            if email:
+                if Subscriber.objects.filter(email=email).exists():
+                    return JsonResponse({"success": False, "message": "Email is already subscribed."})
+            if phone:
+                if Subscriber.objects.filter(phone=phone).exists():
+                    return JsonResponse({"success": False, "message": "Phone number is already subscribed."})
+                
+            Subscriber.objects.create(email=email or None, phone=phone or None)
 
-            if not created:
-                return JsonResponse({"success": False, "message": "You are already subscribed."})
 
-            # Render HTML Email Content
-            html_content = render_to_string("subscription.html", {"email": email})
-            text_content = strip_tags(html_content)  # Convert HTML to plain text
+            # Only send welcome email if they signed up with an email
+            if email:
+                html_content = render_to_string("subscription.html", {"email": email})
+                text_content = strip_tags(html_content)
 
-            # Create Email with HTML and Plain Text
-            subject = "🎉 Welcome to MoonWalk Threads!"
-            from_email = "projectmoonwalk01@gmail.com"
-            recipient_list = [email]
-
-            email_message = EmailMultiAlternatives(subject, text_content, from_email, recipient_list)
-            email_message.attach_alternative(html_content, "text/html")
-            email_message.send()
+                email_message = EmailMultiAlternatives(
+                    subject="🎉 Welcome to MoonWalk Threads!",
+                    body=text_content,
+                    from_email="projectmoonwalk01@gmail.com",
+                    to=[email],
+                )
+                email_message.attach_alternative(html_content, "text/html")
+                email_message.send()
 
             return JsonResponse({"success": True, "message": "Subscription successful."})
 
         except json.JSONDecodeError:
             return JsonResponse({"success": False, "message": "Invalid data format."}, status=400)
 
-    return JsonResponse({"success": False, "message": "Invalid request."}, status=405)
+    return JsonResponse({"success": False, "message": "Invalid request method."}, status=405)
 
 
 def unsubscribe(request, token):

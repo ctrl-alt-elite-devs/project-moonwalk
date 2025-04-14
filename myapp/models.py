@@ -44,7 +44,8 @@ class Customer(models.Model):
     post_save.connect(create_customer, sender=User)
 
 class Subscriber(models.Model):
-    email = models.EmailField(unique=True)
+    email = models.EmailField(unique=True,null=True,blank=True)
+    phone = models.CharField(max_length=20, unique=True, null=True, blank=True)
     date_subscribed = models.DateTimeField(auto_now_add=True)
     unsubscribe_token = models.UUIDField(default=uuid.uuid4, null=True, blank=True)  # <- temporarily not unique
 
@@ -52,7 +53,11 @@ class Subscriber(models.Model):
         return reverse('unsubscribe', args=[str(self.unsubscribe_token)])
     
     def __str__(self):
-        return self.email
+        if self.email:
+            return self.email
+        elif self.phone:
+            return self.phone
+        return "Anonymous Subscriber"
 
 # models.py
 
