@@ -154,9 +154,11 @@
             'LNG128XEAPR21'
         );
 
+        const totalAmount = localStorage.getItem('totalAmount');
+
         const paymentRequest = payments.paymentRequest({
             total: {
-                amount: "1.00",
+                amount: totalAmount,
                 label: "Total"
             },
             countryCode: "US",
@@ -186,9 +188,11 @@
             'LNG128XEAPR21'
         );
 
+        const totalAmount = localStorage.getItem('totalAmount');
+
         const paymentRequest = payments.paymentRequest({
             total: {
-                amount: "1.00",
+                amount: totalAmount,
                 label: "Total"
             },
             countryCode: "US",
