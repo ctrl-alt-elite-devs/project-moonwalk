@@ -8,9 +8,7 @@ from selenium.webdriver.support import expected_conditions as EC
 
 class MyTextTestResult(unittest.TextTestResult):
     def printErrors(self):
-        # Call the original method to print errors (if any)
         super().printErrors()
-        # If tests were successful, print a custom message.
         if self.wasSuccessful():
             self.stream.writeln("\n🎉 ALL TESTS PASSED! 🎉\n")
 
@@ -40,7 +38,7 @@ class GoogleSignInTest(unittest.TestCase):
         wait = WebDriverWait(driver, 30)
 
         # Step 1: Open homepage
-        driver.get("http://127.0.0.1:8000/")  # Adjust URL to your local site
+        driver.get("http://127.0.0.1:8000/") 
 
         # Step 2: Click the profile icon to open the login modal
         profile_icon = wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "open_login")))
@@ -58,7 +56,7 @@ class GoogleSignInTest(unittest.TestCase):
 
         # Step 6: Fill in the Google login form
         email_input = wait.until(EC.element_to_be_clickable((By.XPATH, "//input[@type='email']")))
-        test_email = "moonwalktester@gmail.com"  # Replace with your test email
+        test_email = "moonwalktester@gmail.com"  
         email_input.send_keys(test_email)
 
         next_button = wait.until(EC.element_to_be_clickable(
