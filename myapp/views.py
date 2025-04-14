@@ -764,6 +764,7 @@ def register_user(request):
             return render(request, 'home.html', context)
     return redirect('home')
 
+
 class password_reset(FormView):
     form_class = PasswordResetForm  # Built-in Django form
 
@@ -918,23 +919,23 @@ def send_order_email(context):
 
 @login_required
 def profile(request):
-    customer = getattr(request.user, "customer", None)
+    user = request.user
 
+    customer = getattr(request.user, "customer", None)
+    print(f"DEBUG: Logged-in user's email: {request.user.email}")
     if customer:
-        orders = Order.objects.filter(customer=customer).order_by('-created_at')  # Get user orders
-        user_data = {
-            "email": request.user.email,
-            "password": "********",  # Hidden for security
-            "address": customer.street_address,
-            "orders": orders,  # ✅ Add orders here
-        }
+        orders = Order.objects.filter(customer=customer).order_by('-created_at')
+        address = customer.street_address
     else:
-        user_data = {
-            "email": "guest@example.com",
-            "password": "********",
-            "address": "No address available",
-            "orders": [],
-        }
+        orders = []
+        address = "No address available"
+
+    user_data = {
+        "email": user.email,
+        "password": "********",
+        "address": address,
+        "orders": orders,
+    }
 
     return render(request, "profile.html", {"user_data": user_data})
 
