@@ -39,7 +39,9 @@
     </div>
     <div class="order-summary-column">
         <h1 class="order-summary-title">Order Summary</h1>
-        <h3 id="confirmation-number">Confirmation Number: #...</h3>
+        {% if square_order_id %}
+        <h3 id="confirmation-number">Confirmation Number: #{{ square_order_id }}</h3>
+        {% endif %}
         <h3>Your Order Details</h3>
         <span id="display-method-items"></span>
         <p id="display-details"></p>
@@ -71,11 +73,6 @@
 <script>
 window.onload = function() {
     var deliveryMethod = localStorage.getItem('deliveryMethod');
-
-    const orderId = localStorage.getItem("squareOrderId");
-    if (orderId) {
-        document.getElementById("confirmation-number").innerText = `Order ID: #${orderId}`;
-    }
 
 
     if (deliveryMethod === 'Delivery') {
@@ -112,6 +109,7 @@ window.onload = function() {
     }
 };
 </script>
+
 
 
 {% endblock %}

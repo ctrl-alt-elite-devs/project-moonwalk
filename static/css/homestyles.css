@@ -1,17 +1,83 @@
 /* styles.css */
 
+/* Custom Fonts */
+/* Believe the current fonts are not royalty free, search for similar royalty free ones */
+/* Fat Kat */
+@font-face {
+    font-family: "Fat Kat";
+    src: url('Fonts/Fat\ Kat\ -\ \(Demo\)\ hanscostudio.com.ttf') format('truetype');
+}
+
+/* Milky Vintage */
+@font-face {
+    font-family: "Milky Vintage";
+    src: url('Fonts/MilkyVintage-Regular.ttf') format('truetype');
+}
+
+/* Million Design */
+@font-face {
+    font-family: "Million Design";
+    src: url('Fonts/MillionDesign.ttf') format('truetype');
+}
+
+/* Modern Prestige Demo */
+@font-face {
+    font-family: "Modern Prestige Demo";
+    src: url('Fonts/Modern\ Prestige\ DEMO.otf') format('truetype');
+}
+
+/* Verve */
+@font-face {
+    font-family: "Verve";
+    src: url('Fonts/Verve.ttf') format('truetype');
+}
+
+/* Vogue */
+@font-face {
+    font-family: "Vogue";
+    src: url('Fonts/Vogue.ttf') format('truetype');
+}
+
 body {
     margin: 0;
     font-family: var(--font);
 }
-* {
-    --background_color: #F46471;
-    --font: 'Roboto', sans-serif;
-    --visibile: True;
-    --font_color_title: #FFFFFF;
-    --font_color_timer: #000000;
-    --drop_title: "Spooky Halloween Apparel";
+
+/********************************************************************************************************************************************/
+ /* CSS for admin editor */
+ 
+ .webpage {
+    display: flex;
 }
+
+.editor {
+    z-index: 10;
+    width: 25%;
+    display: flex;
+    flex-direction: column;
+    padding-left: 2rem;
+    bottom: 10px;
+    position: fixed;
+    background-color: rgba(255, 0, 208, 0.381);
+}
+
+.demo {
+    width: 75%;
+    width: 100%;
+}
+
+.demo#img_banner{
+    height: 500px;
+}
+
+
+
+.color-editor {
+    padding-left: 5rem;
+}
+
+/* End of CSS for admin editor */
+/********************************************************************************************************************************************/
 
 .img_banner {
     display: flex;
@@ -35,7 +101,7 @@ body {
     align-items: center;
     display: block;
     background-color: var(--background_color);
-    font-family: var(--font);
+    font-family: 'Roboto';
     color: var(--font_color_title);
     /*font-weight: medium;*/
     font-size: 1.125rem;
@@ -46,9 +112,10 @@ body {
     font-size: 1.5rem;
     display: flex;
     justify-content: center;
-    font-weight: bold;
-    -webkit-text-stroke-color: #000000;
-    -webkit-text-stroke-width: 0.8px;
+    font-weight: var(--font_weight);
+    font-family: var(--font);
+    -webkit-text-stroke-color: var(--font_border_color);
+    -webkit-text-stroke-width: calc(var(--font_border_thickness) * 1px);
     transform: translateY(-20px);
 }
 
@@ -110,7 +177,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #F46471;
+    background-color: var(--background_color);
 }
 
 .brand-logo {
@@ -141,7 +208,7 @@ body {
     padding-right: 20px;
     display: flex;
     justify-content: space-between;
-    background-color: #F46471;
+    background-color: var(--background_color);
     font-family: 'Cobito', monospace;
     align-items: center;
     position: relative;

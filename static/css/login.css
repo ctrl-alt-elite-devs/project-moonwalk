@@ -76,7 +76,7 @@
   }
   
   button.login-btn {
-    background-color: #F46471;
+    background-color: var(--background_color);
     color: white;
     border: none;
     padding: 12px;
@@ -148,7 +148,7 @@
 
 .logAlert {
   padding: 15px;
-  background-color:#F46471;
+  background-color: var(--background_color);
   color: black;
   border-radius: 5px;
   position: relative;
@@ -170,4 +170,27 @@
   color:red;
   font-size: 12px;
   text-align: left;
+}
+.classic-google-btn {
+  display: inline-flex;
+  align-items: center;
+  background-color: white;
+  color: #555;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  padding: 8px 12px;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.classic-google-btn:hover {
+  background-color: #f7f7f7;
+  color: #555; 
+}
+
+.classic-google-btn .google-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
 }

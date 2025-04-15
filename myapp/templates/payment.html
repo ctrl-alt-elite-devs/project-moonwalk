@@ -6,6 +6,8 @@
     <title>Payment</title>
     {% load static %}
     {% csrf_token %}
+    <!-- ✅ Add this in the <head> -->
+
 </head>
 {% block content %}
 <div class="payment-page">
@@ -31,6 +33,7 @@
 
 </div>
 
+
 <!-- For testing Shippo API purposes-->
 <!--{% if label_url %}
     <p>Your shipping label is ready! <a href="{{ label_url }}" target="_blank">View Label</a></p>
@@ -41,121 +44,107 @@
 {% endif %}-->
 
 <!-- credit card payment script -->
-<script>
-
+<script type="module">
+    import { showLoadingOverlay, hideLoadingOverlay } from "{% static 'scripts/loadingOverlay.js' %}";
+  
     document.addEventListener("DOMContentLoaded", function () {
-        console.log("📌 Confirming Local Storage Data in `payment.html`...");
-    
-        console.log("🔍 Delivery Method:", localStorage.getItem("deliveryMethod"));
-        console.log("🔍 First Name:", localStorage.getItem("customerFirstName"));
-        console.log("🔍 Last Name:", localStorage.getItem("customerLastName"));
-        console.log("🔍 Email:", localStorage.getItem("customerEmail"));
-        console.log("🔍 Phone:", localStorage.getItem("customerPhone"));
+      console.log("📌 Confirming Local Storage Data in `payment.html`...");
+      console.log("🔍 Delivery Method:", localStorage.getItem("deliveryMethod"));
+      console.log("🔍 First Name:", localStorage.getItem("customerFirstName"));
+      console.log("🔍 Last Name:", localStorage.getItem("customerLastName"));
+      console.log("🔍 Email:", localStorage.getItem("customerEmail"));
+      console.log("🔍 Phone:", localStorage.getItem("customerPhone"));
     });
-
+  
     (async () => {
-        const payments = Square.payments(
-            '{{ square_app_id }}',
-            '{{ square_location_id }}'
-        );
-        const cardOptions = {
-            style: {
-                input: {
-                    backgroundColor: 'white'
-                },
-            }
-        };
-        try {
-            const card = await payments.card(cardOptions);
-            await card.attach('#card');
-
-            const payButton = document.getElementById('pay');
-            payButton.addEventListener('click', async () => {
-                const result = await card.tokenize();
-                console.log("result: " + result);
-                if (result.status !== "OK") {
-                    alert("⚠️ Payment failed. Please try again.");
-                    return;
-                }
-
-                // 🛒 Fetch Order Details from LocalStorage
-                const deliveryMethod = localStorage.getItem('deliveryMethod') || 'pickup';
-                const firstName = localStorage.getItem('customerFirstName') || 'Guest';
-                const lastName = localStorage.getItem('customerLastName') || '';
-                const email = localStorage.getItem('customerEmail') || 'guest@moonwalkthreads.com';
-                const phone = localStorage.getItem('customerPhone') || '';
-                const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
-                const totalAmount = localStorage.getItem('totalAmount') || 0;
-
-                // 📦 If delivery is selected, include shipping address
-                let addressDetails = {
-                    streetAddress: localStorage.getItem('customerStreetAddress') || '',
-                    addressOptional: localStorage.getItem('customerAddressOptional') || '',
-                    city: localStorage.getItem('customerCity') || '',
-                    state: localStorage.getItem('customerState') || '',
-                    zipCode: localStorage.getItem('customerZipCode') || '',
-                };
-
-                    // 🔍 **Check what is being sent to Square**
-    console.log("🛒 Sending Order Data to Square API:", {
-        token: result.token,
-        first_name: firstName,
-        last_name: lastName,
-        email: email,
-        phone: phone,
-        delivery_method: deliveryMethod,
-        address: addressDetails,
-        total_amount: totalAmount
-    });
-
-                // 🚀 Send Data to Django Backend
-                fetch("{% url 'process_payment' %}", {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRFToken': '{{ csrf_token }}',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        token: result.token,
-                        first_name: firstName,
-                        last_name: lastName,
-                        email: email,
-                        phone: phone,
-                        delivery_method: deliveryMethod,
-                        address: addressDetails,
-                        cart_items: cartItems,
-                        total_amount: totalAmount
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        alert("✅ Payment successful!");
-
-                        if (data.square_order_id) {
-                            localStorage.setItem("squareOrderId", data.square_order_id);
-                        }
-
-
-                        // ✅ Add this line to indicate email was sent
-                     //   if (data.email_sent) {
-                     //       localStorage.setItem("email_sent", "true");
-                     //   }
-
-                        // Redirect to order summary page
-                        document.location.href = data.redirect_url;
-                    } else {
-                        alert("❌ Payment failed. Most likely invalid phone number.");
-                        alert(data.message);
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-            });
-        } catch (e) {
-            console.error("Payment Initialization Error:", e);
+      const payments = Square.payments(
+        '{{ square_app_id }}',
+        '{{ square_location_id }}'
+      );
+      const cardOptions = {
+        style: {
+          input: {
+            backgroundColor: 'white'
+          },
         }
+      };
+  
+      try {
+        const card = await payments.card(cardOptions);
+        await card.attach('#card');
+  
+        const payButton = document.getElementById('pay');
+        payButton.addEventListener('click', async () => {
+          showLoadingOverlay(); // Show the overlay spinner
+          try {
+            const result = await card.tokenize();
+            if (result.status !== "OK") {
+              alert("⚠️ Payment failed. Please try again.");
+              hideLoadingOverlay();
+              return;
+            }
+  
+            const deliveryMethod = localStorage.getItem('deliveryMethod') || 'pickup';
+            const firstName = localStorage.getItem('customerFirstName') || 'Guest';
+            const lastName = localStorage.getItem('customerLastName') || '';
+            const email = localStorage.getItem('customerEmail') || 'guest@moonwalkthreads.com';
+            const phone = localStorage.getItem('customerPhone') || '';
+            const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+            const totalAmount = localStorage.getItem('totalAmount') || 0;
+  
+            let addressDetails = {
+              streetAddress: localStorage.getItem('customerStreetAddress') || '',
+              addressOptional: localStorage.getItem('customerAddressOptional') || '',
+              city: localStorage.getItem('customerCity') || '',
+              state: localStorage.getItem('customerState') || '',
+              zipCode: localStorage.getItem('customerZipCode') || '',
+            };
+  
+            const response = await fetch("{% url 'process_payment' %}", {
+              method: 'POST',
+              headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                token: result.token,
+                first_name: firstName,
+                last_name: lastName,
+                email: email,
+                phone: phone,
+                delivery_method: deliveryMethod,
+                address: addressDetails,
+                cart_items: cartItems,
+                total_amount: totalAmount
+              })
+            });
+  
+            const data = await response.json();
+  
+            if (data.status === 'success') {
+              localStorage.setItem("squareOrderId", data.square_order_id);
+              if (data.email_sent) {
+                localStorage.setItem("email_sent", "true");
+              }
+            // ✅ Delay to ensure overlay is seen before redirect
+            setTimeout(() => {
+              window.location.href = data.redirect_url;
+            }, 1500); // 1.5 second delay
+            } else {
+              alert("❌ Payment failed: " + data.message);
+              hideLoadingOverlay();
+            }
+          } catch (error) {
+            console.error("❌ Unhandled error:", error);
+            alert("Something went wrong. Please try again.");
+            hideLoadingOverlay();
+          }
+        });
+      } catch (e) {
+        console.error("Payment Initialization Error:", e);
+      }
     })();
-</script>
+  </script>
 
 <!-- google-pay payment option script -->
 <script>
@@ -165,9 +154,11 @@
             'LNG128XEAPR21'
         );
 
+        const totalAmount = localStorage.getItem('totalAmount');
+
         const paymentRequest = payments.paymentRequest({
             total: {
-                amount: "1.00",
+                amount: totalAmount,
                 label: "Total"
             },
             countryCode: "US",
@@ -197,9 +188,11 @@
             'LNG128XEAPR21'
         );
 
+        const totalAmount = localStorage.getItem('totalAmount');
+
         const paymentRequest = payments.paymentRequest({
             total: {
-                amount: "1.00",
+                amount: totalAmount,
                 label: "Total"
             },
             countryCode: "US",
@@ -221,5 +214,4 @@
     })()
 </script>
 
-<!--<script src="{% static 'scripts/sendOrder.js' %}"></script>-->
 {% endblock %}

@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 import datetime
 from django.contrib import messages
 from django.urls import reverse
-from .models import Cart, Customer, Product, Category, Subscriber, Order, OrderItem
+from .models import Cart, Customer, Product, Category, Subscriber, Order, OrderItem, Theme
 from .square_service import client
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -34,6 +34,7 @@ from .decorator import payment_required
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
+from django.views.decorators.http import require_POST
 import re
 
 
@@ -49,6 +50,7 @@ client = Client(
 
 def home(request):
     # Current date is hard coded
+    latest_entry = Theme.objects.latest('timeStamp')
     date = "2024-12-06 17:00:00"
     today = datetime.datetime.now()
     # Specify the date format being provided
@@ -59,7 +61,22 @@ def home(request):
     # Convert the total time to seconds
     total_time = total_time.total_seconds()
     featured = Product.objects.filter(featured=True,  quantity__gt=0)
-    return render(request, 'home.html', {'total_time': total_time, 'featured':featured})
+    context = {
+        'dropDate': latest_entry.dropDate,
+        'backgroundColor': latest_entry.backgroundColor,
+        'bannerImg00': latest_entry.bannerImg00,
+        'bannerImg01': latest_entry.bannerImg01,
+        'bannerImg02': latest_entry.bannerImg02,
+        'fontStyle': latest_entry.fontStyle,
+        'dropTitle': latest_entry.dropTitle,
+        'fontColor': latest_entry.fontColor,
+        'fontWeight': latest_entry.fontWeight,
+        'fontBorderThickness': latest_entry.fontBorderThickness,
+        'borderColor': latest_entry.borderColor,
+        'total_time': total_time, 
+        'featured':featured
+    }
+    return render(request, 'home.html', context)
     # return render(request, 'home.html')
 
 
@@ -81,6 +98,7 @@ def total_time(request):
 
 def shop(request, foo=None):
     # If a category is provided (foo), filter by category, else show all products
+    latest_entry = Theme.objects.latest('timeStamp')
     if foo:
         foo = foo.replace('-', ' ')
         try:
@@ -94,14 +112,118 @@ def shop(request, foo=None):
         products = Product.objects.filter(quantity__gt=0)
         category = None  # No category selected
 
+    context = {
+        'dropDate': latest_entry.dropDate,
+        'backgroundColor': latest_entry.backgroundColor,
+        'bannerImg00': latest_entry.bannerImg00,
+        'bannerImg01': latest_entry.bannerImg01,
+        'bannerImg02': latest_entry.bannerImg02,
+        'fontStyle': latest_entry.fontStyle,
+        'dropTitle': latest_entry.dropTitle,
+        'fontColor': latest_entry.fontColor,
+        'fontWeight': latest_entry.fontWeight,
+        'fontBorderThickness': latest_entry.fontBorderThickness,
+        'borderColor': latest_entry.borderColor,
+        'products': products, 
+        'category': category, 
+        'categories': category
+    }
+
     categories = Category.objects.all()  # Pass all categories to the template
-    return render(request, 'shop.html', {'products': products, 'category': category, 'categories': categories})
+    return render(request, 'shop.html', context)
 
 def about(request):
-    return render(request, 'about.html')
+    latest_entry = Theme.objects.latest('timeStamp')
+    context = {
+        'dropDate': latest_entry.dropDate,
+        'backgroundColor': latest_entry.backgroundColor,
+        'bannerImg00': latest_entry.bannerImg00,
+        'bannerImg01': latest_entry.bannerImg01,
+        'bannerImg02': latest_entry.bannerImg02,
+        'fontStyle': latest_entry.fontStyle,
+        'dropTitle': latest_entry.dropTitle,
+        'fontColor': latest_entry.fontColor,
+        'fontWeight': latest_entry.fontWeight,
+        'fontBorderThickness': latest_entry.fontBorderThickness,
+        'borderColor': latest_entry.borderColor
+    }
+    return render(request, 'about.html', context)
 
 def contact(request):
-    return render(request, 'contact.html')
+    latest_entry = Theme.objects.latest('timeStamp')
+    context = {
+        'dropDate': latest_entry.dropDate,
+        'backgroundColor': latest_entry.backgroundColor,
+        'bannerImg00': latest_entry.bannerImg00,
+        'bannerImg01': latest_entry.bannerImg01,
+        'bannerImg02': latest_entry.bannerImg02,
+        'fontStyle': latest_entry.fontStyle,
+        'dropTitle': latest_entry.dropTitle,
+        'fontColor': latest_entry.fontColor,
+        'fontWeight': latest_entry.fontWeight,
+        'fontBorderThickness': latest_entry.fontBorderThickness,
+        'borderColor': latest_entry.borderColor
+    }
+    return render(request, 'contact.html', context)
+
+# theme HTML - Admin CSS Editor
+def edit_theme(request):
+    latest_entry = Theme.objects.latest('timeStamp')
+    context = {
+        'dropDate': latest_entry.dropDate,
+        'backgroundColor': latest_entry.backgroundColor,
+        'bannerImg00': latest_entry.bannerImg00,
+        'bannerImg01': latest_entry.bannerImg01,
+        'bannerImg02': latest_entry.bannerImg02,
+        'fontStyle': latest_entry.fontStyle,
+        'dropTitle': latest_entry.dropTitle,
+        'fontColor': latest_entry.fontColor,
+        'fontWeight': latest_entry.fontWeight,
+        'fontBorderThickness': latest_entry.fontBorderThickness,
+        'borderColor': latest_entry.borderColor
+    }
+    return render(request, 'edit_theme.html', context)
+
+# Request used to update CSS Theme
+@csrf_exempt
+def submit_theme(request):
+    if request.method != 'POST':
+        return JsonResponse({"status": "error", "message": "Invalid request response"}, status=405)
+    try:
+        print("Passed thrugh if")
+        print(request.POST.get('backgroundColor'))
+        dropDate = request.POST.get("dropDate")
+        backgroundColor = request.POST.get("backgroundColor")
+        bannerImg00 = request.FILES.get("bannerImg00")
+        bannerImg01 = request.FILES.get("bannerImg01")
+        bannerImg02 = request.FILES.get("bannerImg02")
+        fontStyle = request.POST.get("fontStyle")
+        dropTitle = request.POST.get("dropTitle")
+        fontColor = request.POST.get("fontColor")
+        fontWeight = request.POST.get("fontWeight")
+        fontBorderThickness = request.POST.get("fontBorderThickness")
+        borderColor = request.POST.get("borderColor")
+
+        new_theme = Theme(dropDate = dropDate, 
+                          backgroundColor = backgroundColor, 
+                          bannerImg00 = bannerImg00, 
+                          bannerImg01 = bannerImg01,
+                          bannerImg02 = bannerImg02,
+                          fontStyle = fontStyle,
+                          dropTitle = dropTitle,
+                          fontColor = fontColor,
+                          fontWeight = fontWeight,
+                          fontBorderThickness = fontBorderThickness,
+                          borderColor = borderColor)
+        
+        new_theme.save()
+        return JsonResponse({"message": "Theme saved successfully"})
+        
+    except json.JSONDecodeError:
+        return JsonResponse({"status": "error", "message": "Invalid JSON format"}, status=400)
+    except Exception as e:
+        return JsonResponse({"status": "error", "message": str(e)}, status=501)
+
 
 def cart(request):
     #mock items
@@ -124,10 +246,27 @@ def cart(request):
     total_price = sum(item.product.price * item.quantity for item in cart_items)
     tax_amount = float(total_price) * 0.0725
     tax_total = float(total_price) + tax_amount
+    latest_entry = Theme.objects.latest('timeStamp')
+    context = {
+        'dropDate': latest_entry.dropDate,
+        'backgroundColor': latest_entry.backgroundColor,
+        'bannerImg00': latest_entry.bannerImg00,
+        'bannerImg01': latest_entry.bannerImg01,
+        'bannerImg02': latest_entry.bannerImg02,
+        'fontStyle': latest_entry.fontStyle,
+        'dropTitle': latest_entry.dropTitle,
+        'fontColor': latest_entry.fontColor,
+        'fontWeight': latest_entry.fontWeight,
+        'fontBorderThickness': latest_entry.fontBorderThickness,
+        'borderColor': latest_entry.borderColor,
+        'cart_items': cart_items,
+        'total_price': total_price, 
+        'tax_amount': tax_amount, 
+        'tax_total': tax_total
+    }
 
     # Render the cart page with items and total and timer count down
-    return render(request, 'cart.html', {'total_time': total_time,'cart_items': cart_items,
-        'total_price': total_price, 'tax_amount': tax_amount, 'tax_total': tax_total})
+    return render(request, 'cart.html', context)
 
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
@@ -207,7 +346,22 @@ def googleCalendar(request):
     iframe_code = '''
     <iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=America%2FLos_Angeles&showPrint=0&title=MoonWalk%20Threads%20Events&src=OTAwZmRmNjUwYjU3OWEwMDdmZWI2ZTdmOGFjODc5MTkwMzM3ZDAwZWFjOGU2MmFlZmZiYmI2Y2Q5ZmYxMGRmM0Bncm91cC5jYWxlbmRhci5nb29nbGUuY29t&color=%23F09300" style="border:solid 1px #777" width="800" height="600" frameborder="0" scrolling="no"></iframe>
     '''
-    return render(request, 'googleCalendar.html', {'iframe_code': iframe_code})
+    latest_entry = Theme.objects.latest('timeStamp')
+    context = {
+        'dropDate': latest_entry.dropDate,
+        'backgroundColor': latest_entry.backgroundColor,
+        'bannerImg00': latest_entry.bannerImg00,
+        'bannerImg01': latest_entry.bannerImg01,
+        'bannerImg02': latest_entry.bannerImg02,
+        'fontStyle': latest_entry.fontStyle,
+        'dropTitle': latest_entry.dropTitle,
+        'fontColor': latest_entry.fontColor,
+        'fontWeight': latest_entry.fontWeight,
+        'fontBorderThickness': latest_entry.fontBorderThickness,
+        'borderColor': latest_entry.borderColor,
+        'iframe_code': iframe_code
+    }
+    return render(request, 'googleCalendar.html', context)
 
 @csrf_exempt
 def checkout(request):
@@ -219,9 +373,22 @@ def checkout(request):
     total_price = sum(item.product.price for item in cart_items)
     tax_amount = float(total_price) * 0.0725
     tax_total = float(total_price) + tax_amount
-
+    latest_entry = Theme.objects.latest('timeStamp')
     context = {
-        'tax_amount': tax_amount,
+        'dropDate': latest_entry.dropDate,
+        'backgroundColor': latest_entry.backgroundColor,
+        'bannerImg00': latest_entry.bannerImg00,
+        'bannerImg01': latest_entry.bannerImg01,
+        'bannerImg02': latest_entry.bannerImg02,
+        'fontStyle': latest_entry.fontStyle,
+        'dropTitle': latest_entry.dropTitle,
+        'fontColor': latest_entry.fontColor,
+        'fontWeight': latest_entry.fontWeight,
+        'fontBorderThickness': latest_entry.fontBorderThickness,
+        'borderColor': latest_entry.borderColor,
+        'cart_items': cart_items,
+        'total_price': total_price, 
+        'tax_amount': tax_amount, 
         'tax_total': tax_total
     }
     return render(request, 'checkout.html', context)
@@ -264,7 +431,21 @@ def create_order(request):
     cart_data = request.session['cart_data']
 
     print("checkout successful")
-    return render(request, 'payment.html')
+    latest_entry = Theme.objects.latest('timeStamp')
+    context = {
+        'dropDate': latest_entry.dropDate,
+        'backgroundColor': latest_entry.backgroundColor,
+        'bannerImg00': latest_entry.bannerImg00,
+        'bannerImg01': latest_entry.bannerImg01,
+        'bannerImg02': latest_entry.bannerImg02,
+        'fontStyle': latest_entry.fontStyle,
+        'dropTitle': latest_entry.dropTitle,
+        'fontColor': latest_entry.fontColor,
+        'fontWeight': latest_entry.fontWeight,
+        'fontBorderThickness': latest_entry.fontBorderThickness,
+        'borderColor': latest_entry.borderColor
+    }
+    return render(request, 'payment.html', context)
 
 #@authenticated_user
 @payment_required
@@ -275,6 +456,7 @@ def orderSummary(request, order_id=None):
         pre_tax_total = order.pre_tax_total
         tax_amount = order.tax_amount
         total_amount = order.total_amount
+        square_order_id = order.square_order_id  # ✅ Pull it from the order
     else:
         if request.user.is_authenticated:
             cart_items = Cart.objects.filter(customer = Customer.objects.filter(user=request.user).first())
@@ -282,19 +464,48 @@ def orderSummary(request, order_id=None):
             cart_items = Cart.objects.filter(session_key=request.session.session_key)
 
         items = cart_items  # So template doesn't break
-
-    return render(request, 'orderSummary.html', {
+    latest_entry = Theme.objects.latest('timeStamp')
+    context = {
+        'dropDate': latest_entry.dropDate,
+        'backgroundColor': latest_entry.backgroundColor,
+        'bannerImg00': latest_entry.bannerImg00,
+        'bannerImg01': latest_entry.bannerImg01,
+        'bannerImg02': latest_entry.bannerImg02,
+        'fontStyle': latest_entry.fontStyle,
+        'dropTitle': latest_entry.dropTitle,
+        'fontColor': latest_entry.fontColor,
+        'fontWeight': latest_entry.fontWeight,
+        'fontBorderThickness': latest_entry.fontBorderThickness,
+        'borderColor': latest_entry.borderColor,
         'items': items,
         'pre_tax_total': pre_tax_total,
         'tax_amount': tax_amount,
         'total_amount': total_amount,
-        'is_order': bool(order_id),  # helpful flag in template
-    })
+        'is_order': bool(order_id),
+        'square_order_id': square_order_id  # ✅ Add to context
+    }
+
+    return render(request, 'orderSummary.html', context)
 
 # Creating the request for product details
 def productDetails(request,pk):
     product = Product.objects.get(id=pk)
-    return render(request, 'productDetails.html', {'product': product})
+    latest_entry = Theme.objects.latest('timeStamp')
+    context = {
+        'dropDate': latest_entry.dropDate,
+        'backgroundColor': latest_entry.backgroundColor,
+        'bannerImg00': latest_entry.bannerImg00,
+        'bannerImg01': latest_entry.bannerImg01,
+        'bannerImg02': latest_entry.bannerImg02,
+        'fontStyle': latest_entry.fontStyle,
+        'dropTitle': latest_entry.dropTitle,
+        'fontColor': latest_entry.fontColor,
+        'fontWeight': latest_entry.fontWeight,
+        'fontBorderThickness': latest_entry.fontBorderThickness,
+        'borderColor': latest_entry.borderColor,
+        'product': product
+    }
+    return render(request, 'productDetails.html', context)
 
 #@authenticated_user
 @checkout_required
@@ -313,7 +524,19 @@ def paymentPortal(request):
     tax_amount = float(total_price) * 0.0725
     tax_total = float(total_price) + tax_amount
 
+    latest_entry = Theme.objects.latest('timeStamp')
     context = {
+        'dropDate': latest_entry.dropDate,
+        'backgroundColor': latest_entry.backgroundColor,
+        'bannerImg00': latest_entry.bannerImg00,
+        'bannerImg01': latest_entry.bannerImg01,
+        'bannerImg02': latest_entry.bannerImg02,
+        'fontStyle': latest_entry.fontStyle,
+        'dropTitle': latest_entry.dropTitle,
+        'fontColor': latest_entry.fontColor,
+        'fontWeight': latest_entry.fontWeight,
+        'fontBorderThickness': latest_entry.fontBorderThickness,
+        'borderColor': latest_entry.borderColor,
         "square_app_id": square_app_id,
         "square_location_id": square_location_id,
         'total_price': total_price,
@@ -440,6 +663,7 @@ def create_square_order(cart_items, customerInfo, delivery_method):
     else:
         print(result.errors)
         return None, None
+
 
 def process_payment(request):
     if request.method != 'POST':
@@ -606,11 +830,12 @@ def process_payment(request):
                 "order_items": [
                     {
                         "name": item.product.name,
-                        "price": item.product.price,
+                        "price": item.price_at_purchase,
                         "image_url": item.product.image.url if item.product.image else ""
-                    } for item in cart_queryset
+                    } for item in order.items.all()
                 ],
-                "total_price": total_amount / 100,  # cents to dollars
+                "total_price": float(order.total_amount),  # or order.total_amount if already Decimal
+                "tax_amount": float(order.tax_amount) if hasattr(order, "tax_amount") else 0.00,
                 "square_order_id": square_order_id,  # ✅ ADD THIS
                 "shipping_cost": float(cheapest_rate.amount) if cheapest_rate else 0.00,
                 "shipping_label_url": shipping_label_url,
@@ -619,11 +844,11 @@ def process_payment(request):
 
             # After Square payment is processed(uncomment to make it work)
             email_sent = False
-            #try:
-            #     send_order_email(email_context)
-            #     email_sent = True
-            #except Exception as e:
-            #     print("❌ Email failed to send:", str(e))
+            try:
+                send_order_email(email_context)
+                email_sent = True
+            except Exception as e:
+                 print("❌ Email failed to send:", str(e))
 
 
             return JsonResponse({"status": "success",
@@ -655,7 +880,19 @@ def checkout(request):
     tax_amount = float(total_price) * 0.0725
     tax_total = float(total_price) + tax_amount
 
+    latest_entry = Theme.objects.latest('timeStamp')
     context = {
+        'dropDate': latest_entry.dropDate,
+        'backgroundColor': latest_entry.backgroundColor,
+        'bannerImg00': latest_entry.bannerImg00,
+        'bannerImg01': latest_entry.bannerImg01,
+        'bannerImg02': latest_entry.bannerImg02,
+        'fontStyle': latest_entry.fontStyle,
+        'dropTitle': latest_entry.dropTitle,
+        'fontColor': latest_entry.fontColor,
+        'fontWeight': latest_entry.fontWeight,
+        'fontBorderThickness': latest_entry.fontBorderThickness,
+        'borderColor': latest_entry.borderColor,
         "square_app_id": square_app_id,
         "square_location_id": square_location_id,
         'total_price': total_price,
@@ -676,10 +913,38 @@ def login_user(request):
             messages.success(request, ("YOU LOGGED IN"))
             return redirect('home')
         else:
-            context = {"login_error": "Incorrect email or password"}
+            latest_entry = Theme.objects.latest('timeStamp')
+            context = {
+                'dropDate': latest_entry.dropDate,
+                'backgroundColor': latest_entry.backgroundColor,
+                'bannerImg00': latest_entry.bannerImg00,
+                'bannerImg01': latest_entry.bannerImg01,
+                'bannerImg02': latest_entry.bannerImg02,
+                'fontStyle': latest_entry.fontStyle,
+                'dropTitle': latest_entry.dropTitle,
+                'fontColor': latest_entry.fontColor,
+                'fontWeight': latest_entry.fontWeight,
+                'fontBorderThickness': latest_entry.fontBorderThickness,
+                'borderColor': latest_entry.borderColor,
+                "login_error": "Incorrect email or password"
+            }
             return render(request, 'home.html', context)
     else:
-        return render(request, 'home.html', {})   
+        latest_entry = Theme.objects.latest('timeStamp')
+        context = {
+        'dropDate': latest_entry.dropDate,
+        'backgroundColor': latest_entry.backgroundColor,
+        'bannerImg00': latest_entry.bannerImg00,
+        'bannerImg01': latest_entry.bannerImg01,
+        'bannerImg02': latest_entry.bannerImg02,
+        'fontStyle': latest_entry.fontStyle,
+        'dropTitle': latest_entry.dropTitle,
+        'fontColor': latest_entry.fontColor,
+        'fontWeight': latest_entry.fontWeight,
+        'fontBorderThickness': latest_entry.fontBorderThickness,
+        'borderColor': latest_entry.borderColor
+    }
+        return render(request, 'home.html', context)   
 #logout request
 def logout_user(request):
     logout(request)
@@ -727,6 +992,7 @@ def register_user(request):
 
         if errors:
             # Re-render the home page (or the signup page) with the errors in the context.
+            latest_entry = Theme.objects.latest('timeStamp')
             context = {
                 "signup_errors": errors,
                 "signup_data": {
@@ -736,8 +1002,19 @@ def register_user(request):
                     "phone": request.POST.get("phone"),
                     "text_checkbox": request.POST.get("text-checkbox"),
                     "email_checkbox": request.POST.get("email-checkbox"),
-                }
-            }
+                },
+                'dropDate': latest_entry.dropDate,
+                'backgroundColor': latest_entry.backgroundColor,
+                'bannerImg00': latest_entry.bannerImg00,
+                'bannerImg01': latest_entry.bannerImg01,
+                'bannerImg02': latest_entry.bannerImg02,
+                'fontStyle': latest_entry.fontStyle,
+                'dropTitle': latest_entry.dropTitle,
+                'fontColor': latest_entry.fontColor,
+                'fontWeight': latest_entry.fontWeight,
+                'fontBorderThickness': latest_entry.fontBorderThickness,
+                'borderColor': latest_entry.borderColor
+            }   
             return render(request, 'home.html', context)
 
         try:
@@ -759,9 +1036,24 @@ def register_user(request):
             return redirect('home')
         except Exception as e:
             errors["server_error"] = f"Error creating account: {e}"
-            context = {"signup_errors": errors}
+            latest_entry = Theme.objects.latest('timeStamp')
+            context = {
+                "signup_errors": errors,
+                'dropDate': latest_entry.dropDate,
+                'backgroundColor': latest_entry.backgroundColor,
+                'bannerImg00': latest_entry.bannerImg00,
+                'bannerImg01': latest_entry.bannerImg01,
+                'bannerImg02': latest_entry.bannerImg02,
+                'fontStyle': latest_entry.fontStyle,
+                'dropTitle': latest_entry.dropTitle,
+                'fontColor': latest_entry.fontColor,
+                'fontWeight': latest_entry.fontWeight,
+                'fontBorderThickness': latest_entry.fontBorderThickness,
+                'borderColor': latest_entry.borderColor
+            }   
             return render(request, 'home.html', context)
     return redirect('home')
+
 
 class password_reset(FormView):
     form_class = PasswordResetForm  # Built-in Django form
@@ -863,78 +1155,134 @@ def orderCartSummary(context):
     }
 
 
-@csrf_exempt  # Only use this for local testing, remove it if using CSRF middleware
 def subscribe(request):
     if request.method == "POST":
         try:
             data = json.loads(request.body)
-            email = data.get("email")
+            email = data.get("email", "").strip()
+            phone = data.get("phone", "").strip()
 
-            if not email:
-                return JsonResponse({"success": False, "message": "Invalid email address."}, status=400)
+            if not email and not phone:
+                return JsonResponse({"success": False, "message": "Please provide an email or phone number."}, status=400)
 
-            subscriber, created = Subscriber.objects.get_or_create(email=email)
+            # Check if subscriber already exists
+            if email:
+                if Subscriber.objects.filter(email=email).exists():
+                    return JsonResponse({"success": False, "message": "Email is already subscribed."})
+            if phone:
+                if Subscriber.objects.filter(phone=phone).exists():
+                    return JsonResponse({"success": False, "message": "Phone number is already subscribed."})
+                
+            Subscriber.objects.create(email=email or None, phone=phone or None)
 
-            if not created:
-                return JsonResponse({"success": False, "message": "You are already subscribed."})
 
-            # Render HTML Email Content
-            html_content = render_to_string("subscription.html", {"email": email})
-            text_content = strip_tags(html_content)  # Convert HTML to plain text
+            # Only send welcome email if they signed up with an email
+            if email:
+                html_content = render_to_string("subscription.html", {"email": email})
+                text_content = strip_tags(html_content)
 
-            # Create Email with HTML and Plain Text
-            subject = "🎉 Welcome to MoonWalk Threads!"
-            from_email = "info@yourdomain.com"
-            recipient_list = [email]
-
-            email_message = EmailMultiAlternatives(subject, text_content, from_email, recipient_list)
-            email_message.attach_alternative(html_content, "text/html")
-            email_message.send()
+                email_message = EmailMultiAlternatives(
+                    subject="🎉 Welcome to MoonWalk Threads!",
+                    body=text_content,
+                    from_email="projectmoonwalk01@gmail.com",
+                    to=[email],
+                )
+                email_message.attach_alternative(html_content, "text/html")
+                email_message.send()
 
             return JsonResponse({"success": True, "message": "Subscription successful."})
 
         except json.JSONDecodeError:
             return JsonResponse({"success": False, "message": "Invalid data format."}, status=400)
 
-    return JsonResponse({"success": False, "message": "Invalid request."}, status=405)
+    return JsonResponse({"success": False, "message": "Invalid request method."}, status=405)
 
-# def send_order_email(context):(uncomment to try it out)
-#     try:
-#         html_content = render_to_string("order_confirmation_email.html", context)
-#         text_content = strip_tags(html_content)
-#         subject = f"Order #{context['square_order_id']}"
-#         from_email = "projectmoonwalk01@gmail.com"
-#         recipient_list = [context["email"]]
 
-#         email = EmailMultiAlternatives(subject, text_content, from_email, recipient_list)
-#         email.attach_alternative(html_content, "text/html")
-#         email.send()
-#         return True
-#     except Exception as e:
-#         print("Email Error:", e)
-#         return False
+def unsubscribe(request, token):
+    subscriber = get_object_or_404(Subscriber, unsubscribe_token=token)
+    subscriber.delete()
+    return render(request, "unsubscribe.html", {"email": subscriber.email})
+
+def send_order_email(context):
+    try:
+        html_content = render_to_string("order_confirmation_email.html", context)
+        text_content = strip_tags(html_content)
+        subject = f"Order #{context['square_order_id']}"
+        from_email = "projectmoonwalk01@gmail.com"
+        recipient_list = [context["email"]]
+
+        email = EmailMultiAlternatives(subject, text_content, from_email, recipient_list)
+        email.attach_alternative(html_content, "text/html")
+        email.send()
+        return True
+    except Exception as e:
+        print("Email Error:", e)
+        return False
 
 @login_required
 def profile(request):
-    # Check if a user is logged in
-    if request.user.is_authenticated:
-        user_data = {
-            "email": request.user.email,
-            "password": "********",  # Hidden for security
-            "address": request.user.customer.street_address if hasattr(request.user, "customer") else "No address available",
-            "orders": [],  # Placeholder for future order retrieval
-        }
+    user = request.user
+
+    customer = getattr(request.user, "customer", None)
+    print(f"DEBUG: Logged-in user's email: {request.user.email}")
+    if customer:
+        orders = Order.objects.filter(customer=customer).order_by('-created_at')
+        address = customer.street_address
     else:
         # Hardcoded data for non-logged-in users
+        orders = []
+        address = "No address available"
         user_data = {
-            "email": "guest@example.com",
+            "email": user.email,
             "password": "********",
-            "address": "No address available",
-            "orders": [
-                {"id": 1, "status": "Shipped", "total": 59.99},
-                {"id": 2, "status": "Processing", "total": 120.50},
-            ],
+            "address": address,
+            "orders": orders
         }
+        latest_entry = Theme.objects.latest('timeStamp')
+        context = {
+        'dropDate': latest_entry.dropDate,
+        'backgroundColor': latest_entry.backgroundColor,
+        'bannerImg00': latest_entry.bannerImg00,
+        'bannerImg01': latest_entry.bannerImg01,
+        'bannerImg02': latest_entry.bannerImg02,
+        'fontStyle': latest_entry.fontStyle,
+        'dropTitle': latest_entry.dropTitle,
+        'fontColor': latest_entry.fontColor,
+        'fontWeight': latest_entry.fontWeight,
+        'fontBorderThickness': latest_entry.fontBorderThickness,
+        'borderColor': latest_entry.borderColor,
+        "user_data": user_data
+        }   
+        return render(request, "profile.html", context)
 
-    return render(request, "profile.html", {"user_data": user_data})
+
+@require_POST
+@login_required
+def update_address(request):
+    customer = getattr(request.user, "customer", None)
+    if not customer:
+        messages.error(request, "No customer profile found.")
+        return redirect("profile")
+
+    street = request.POST.get("street_address", "").strip()
+    street2 = request.POST.get("street_address2", "").strip()
+    city = request.POST.get("city", "").strip()
+    state = request.POST.get("state", "").strip()
+    zip_code = request.POST.get("zip_code", "").strip()
+
+    if not street or not city or not state or not zip_code:
+        messages.error(request, "All required address fields must be filled.")
+        return redirect("profile")
+
+    # Save the updated values
+    customer.street_address = street
+    customer.street_address2 = street2
+    customer.city = city
+    customer.state = state
+    customer.zip_code = zip_code
+    customer.save()
+
+    messages.success(request, "Your address has been updated.")
+    return redirect("profile")
+
 
