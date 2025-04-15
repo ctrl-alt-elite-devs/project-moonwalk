@@ -76,7 +76,7 @@
   }
   
   button.login-btn {
-    background-color: #F46471;
+    background-color: var(--background_color);
     color: white;
     border: none;
     padding: 12px;
@@ -148,7 +148,7 @@
 
 .logAlert {
   padding: 15px;
-  background-color:#F46471;
+  background-color: var(--background_color);
   color: black;
   border-radius: 5px;
   position: relative;

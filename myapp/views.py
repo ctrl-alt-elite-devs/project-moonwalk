@@ -97,6 +97,7 @@ def total_time(request):
 
 def shop(request, foo=None):
     # If a category is provided (foo), filter by category, else show all products
+    latest_entry = Theme.objects.latest('timeStamp')
     if foo:
         foo = foo.replace('-', ' ')
         try:
@@ -110,18 +111,77 @@ def shop(request, foo=None):
         products = Product.objects.filter(quantity__gt=0)
         category = None  # No category selected
 
+    context = {
+        'dropDate': latest_entry.dropDate,
+        'backgroundColor': latest_entry.backgroundColor,
+        'bannerImg00': latest_entry.bannerImg00,
+        'bannerImg01': latest_entry.bannerImg01,
+        'bannerImg02': latest_entry.bannerImg02,
+        'fontStyle': latest_entry.fontStyle,
+        'dropTitle': latest_entry.dropTitle,
+        'fontColor': latest_entry.fontColor,
+        'fontWeight': latest_entry.fontWeight,
+        'fontBorderThickness': latest_entry.fontBorderThickness,
+        'borderColor': latest_entry.borderColor,
+        'products': products, 
+        'category': category, 
+        'categories': category
+    }
+
     categories = Category.objects.all()  # Pass all categories to the template
-    return render(request, 'shop.html', {'products': products, 'category': category, 'categories': categories})
+    return render(request, 'shop.html', context)
 
 def about(request):
-    return render(request, 'about.html')
+    latest_entry = Theme.objects.latest('timeStamp')
+    context = {
+        'dropDate': latest_entry.dropDate,
+        'backgroundColor': latest_entry.backgroundColor,
+        'bannerImg00': latest_entry.bannerImg00,
+        'bannerImg01': latest_entry.bannerImg01,
+        'bannerImg02': latest_entry.bannerImg02,
+        'fontStyle': latest_entry.fontStyle,
+        'dropTitle': latest_entry.dropTitle,
+        'fontColor': latest_entry.fontColor,
+        'fontWeight': latest_entry.fontWeight,
+        'fontBorderThickness': latest_entry.fontBorderThickness,
+        'borderColor': latest_entry.borderColor
+    }
+    return render(request, 'about.html', context)
 
 def contact(request):
-    return render(request, 'contact.html')
+    latest_entry = Theme.objects.latest('timeStamp')
+    context = {
+        'dropDate': latest_entry.dropDate,
+        'backgroundColor': latest_entry.backgroundColor,
+        'bannerImg00': latest_entry.bannerImg00,
+        'bannerImg01': latest_entry.bannerImg01,
+        'bannerImg02': latest_entry.bannerImg02,
+        'fontStyle': latest_entry.fontStyle,
+        'dropTitle': latest_entry.dropTitle,
+        'fontColor': latest_entry.fontColor,
+        'fontWeight': latest_entry.fontWeight,
+        'fontBorderThickness': latest_entry.fontBorderThickness,
+        'borderColor': latest_entry.borderColor
+    }
+    return render(request, 'contact.html', context)
 
 # theme HTML - Admin CSS Editor
 def edit_theme(request):
-    return render(request, 'edit_theme.html')
+    latest_entry = Theme.objects.latest('timeStamp')
+    context = {
+        'dropDate': latest_entry.dropDate,
+        'backgroundColor': latest_entry.backgroundColor,
+        'bannerImg00': latest_entry.bannerImg00,
+        'bannerImg01': latest_entry.bannerImg01,
+        'bannerImg02': latest_entry.bannerImg02,
+        'fontStyle': latest_entry.fontStyle,
+        'dropTitle': latest_entry.dropTitle,
+        'fontColor': latest_entry.fontColor,
+        'fontWeight': latest_entry.fontWeight,
+        'fontBorderThickness': latest_entry.fontBorderThickness,
+        'borderColor': latest_entry.borderColor
+    }
+    return render(request, 'edit_theme.html', context)
 
 # Request used to update CSS Theme
 @csrf_exempt
@@ -185,10 +245,27 @@ def cart(request):
     total_price = sum(item.product.price * item.quantity for item in cart_items)
     tax_amount = float(total_price) * 0.0725
     tax_total = float(total_price) + tax_amount
+    latest_entry = Theme.objects.latest('timeStamp')
+    context = {
+        'dropDate': latest_entry.dropDate,
+        'backgroundColor': latest_entry.backgroundColor,
+        'bannerImg00': latest_entry.bannerImg00,
+        'bannerImg01': latest_entry.bannerImg01,
+        'bannerImg02': latest_entry.bannerImg02,
+        'fontStyle': latest_entry.fontStyle,
+        'dropTitle': latest_entry.dropTitle,
+        'fontColor': latest_entry.fontColor,
+        'fontWeight': latest_entry.fontWeight,
+        'fontBorderThickness': latest_entry.fontBorderThickness,
+        'borderColor': latest_entry.borderColor,
+        'cart_items': cart_items,
+        'total_price': total_price, 
+        'tax_amount': tax_amount, 
+        'tax_total': tax_total
+    }
 
     # Render the cart page with items and total and timer count down
-    return render(request, 'cart.html', {'total_time': total_time,'cart_items': cart_items,
-        'total_price': total_price, 'tax_amount': tax_amount, 'tax_total': tax_total})
+    return render(request, 'cart.html', context)
 
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
@@ -268,7 +345,22 @@ def googleCalendar(request):
     iframe_code = '''
     <iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=America%2FLos_Angeles&showPrint=0&title=MoonWalk%20Threads%20Events&src=OTAwZmRmNjUwYjU3OWEwMDdmZWI2ZTdmOGFjODc5MTkwMzM3ZDAwZWFjOGU2MmFlZmZiYmI2Y2Q5ZmYxMGRmM0Bncm91cC5jYWxlbmRhci5nb29nbGUuY29t&color=%23F09300" style="border:solid 1px #777" width="800" height="600" frameborder="0" scrolling="no"></iframe>
     '''
-    return render(request, 'googleCalendar.html', {'iframe_code': iframe_code})
+    latest_entry = Theme.objects.latest('timeStamp')
+    context = {
+        'dropDate': latest_entry.dropDate,
+        'backgroundColor': latest_entry.backgroundColor,
+        'bannerImg00': latest_entry.bannerImg00,
+        'bannerImg01': latest_entry.bannerImg01,
+        'bannerImg02': latest_entry.bannerImg02,
+        'fontStyle': latest_entry.fontStyle,
+        'dropTitle': latest_entry.dropTitle,
+        'fontColor': latest_entry.fontColor,
+        'fontWeight': latest_entry.fontWeight,
+        'fontBorderThickness': latest_entry.fontBorderThickness,
+        'borderColor': latest_entry.borderColor,
+        'iframe_code': iframe_code
+    }
+    return render(request, 'googleCalendar.html', context)
 
 @csrf_exempt
 def checkout(request):
@@ -280,9 +372,22 @@ def checkout(request):
     total_price = sum(item.product.price for item in cart_items)
     tax_amount = float(total_price) * 0.0725
     tax_total = float(total_price) + tax_amount
-
+    latest_entry = Theme.objects.latest('timeStamp')
     context = {
-        'tax_amount': tax_amount,
+        'dropDate': latest_entry.dropDate,
+        'backgroundColor': latest_entry.backgroundColor,
+        'bannerImg00': latest_entry.bannerImg00,
+        'bannerImg01': latest_entry.bannerImg01,
+        'bannerImg02': latest_entry.bannerImg02,
+        'fontStyle': latest_entry.fontStyle,
+        'dropTitle': latest_entry.dropTitle,
+        'fontColor': latest_entry.fontColor,
+        'fontWeight': latest_entry.fontWeight,
+        'fontBorderThickness': latest_entry.fontBorderThickness,
+        'borderColor': latest_entry.borderColor,
+        'cart_items': cart_items,
+        'total_price': total_price, 
+        'tax_amount': tax_amount, 
         'tax_total': tax_total
     }
     return render(request, 'checkout.html', context)
@@ -325,7 +430,21 @@ def create_order(request):
     cart_data = request.session['cart_data']
 
     print("checkout successful")
-    return render(request, 'payment.html')
+    latest_entry = Theme.objects.latest('timeStamp')
+    context = {
+        'dropDate': latest_entry.dropDate,
+        'backgroundColor': latest_entry.backgroundColor,
+        'bannerImg00': latest_entry.bannerImg00,
+        'bannerImg01': latest_entry.bannerImg01,
+        'bannerImg02': latest_entry.bannerImg02,
+        'fontStyle': latest_entry.fontStyle,
+        'dropTitle': latest_entry.dropTitle,
+        'fontColor': latest_entry.fontColor,
+        'fontWeight': latest_entry.fontWeight,
+        'fontBorderThickness': latest_entry.fontBorderThickness,
+        'borderColor': latest_entry.borderColor
+    }
+    return render(request, 'payment.html', context)
 
 #@authenticated_user
 @payment_required
@@ -343,19 +462,47 @@ def orderSummary(request, order_id=None):
             cart_items = Cart.objects.filter(session_key=request.session.session_key)
 
         items = cart_items  # So template doesn't break
-
-    return render(request, 'orderSummary.html', {
+    latest_entry = Theme.objects.latest('timeStamp')
+    context = {
+        'dropDate': latest_entry.dropDate,
+        'backgroundColor': latest_entry.backgroundColor,
+        'bannerImg00': latest_entry.bannerImg00,
+        'bannerImg01': latest_entry.bannerImg01,
+        'bannerImg02': latest_entry.bannerImg02,
+        'fontStyle': latest_entry.fontStyle,
+        'dropTitle': latest_entry.dropTitle,
+        'fontColor': latest_entry.fontColor,
+        'fontWeight': latest_entry.fontWeight,
+        'fontBorderThickness': latest_entry.fontBorderThickness,
+        'borderColor': latest_entry.borderColor,
         'items': items,
         'pre_tax_total': pre_tax_total,
         'tax_amount': tax_amount,
         'total_amount': total_amount,
-        'is_order': bool(order_id),  # helpful flag in template
-    })
+        'is_order': bool(order_id)
+    }
+
+    return render(request, 'orderSummary.html', context)
 
 # Creating the request for product details
 def productDetails(request,pk):
     product = Product.objects.get(id=pk)
-    return render(request, 'productDetails.html', {'product': product})
+    latest_entry = Theme.objects.latest('timeStamp')
+    context = {
+        'dropDate': latest_entry.dropDate,
+        'backgroundColor': latest_entry.backgroundColor,
+        'bannerImg00': latest_entry.bannerImg00,
+        'bannerImg01': latest_entry.bannerImg01,
+        'bannerImg02': latest_entry.bannerImg02,
+        'fontStyle': latest_entry.fontStyle,
+        'dropTitle': latest_entry.dropTitle,
+        'fontColor': latest_entry.fontColor,
+        'fontWeight': latest_entry.fontWeight,
+        'fontBorderThickness': latest_entry.fontBorderThickness,
+        'borderColor': latest_entry.borderColor,
+        'product': product
+    }
+    return render(request, 'productDetails.html', context)
 
 #@authenticated_user
 @checkout_required
@@ -374,7 +521,19 @@ def paymentPortal(request):
     tax_amount = float(total_price) * 0.0725
     tax_total = float(total_price) + tax_amount
 
+    latest_entry = Theme.objects.latest('timeStamp')
     context = {
+        'dropDate': latest_entry.dropDate,
+        'backgroundColor': latest_entry.backgroundColor,
+        'bannerImg00': latest_entry.bannerImg00,
+        'bannerImg01': latest_entry.bannerImg01,
+        'bannerImg02': latest_entry.bannerImg02,
+        'fontStyle': latest_entry.fontStyle,
+        'dropTitle': latest_entry.dropTitle,
+        'fontColor': latest_entry.fontColor,
+        'fontWeight': latest_entry.fontWeight,
+        'fontBorderThickness': latest_entry.fontBorderThickness,
+        'borderColor': latest_entry.borderColor,
         "square_app_id": square_app_id,
         "square_location_id": square_location_id,
         'total_price': total_price,
@@ -717,7 +876,19 @@ def checkout(request):
     tax_amount = float(total_price) * 0.0725
     tax_total = float(total_price) + tax_amount
 
+    latest_entry = Theme.objects.latest('timeStamp')
     context = {
+        'dropDate': latest_entry.dropDate,
+        'backgroundColor': latest_entry.backgroundColor,
+        'bannerImg00': latest_entry.bannerImg00,
+        'bannerImg01': latest_entry.bannerImg01,
+        'bannerImg02': latest_entry.bannerImg02,
+        'fontStyle': latest_entry.fontStyle,
+        'dropTitle': latest_entry.dropTitle,
+        'fontColor': latest_entry.fontColor,
+        'fontWeight': latest_entry.fontWeight,
+        'fontBorderThickness': latest_entry.fontBorderThickness,
+        'borderColor': latest_entry.borderColor,
         "square_app_id": square_app_id,
         "square_location_id": square_location_id,
         'total_price': total_price,
@@ -738,10 +909,38 @@ def login_user(request):
             messages.success(request, ("YOU LOGGED IN"))
             return redirect('home')
         else:
-            context = {"login_error": "Incorrect email or password"}
+            latest_entry = Theme.objects.latest('timeStamp')
+            context = {
+                'dropDate': latest_entry.dropDate,
+                'backgroundColor': latest_entry.backgroundColor,
+                'bannerImg00': latest_entry.bannerImg00,
+                'bannerImg01': latest_entry.bannerImg01,
+                'bannerImg02': latest_entry.bannerImg02,
+                'fontStyle': latest_entry.fontStyle,
+                'dropTitle': latest_entry.dropTitle,
+                'fontColor': latest_entry.fontColor,
+                'fontWeight': latest_entry.fontWeight,
+                'fontBorderThickness': latest_entry.fontBorderThickness,
+                'borderColor': latest_entry.borderColor,
+                "login_error": "Incorrect email or password"
+            }
             return render(request, 'home.html', context)
     else:
-        return render(request, 'home.html', {})   
+        latest_entry = Theme.objects.latest('timeStamp')
+        context = {
+        'dropDate': latest_entry.dropDate,
+        'backgroundColor': latest_entry.backgroundColor,
+        'bannerImg00': latest_entry.bannerImg00,
+        'bannerImg01': latest_entry.bannerImg01,
+        'bannerImg02': latest_entry.bannerImg02,
+        'fontStyle': latest_entry.fontStyle,
+        'dropTitle': latest_entry.dropTitle,
+        'fontColor': latest_entry.fontColor,
+        'fontWeight': latest_entry.fontWeight,
+        'fontBorderThickness': latest_entry.fontBorderThickness,
+        'borderColor': latest_entry.borderColor
+    }
+        return render(request, 'home.html', context)   
 #logout request
 def logout_user(request):
     logout(request)
@@ -789,6 +988,7 @@ def register_user(request):
 
         if errors:
             # Re-render the home page (or the signup page) with the errors in the context.
+            latest_entry = Theme.objects.latest('timeStamp')
             context = {
                 "signup_errors": errors,
                 "signup_data": {
@@ -798,8 +998,19 @@ def register_user(request):
                     "phone": request.POST.get("phone"),
                     "text_checkbox": request.POST.get("text-checkbox"),
                     "email_checkbox": request.POST.get("email-checkbox"),
-                }
-            }
+                },
+                'dropDate': latest_entry.dropDate,
+                'backgroundColor': latest_entry.backgroundColor,
+                'bannerImg00': latest_entry.bannerImg00,
+                'bannerImg01': latest_entry.bannerImg01,
+                'bannerImg02': latest_entry.bannerImg02,
+                'fontStyle': latest_entry.fontStyle,
+                'dropTitle': latest_entry.dropTitle,
+                'fontColor': latest_entry.fontColor,
+                'fontWeight': latest_entry.fontWeight,
+                'fontBorderThickness': latest_entry.fontBorderThickness,
+                'borderColor': latest_entry.borderColor
+            }   
             return render(request, 'home.html', context)
 
         try:
@@ -821,7 +1032,21 @@ def register_user(request):
             return redirect('home')
         except Exception as e:
             errors["server_error"] = f"Error creating account: {e}"
-            context = {"signup_errors": errors}
+            latest_entry = Theme.objects.latest('timeStamp')
+            context = {
+                "signup_errors": errors,
+                'dropDate': latest_entry.dropDate,
+                'backgroundColor': latest_entry.backgroundColor,
+                'bannerImg00': latest_entry.bannerImg00,
+                'bannerImg01': latest_entry.bannerImg01,
+                'bannerImg02': latest_entry.bannerImg02,
+                'fontStyle': latest_entry.fontStyle,
+                'dropTitle': latest_entry.dropTitle,
+                'fontColor': latest_entry.fontColor,
+                'fontWeight': latest_entry.fontWeight,
+                'fontBorderThickness': latest_entry.fontBorderThickness,
+                'borderColor': latest_entry.borderColor
+            }   
             return render(request, 'home.html', context)
     return redirect('home')
 
@@ -997,6 +1222,20 @@ def profile(request):
                 {"id": 2, "status": "Processing", "total": 120.50},
             ],
         }
-
-    return render(request, "profile.html", {"user_data": user_data})
+    latest_entry = Theme.objects.latest('timeStamp')
+    context = {
+        'dropDate': latest_entry.dropDate,
+        'backgroundColor': latest_entry.backgroundColor,
+        'bannerImg00': latest_entry.bannerImg00,
+        'bannerImg01': latest_entry.bannerImg01,
+        'bannerImg02': latest_entry.bannerImg02,
+        'fontStyle': latest_entry.fontStyle,
+        'dropTitle': latest_entry.dropTitle,
+        'fontColor': latest_entry.fontColor,
+        'fontWeight': latest_entry.fontWeight,
+        'fontBorderThickness': latest_entry.fontBorderThickness,
+        'borderColor': latest_entry.borderColor,
+        "user_data": user_data
+        }   
+    return render(request, "profile.html", context)
 

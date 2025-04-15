@@ -32,7 +32,7 @@
 }
 
 .delivery-selection button:hover{
-    background-color: #F46471;
+    background-color: var(--background_color);
 }
 
 
@@ -134,7 +134,7 @@
 
 
 .delivery-selection .tablinks.active, .store-pickup .tablinks.active {
-    background-color: #F46471;
+    background-color: var(--background_color);
 }
 
 .error {
@@ -167,7 +167,7 @@
 }
 
 .payment-checkout-button:hover {
-    background-color: #F46471;
+    background-color: var(--background_color);
     color: white;
 }
 
@@ -192,11 +192,11 @@
 }
 
 #pay-checkout:hover {
-    background-color: #F46471;
+    background-color: var(--background_color);
 }
 
 #pay-checkout:active {
-    background-color: #F46471;
+    background-color: var(--background_color);
 }
 
 .checkout-page {
