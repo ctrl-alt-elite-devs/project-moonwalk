@@ -5,7 +5,7 @@
     --hover-scale: 1.05;
     --button-color: #333333;
     --button-border-color: #333333;
-    --button-hover-color: #F46471;
+    --button-hover-color: var(--background_color);
 }
 
 /* Section Styling */

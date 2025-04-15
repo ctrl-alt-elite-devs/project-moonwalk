@@ -19,7 +19,7 @@ body {
 }
 
 .countdown-container {
-    background-color: #f45b69;
+    background-color: var(--background_color);
     color: black;
     text-align: center;
     padding: .825rem;
@@ -70,7 +70,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #ff6f72;
+    background-color: var(--background_color);
     margin-bottom: 1.625rem;
     padding: 0.625rem;
     border-radius: 3px;
@@ -139,7 +139,7 @@ body {
 /* Checkout Button */
 .checkout {
     text-align: center;
-    background-color: #F46471;
+    background-color: var(--background_color);
     padding: 0.625rem;
 
     display: grid;
@@ -148,7 +148,7 @@ body {
 }
 
 .checkout-button {
-    background-color:#F46471;
+    background-color:var(--background_color);
     color: white;
     border: .125rem solid #d6334a;
     padding: .625rem 1.875rem;
@@ -166,11 +166,11 @@ body {
 
 .checkout-button:hover {
     background-color: white;
-    color: #F46471;
+    color: var(--background_color);
 }
 
 .digitalPayment {
-    background-color: #F46471;
+    background-color: var(--background_color);
     margin: 0;
     display: flex;
     justify-content: center;

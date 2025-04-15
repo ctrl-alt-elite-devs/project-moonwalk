@@ -101,11 +101,11 @@
 }
 
 #pay:hover {
-    background-color: #F46471;
+    background-color: var(--background_color);
 }
 
 #pay:active {
-    background-color: #F46471;
+    background-color: var(--background_color);
 }
 
 /*.paymentInput {
