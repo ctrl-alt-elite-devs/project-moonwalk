@@ -114,3 +114,16 @@ class CheckoutInformation(models.Model):
     email = models.EmailField()
     phoneNumber = models.CharField(max_length=10)
 
+class Theme(models.Model):
+    timeStamp = models.DateTimeField(auto_now=True)
+    backgroundColor = models.CharField(max_length=7)
+    dropDate = models.DateField(auto_now=True)
+    bannerImg00 = models.ImageField(storage=S3Boto3Storage(), upload_to='theme_img00/')
+    bannerImg01 = models.ImageField(storage=S3Boto3Storage(), upload_to='theme_img01/')
+    bannerImg02 = models.ImageField(storage=S3Boto3Storage(), upload_to='theme_img02/')
+    fontStyle = models.CharField(max_length=100)
+    dropTitle = models.CharField(max_length=30)
+    fontColor = models.CharField(max_length=7)
+    fontWeight = models.CharField(max_length=6)
+    fontBorderThickness = models.DecimalField(default=0, decimal_places=2, max_digits=3)
+    borderColor = models.CharField(max_length=7)
