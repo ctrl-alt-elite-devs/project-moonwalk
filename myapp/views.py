@@ -34,6 +34,7 @@ from .decorator import payment_required
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
+from django.views.decorators.http import require_POST
 import re
 
 
@@ -204,10 +205,7 @@ def merge_cart(sender, request, user, **kwargs):
         item.delete()
 
 def googleCalendar(request):
-    iframe_code = '''
-    <iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=America%2FLos_Angeles&showPrint=0&title=MoonWalk%20Threads%20Events&src=OTAwZmRmNjUwYjU3OWEwMDdmZWI2ZTdmOGFjODc5MTkwMzM3ZDAwZWFjOGU2MmFlZmZiYmI2Y2Q5ZmYxMGRmM0Bncm91cC5jYWxlbmRhci5nb29nbGUuY29t&color=%23F09300" style="border:solid 1px #777" width="800" height="600" frameborder="0" scrolling="no"></iframe>
-    '''
-    return render(request, 'googleCalendar.html', {'iframe_code': iframe_code})
+    return render(request, 'googleCalendar.html')
 
 @csrf_exempt
 def checkout(request):
@@ -275,6 +273,7 @@ def orderSummary(request, order_id=None):
         pre_tax_total = order.pre_tax_total
         tax_amount = order.tax_amount
         total_amount = order.total_amount
+        square_order_id = order.square_order_id  # ✅ Pull it from the order
     else:
         if request.user.is_authenticated:
             cart_items = Cart.objects.filter(customer = Customer.objects.filter(user=request.user).first())
@@ -288,6 +287,7 @@ def orderSummary(request, order_id=None):
         'pre_tax_total': pre_tax_total,
         'tax_amount': tax_amount,
         'total_amount': total_amount,
+        'square_order_id': square_order_id,  # ✅ Add to context
         'is_order': bool(order_id),  # helpful flag in template
     })
 
@@ -606,11 +606,12 @@ def process_payment(request):
                 "order_items": [
                     {
                         "name": item.product.name,
-                        "price": item.product.price,
+                        "price": item.price_at_purchase,
                         "image_url": item.product.image.url if item.product.image else ""
-                    } for item in cart_queryset
+                    } for item in order.items.all()
                 ],
-                "total_price": total_amount / 100,  # cents to dollars
+                "total_price": float(order.total_amount),  # or order.total_amount if already Decimal
+                "tax_amount": float(order.tax_amount) if hasattr(order, "tax_amount") else 0.00,
                 "square_order_id": square_order_id,  # ✅ ADD THIS
                 "shipping_cost": float(cheapest_rate.amount) if cheapest_rate else 0.00,
                 "shipping_label_url": shipping_label_url,
@@ -619,11 +620,11 @@ def process_payment(request):
 
             # After Square payment is processed(uncomment to make it work)
             email_sent = False
-            #try:
-            #     send_order_email(email_context)
-            #     email_sent = True
-            #except Exception as e:
-            #     print("❌ Email failed to send:", str(e))
+            try:
+                send_order_email(email_context)
+                email_sent = True
+            except Exception as e:
+                 print("❌ Email failed to send:", str(e))
 
 
             return JsonResponse({"status": "success",
@@ -763,6 +764,7 @@ def register_user(request):
             return render(request, 'home.html', context)
     return redirect('home')
 
+
 class password_reset(FormView):
     form_class = PasswordResetForm  # Built-in Django form
 
@@ -863,78 +865,120 @@ def orderCartSummary(context):
     }
 
 
-@csrf_exempt  # Only use this for local testing, remove it if using CSRF middleware
 def subscribe(request):
     if request.method == "POST":
         try:
             data = json.loads(request.body)
-            email = data.get("email")
+            email = data.get("email", "").strip()
+            phone = data.get("phone", "").strip()
 
-            if not email:
-                return JsonResponse({"success": False, "message": "Invalid email address."}, status=400)
+            if not email and not phone:
+                return JsonResponse({"success": False, "message": "Please provide an email or phone number."}, status=400)
 
-            subscriber, created = Subscriber.objects.get_or_create(email=email)
+            # Check if subscriber already exists
+            if email:
+                if Subscriber.objects.filter(email=email).exists():
+                    return JsonResponse({"success": False, "message": "Email is already subscribed."})
+            if phone:
+                if Subscriber.objects.filter(phone=phone).exists():
+                    return JsonResponse({"success": False, "message": "Phone number is already subscribed."})
+                
+            Subscriber.objects.create(email=email or None, phone=phone or None)
 
-            if not created:
-                return JsonResponse({"success": False, "message": "You are already subscribed."})
 
-            # Render HTML Email Content
-            html_content = render_to_string("subscription.html", {"email": email})
-            text_content = strip_tags(html_content)  # Convert HTML to plain text
+            # Only send welcome email if they signed up with an email
+            if email:
+                html_content = render_to_string("subscription.html", {"email": email})
+                text_content = strip_tags(html_content)
 
-            # Create Email with HTML and Plain Text
-            subject = "🎉 Welcome to MoonWalk Threads!"
-            from_email = "info@yourdomain.com"
-            recipient_list = [email]
-
-            email_message = EmailMultiAlternatives(subject, text_content, from_email, recipient_list)
-            email_message.attach_alternative(html_content, "text/html")
-            email_message.send()
+                email_message = EmailMultiAlternatives(
+                    subject="🎉 Welcome to MoonWalk Threads!",
+                    body=text_content,
+                    from_email="projectmoonwalk01@gmail.com",
+                    to=[email],
+                )
+                email_message.attach_alternative(html_content, "text/html")
+                email_message.send()
 
             return JsonResponse({"success": True, "message": "Subscription successful."})
 
         except json.JSONDecodeError:
             return JsonResponse({"success": False, "message": "Invalid data format."}, status=400)
 
-    return JsonResponse({"success": False, "message": "Invalid request."}, status=405)
+    return JsonResponse({"success": False, "message": "Invalid request method."}, status=405)
 
-# def send_order_email(context):(uncomment to try it out)
-#     try:
-#         html_content = render_to_string("order_confirmation_email.html", context)
-#         text_content = strip_tags(html_content)
-#         subject = f"Order #{context['square_order_id']}"
-#         from_email = "projectmoonwalk01@gmail.com"
-#         recipient_list = [context["email"]]
 
-#         email = EmailMultiAlternatives(subject, text_content, from_email, recipient_list)
-#         email.attach_alternative(html_content, "text/html")
-#         email.send()
-#         return True
-#     except Exception as e:
-#         print("Email Error:", e)
-#         return False
+def unsubscribe(request, token):
+    subscriber = get_object_or_404(Subscriber, unsubscribe_token=token)
+    subscriber.delete()
+    return render(request, "unsubscribe.html", {"email": subscriber.email})
+
+def send_order_email(context):
+    try:
+        html_content = render_to_string("order_confirmation_email.html", context)
+        text_content = strip_tags(html_content)
+        subject = f"Order #{context['square_order_id']}"
+        from_email = "projectmoonwalk01@gmail.com"
+        recipient_list = [context["email"]]
+
+        email = EmailMultiAlternatives(subject, text_content, from_email, recipient_list)
+        email.attach_alternative(html_content, "text/html")
+        email.send()
+        return True
+    except Exception as e:
+        print("Email Error:", e)
+        return False
 
 @login_required
 def profile(request):
-    # Check if a user is logged in
-    if request.user.is_authenticated:
-        user_data = {
-            "email": request.user.email,
-            "password": "********",  # Hidden for security
-            "address": request.user.customer.street_address if hasattr(request.user, "customer") else "No address available",
-            "orders": [],  # Placeholder for future order retrieval
-        }
+    user = request.user
+
+    customer = getattr(request.user, "customer", None)
+    print(f"DEBUG: Logged-in user's email: {request.user.email}")
+    if customer:
+        orders = Order.objects.filter(customer=customer).order_by('-created_at')
+        address = customer.street_address
     else:
-        # Hardcoded data for non-logged-in users
-        user_data = {
-            "email": "guest@example.com",
-            "password": "********",
-            "address": "No address available",
-            "orders": [
-                {"id": 1, "status": "Shipped", "total": 59.99},
-                {"id": 2, "status": "Processing", "total": 120.50},
-            ],
-        }
+        orders = []
+        address = "No address available"
+
+    user_data = {
+        "email": user.email,
+        "password": "********",
+        "address": address,
+        "orders": orders,
+    }
 
     return render(request, "profile.html", {"user_data": user_data})
+
+
+@require_POST
+@login_required
+def update_address(request):
+    customer = getattr(request.user, "customer", None)
+    if not customer:
+        messages.error(request, "No customer profile found.")
+        return redirect("profile")
+
+    street = request.POST.get("street_address", "").strip()
+    street2 = request.POST.get("street_address2", "").strip()
+    city = request.POST.get("city", "").strip()
+    state = request.POST.get("state", "").strip()
+    zip_code = request.POST.get("zip_code", "").strip()
+
+    if not street or not city or not state or not zip_code:
+        messages.error(request, "All required address fields must be filled.")
+        return redirect("profile")
+
+    # Save the updated values
+    customer.street_address = street
+    customer.street_address2 = street2
+    customer.city = city
+    customer.state = state
+    customer.zip_code = zip_code
+    customer.save()
+
+    messages.success(request, "Your address has been updated.")
+    return redirect("profile")
+
 

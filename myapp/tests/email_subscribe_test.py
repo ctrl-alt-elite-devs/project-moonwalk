@@ -1,35 +1,78 @@
-# This tests the advanced search functionality in Firefox.
-import sys, getopt
-import wait
-from time import sleep
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from webdriver_manager.firefox import GeckoDriverManager
-from selenium.webdriver.firefox.service import Service
+from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import time
 
-opts, args = getopt.getopt(sys.argv[1:], "d", ["debug"])
+# Test data
+new_email = "testuser01@example.com"
+existing_email = "testuser_selenium_001@example.com"
+test_phone = "11111111111"
 
-print("Running test " + sys.argv[0])
+# Setup Firefox
+options = Options()
+options.headless = False
+driver = webdriver.Firefox(options=options)
+driver.set_window_size(1200, 900)
 
-# launch
-driver = webdriver.Firefox(service=Service(executable_path=GeckoDriverManager().install()))
+try:
+    driver.get("http://localhost:8000/")
+    wait = WebDriverWait(driver, 10)
 
-# check search page
-driver.get('localhost:8000')
-driver.find_element(by=By.ID, value='emailAddress').send_keys('nazapot@gmail.com' + Keys.ENTER)
-#wait.pause(opts)
+    def submit_email(email):
+        print(f"📧 Submitting email: {email}")
+        email_input = wait.until(EC.presence_of_element_located((By.ID, "emailAddress")))
+        email_input.clear()
+        email_input.send_keys(email)
 
-'''driver.find_element(by=By.NAME, value='emailAddress').clear()
-driver.find_element(by=By.NAME, value='emailAddress').send_keys('Sacramento' + Keys.ENTER)
-wait.pause(opts)
+        email_subscribe_btn = email_input.find_element(By.XPATH, "./following-sibling::button[@class='subscribeButton']")
+        email_subscribe_btn.click()
 
-driver.find_element(by=By.NAME, value='emailAddress').clear()
-driver.find_element(by=By.NAME, value='emailAddress').send_keys('tina delgado' + Keys.ENTER)
-wait.pause(opts)
+        modal = wait.until(EC.visibility_of_element_located((By.ID, "subscription-modal")))
+        modal_msg = modal.find_element(By.ID, "modal-message").text.strip()
+        time.sleep(3)
+        driver.find_element(By.ID, "close-modal").click()
+        time.sleep(1)
+        return modal_msg
 
-driver.find_element(by=By.NAME, value='emailAddress').clear()
-driver.find_element(by=By.NAME, value='emailAddress').send_keys('' + Keys.ENTER)
-wait.pause(opts)'''
+    def submit_phone(phone):
+        print(f"📱 Submitting phone: {phone}")
+        phone_input = wait.until(EC.presence_of_element_located((By.ID, "phoneNum")))
+        phone_input.clear()
+        phone_input.send_keys(phone)
 
-driver.quit()
+    # Corrected button ID based on your HTML
+        phone_subscribe_btn = wait.until(EC.element_to_be_clickable((By.ID, "subscribeButtonPhone")))
+        phone_subscribe_btn.click()
+
+        modal = wait.until(EC.visibility_of_element_located((By.ID, "subscription-modal")))
+        modal_msg = modal.find_element(By.ID, "modal-message").text.strip()
+        time.sleep(5)
+        driver.find_element(By.ID, "close-modal").click()
+        time.sleep(1)
+        return modal_msg
+    
+    def is_valid_phone(number):
+        return number.isdigit() and len(number) >= 10
+
+    # Example usag
+    
+    # Email flow
+    first_email_msg = submit_email(new_email)
+    print("🟢 Email Submission:", first_email_msg)
+
+    second_email_msg = submit_email(existing_email)
+    print("🟡 Email (again):", second_email_msg)
+
+    # Phone flow
+    # Test: Phone-only submission
+    first_phone_msg = submit_phone(phone=test_phone)
+    print("🔵 Phone Submission:", first_email_msg)
+    
+    second_phone_msg = submit_phone(phone=test_phone)
+    print("🔵 Phone Submission:", second_phone_msg)
+finally:
+    time.sleep(4)
+    driver.quit()
