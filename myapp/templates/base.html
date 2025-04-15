@@ -13,6 +13,24 @@
     <script>
         var data = "{{ total_time }}";
     </script>
+    {% block style %}
+
+    <style>
+        
+        :root{
+            --background_color: {{ backgroundColor }};
+            --font: {{ fontStyle }};
+            --font_color_title: {{ fontColor }};
+            --visible: True;
+            --font_color_timer: #000000;
+            --drop_title: {{ dropTitel }};
+            --font_border_thickness: {{ fontBorderThickness }};
+            --font_weight: {{ fontWeight }};
+            --font_border_color: {{ borderColor }};
+            paint-order: stroke fill;
+        }
+    </style>
+    {% endblock style %}
 
     {% load socialaccount %}
     <meta name="google-signin-client_id" content="{{ google_client_id }}">
@@ -40,6 +58,8 @@
     <script src="https://kit.fontawesome.com/34f0afb215.js" crossorigin="anonymous"></script>
     
 </head>
+
+
 
         <!-- Notification Message -->
         <div id="cart-notification" class="cart-notification">

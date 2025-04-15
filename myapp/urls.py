@@ -8,6 +8,10 @@ urlpatterns = [
 
     # path('', views.total_time, name='total_time'),
     
+    # Admin CSS Editor
+    path('edit-theme/', views.edit_theme, name='edit-theme'),
+    path('submit_theme/', views.submit_theme, name='submit_theme'),
+    
     # Shop and Filtering
     path('shop/<str:foo>/', views.shop, name='shop-category'),
     path('shop/', views.shop, name='shop'),

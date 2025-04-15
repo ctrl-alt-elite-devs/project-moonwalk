@@ -1,7 +1,8 @@
+
 footer {
     margin: auto;
     height: 100%;
-    background-color: #F46471;
+    background-color: var(--background_color);
     padding: 10px;
     text-align: center;
 }
@@ -51,7 +52,7 @@ footer {
 
     padding: 5px;
 
-    color: #F46471;
+    color: var(--background_color);
 
     background: #000000;
     border: 1px solid transparent;

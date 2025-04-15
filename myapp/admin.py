@@ -1,7 +1,9 @@
 from os import path
 from pyexpat.errors import messages
 from django.contrib import admin
-from .models import Category,Customer, Newsletter,Product,Order,OrderItem,Subscriber
+
+from .models import Category,Customer,Product,Order,OrderItem,Subscriber,Theme,Newsletter
+
 from django.contrib.auth.models import User
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
@@ -19,6 +21,8 @@ admin.site.register(Customer)
 admin.site.register(Product)
 admin.site.register(OrderItem)
 admin.site.register(Subscriber)
+admin.site.register(Theme)
+
 
 #Mix customer info and user info
 class CustomerInline(admin.StackedInline):
