@@ -63,7 +63,7 @@ class Subscriber(models.Model):
 
 class Newsletter(models.Model):
     title = models.CharField(max_length=200)
-    banner_image = models.ImageField(upload_to='newsletter_banners/')
+    banner_image =models.ImageField(storage=S3Boto3Storage(), upload_to='newsLetterBanner/')
     description = models.TextField()
     store_link = models.URLField()
     created_at = models.DateTimeField(auto_now_add=True)

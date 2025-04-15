@@ -121,7 +121,8 @@ class NewsletterAdmin(admin.ModelAdmin):
             html_content = render_to_string("newsletter.html", {
                 "subject": newsletter.title,
                 "message": mark_safe(newsletter.description),
-                "banner_image": newsletter.banner_image.url if newsletter.banner_image else None,
+                "banner_url": newsletter.banner_image.url if newsletter.banner_image else None,
+                "button_url": "http://localhost:8000",  # Or dynamic value
                 "unsubscribe_url": unsubscribe_url,
             })
 
