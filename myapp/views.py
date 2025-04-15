@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 import datetime
 from django.contrib import messages
 from django.urls import reverse
-from .models import Cart, Customer, Product, Category, Subscriber, Order, OrderItem
+from .models import Cart, Customer, Product, Category, Subscriber, Order, OrderItem, Theme
 from .square_service import client
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -49,6 +49,7 @@ client = Client(
 
 def home(request):
     # Current date is hard coded
+    latest_entry = Theme.objects.latest('timeStamp')
     date = "2024-12-06 17:00:00"
     today = datetime.datetime.now()
     # Specify the date format being provided
@@ -59,7 +60,22 @@ def home(request):
     # Convert the total time to seconds
     total_time = total_time.total_seconds()
     featured = Product.objects.filter(featured=True,  quantity__gt=0)
-    return render(request, 'home.html', {'total_time': total_time, 'featured':featured})
+    context = {
+        'dropDate': latest_entry.dropDate,
+        'backgroundColor': latest_entry.backgroundColor,
+        'bannerImg00': latest_entry.bannerImg00,
+        'bannerImg01': latest_entry.bannerImg01,
+        'bannerImg02': latest_entry.bannerImg02,
+        'fontStyle': latest_entry.fontStyle,
+        'dropTitle': latest_entry.dropTitle,
+        'fontColor': latest_entry.fontColor,
+        'fontWeight': latest_entry.fontWeight,
+        'fontBorderThickness': latest_entry.fontBorderThickness,
+        'borderColor': latest_entry.borderColor,
+        'total_time': total_time, 
+        'featured':featured
+    }
+    return render(request, 'home.html', context)
     # return render(request, 'home.html')
 
 
@@ -104,8 +120,49 @@ def contact(request):
     return render(request, 'contact.html')
 
 # theme HTML - Admin CSS Editor
-def theme(request):
-    return render(request, 'theme.html')
+def edit_theme(request):
+    return render(request, 'edit_theme.html')
+
+# Request used to update CSS Theme
+@csrf_exempt
+def submit_theme(request):
+    if request.method != 'POST':
+        return JsonResponse({"status": "error", "message": "Invalid request response"}, status=405)
+    try:
+        print("Passed thrugh if")
+        print(request.POST.get('backgroundColor'))
+        dropDate = request.POST.get("dropDate")
+        backgroundColor = request.POST.get("backgroundColor")
+        bannerImg00 = request.FILES.get("bannerImg00")
+        bannerImg01 = request.FILES.get("bannerImg01")
+        bannerImg02 = request.FILES.get("bannerImg02")
+        fontStyle = request.POST.get("fontStyle")
+        dropTitle = request.POST.get("dropTitle")
+        fontColor = request.POST.get("fontColor")
+        fontWeight = request.POST.get("fontWeight")
+        fontBorderThickness = request.POST.get("fontBorderThickness")
+        borderColor = request.POST.get("borderColor")
+
+        new_theme = Theme(dropDate = dropDate, 
+                          backgroundColor = backgroundColor, 
+                          bannerImg00 = bannerImg00, 
+                          bannerImg01 = bannerImg01,
+                          bannerImg02 = bannerImg02,
+                          fontStyle = fontStyle,
+                          dropTitle = dropTitle,
+                          fontColor = fontColor,
+                          fontWeight = fontWeight,
+                          fontBorderThickness = fontBorderThickness,
+                          borderColor = borderColor)
+        
+        new_theme.save()
+        return JsonResponse({"message": "Theme saved successfully"})
+        
+    except json.JSONDecodeError:
+        return JsonResponse({"status": "error", "message": "Invalid JSON format"}, status=400)
+    except Exception as e:
+        return JsonResponse({"status": "error", "message": str(e)}, status=501)
+
 
 def cart(request):
     #mock items
@@ -444,6 +501,7 @@ def create_square_order(cart_items, customerInfo, delivery_method):
     else:
         print(result.errors)
         return None, None
+
 
 def process_payment(request):
     if request.method != 'POST':

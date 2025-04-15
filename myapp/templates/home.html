@@ -10,13 +10,15 @@
 
 <!-- Banner -->
 <div class="img_banner">
-    <img src="{% static 'images/img_banner.png' %}" alt="Banner Image">
+    <img src="{{ bannerImg00 }}" alt="Banner Image 1">
+    <img src="{{ bannerImg01 }}" alt="Banner Image 2">
+    <img src="{{ bannerImg02 }}" alt="Banner Image 3">
 </div>
 
 <!-- Timer Banner -->
 <div class="timer_banner">
     <div class="drop_title">
-        <p>Fall Apparel</p>
+        <p>{{ dropTitle }}</p>
     </div>
     <div class="countdown">
         <div class="time-unit">

@@ -7,6 +7,12 @@
 
 <div class="webpage">
     <div class="editor">
+        <!-- Drop Date-->
+         <h1>Next Drop</h1>
+         <div class ="dropdate">
+            <input type="date" id="date-drop" />
+            <label for="date-drop">Drop Date</label>
+         </div>
         <!-- Color picker -->
         <h1>Pick banner color</h1>
         <div class ="color-editor">
@@ -25,6 +31,23 @@
 
         </div>
         <!-- Drop title -->
+         <h1>Select font</h1>
+         <div class="font-selector">
+            <input type="radio" id="default" name="font_style" value="Roboto">
+            <label for="default">Roboto</label>
+            <input type="radio" id="Fat Kat" name="font_style" value="Fat Kat">
+            <label for="Fat Kat">Fat Kat</label>
+            <input type="radio" id="Milky Vintage" name="font_style" value="Milky Vintage">
+            <label for="Milky Vintage">Milky Vintage</label>
+            <input type="radio" id="Million Design" name="font_style" value="Million Design">
+            <label for="Million Design">Million Design</label><br>
+            <input type="radio" id="Modern Prestige Demo" name="font_style" value="Modern Prestige Demo">
+            <label for="Modern Prestige Demo">Modern Prestige Demo</label>
+            <input type="radio" id="Verve" name="font_style" value="Verve">
+            <label for="Verve">Verve</label>
+            <input type="radio" id="Vogue" name="font_style" value="Vogue">
+            <label for="Vogue">Vogue</label>
+         </div>
         <h1>Edit drop title</h1>
         <div class="title-editor">
             <label>Drop title:</label>
@@ -185,6 +208,35 @@
     document.getElementById("viewmore_button").addEventListener("click", function () {
         window.location.href = "{% url 'googleCalendar' %}";
     });
+</script>
+
+<script>
+    // Method to submit changes to server
+done.addEventListener("click", function(){
+    console.log("submitted");
+
+    let image00 = img00.files[0];
+    let image01 = img01.files[0];
+    let image02 = img02.files[0];
+    let formData = new FormData();
+
+    formData.append('dropDate', dropDate.value);
+    formData.append('backgroundColor', colorPicker.value);
+    formData.append('bannerImg00', image00);
+    formData.append('bannerImg01', image01);
+    formData.append('bannerImg02', image02);
+    formData.append('dropTitle', title.value);
+    formData.append('fontStyle', document.querySelector('input[name="font_style"]:checked').value);
+    formData.append('fontColor', fontColor.value);
+    formData.append('fontWeight', document.querySelector('input[name="weight"]:checked').value);
+    formData.append('fontBorderThickness', borderThickness.value);
+    formData.append('borderColor', borderColor.value);
+    
+    fetch("{% url 'submit_theme' %}", {
+        method: 'POST',
+        body: formData
+    });
+});
 </script>
 
 {% endblock %}

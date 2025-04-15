@@ -12,6 +12,24 @@
     <script>
         var data = "{{ total_time }}";
     </script>
+    {% block style %}
+
+    <style>
+        
+        :root{
+            --background_color: {{ backgroundColor }};
+            --font: {{ fontStyle }};
+            --font_color_title: {{ fontColor }};
+            --visible: True;
+            --font_color_timer: #000000;
+            --drop_title: {{ dropTitel }};
+            --font_border_thickness: {{ fontBorderThickness }};
+            --font_weight: {{ fontWeight }};
+            --font_border_color: {{ borderColor }};
+            paint-order: stroke fill;
+        }
+    </style>
+    {% endblock style %}
 
     <!-- Load static files -->
     {% load static %}
@@ -37,6 +55,8 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Edu+AU+VIC+WA+NT+Dots:wght@400..700&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
     
 </head>
+
+
 
         <!-- Notification Message -->
         <div id="cart-notification" class="cart-notification">
