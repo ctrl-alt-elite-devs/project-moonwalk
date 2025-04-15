@@ -7,6 +7,7 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="https://sandbox.web.squarecdn.com/v1/square.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
@@ -31,6 +32,8 @@
     </style>
     {% endblock style %}
 
+    {% load socialaccount %}
+    <meta name="google-signin-client_id" content="{{ google_client_id }}">
     <!-- Load static files -->
     {% load static %}
     <!--<script type="text/javascript" src="{% static 'scripts/events.js' %}"></script>-->
@@ -53,7 +56,6 @@
 
 
     <script src="https://kit.fontawesome.com/34f0afb215.js" crossorigin="anonymous"></script>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Edu+AU+VIC+WA+NT+Dots:wght@400..700&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
     
 </head>
 
@@ -189,19 +191,11 @@
                 <a href="#" class="create-account open_signup">Create Account</a>
             </div>
 
-            <!-- Placeholder for the Google Sign-In button -->
-            <div id="g_id_onload"
-                data-client_id="967536116046-niqbv6jvmqddk43u38pmhq6caqmohlur.apps.googleusercontent.com"
-                data-callback="handleCredentialResponse">
-            </div>
-
-            <div class="g_id_signin"
-                data-type="standard"
-                data-size="large"
-                data-theme="outline"
-                data-text="sign_in_with"
-                data-shape="rectangular"
-                data-logo_alignment="left">
+            <div class="social-signup">
+                <a href="{% provider_login_url 'google' %}?next={{ request.path }}" class="classic-google-btn">
+                    <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google logo" class="google-icon">
+                    <span>Sign in with Google</span>
+                </a>
             </div>
 
         </form>
@@ -216,7 +210,6 @@
     </script>
     {% endif %}
 
-    <!-- The Create Account Popup -->
 
    <!-- The Create Account Popup -->
 <div id="signup-modal" class="signup-modal">
@@ -366,7 +359,6 @@
         </div>
     </div>
 
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="{% static 'scripts/login-script.js' %}"></script>
 
     {% if messages %}
@@ -395,7 +387,7 @@
 
             <div class="subscribe-subsection">
                 <input class="subscribeInput" type="text" id="phoneNum" placeholder="Your phone number">
-                <button class="subscribeButton" id="subscribeButton" type="button">SUBSCRIBE</button>
+                <button class="subscribeButton" id="subscribeButtonPhone" type="button">SUBSCRIBE</button>
             </div>
         </div>
 

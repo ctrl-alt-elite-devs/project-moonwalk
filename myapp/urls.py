@@ -43,7 +43,7 @@ urlpatterns = [
     path("send-order-email/", views.send_order_email, name="send_order_email"),
     
     path("subscribe/", views.subscribe, name="subscribe"),
-    
+    path("unsubscribe/<uuid:token>/", views.unsubscribe, name="unsubscribe"),
 
     # Address Submission (Shippo)
     path('get-shipping-rates/', views.get_shipping_rates, name='get_shipping_rates'),
