@@ -155,7 +155,7 @@
 
         const paymentRequest = payments.paymentRequest({
             total: {
-                amount: "1.00",
+                amount: toString({{ total_price|floatformat:2 }}),
                 label: "Total"
             },
             countryCode: "US",
@@ -187,7 +187,7 @@
 
         const paymentRequest = payments.paymentRequest({
             total: {
-                amount: "1.00",
+                amount: toString({{ total_price|floatformat:2 }}),
                 label: "Total"
             },
             countryCode: "US",
