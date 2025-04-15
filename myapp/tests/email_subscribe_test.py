@@ -1,3 +1,4 @@
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
@@ -5,18 +6,19 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
 
-# Test emails
-new_email = "testuser_selenium_001@example.com"
-existing_email = "testuser_selenium_001@example.com"  # Simulate as existing by submitting twice
+# Test data
+new_email = "testuser01@example.com"
+existing_email = "testuser_selenium_001@example.com"
+test_phone = "11111111111"
 
 # Setup Firefox
 options = Options()
-options.headless = False  # Set to True if you want to run in headless mode
+options.headless = False
 driver = webdriver.Firefox(options=options)
 driver.set_window_size(1200, 900)
 
 try:
-    driver.get("http://localhost:8000/")  # Replace with your local dev URL if needed
+    driver.get("http://localhost:8000/")
     wait = WebDriverWait(driver, 10)
 
     def submit_email(email):
@@ -25,32 +27,52 @@ try:
         email_input.clear()
         email_input.send_keys(email)
 
-        subscribe_btn = wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "subscribeButton")))
-        subscribe_btn.click()
+        email_subscribe_btn = email_input.find_element(By.XPATH, "./following-sibling::button[@class='subscribeButton']")
+        email_subscribe_btn.click()
 
         modal = wait.until(EC.visibility_of_element_located((By.ID, "subscription-modal")))
         modal_msg = modal.find_element(By.ID, "modal-message").text.strip()
-
-        # Close modal
+        time.sleep(3)
         driver.find_element(By.ID, "close-modal").click()
         time.sleep(1)
-
         return modal_msg
 
-    # First attempt - should be new
-    first_message = submit_email(new_email)
-    print("🟢 First Submission Result:", first_message)
+    def submit_phone(phone):
+        print(f"📱 Submitting phone: {phone}")
+        phone_input = wait.until(EC.presence_of_element_located((By.ID, "phoneNum")))
+        phone_input.clear()
+        phone_input.send_keys(phone)
 
-    # Second attempt - should say already subscribed
-    second_message = submit_email(existing_email)
-    print("🟡 Second Submission Result:", second_message)
+    # Corrected button ID based on your HTML
+        phone_subscribe_btn = wait.until(EC.element_to_be_clickable((By.ID, "subscribeButtonPhone")))
+        phone_subscribe_btn.click()
 
-    # Verify behavior
-    if "already subscribed" in second_message.lower():
-        print("✅ Existing email test passed.")
-    else:
-        print("❌ Existing email test failed.")
+        modal = wait.until(EC.visibility_of_element_located((By.ID, "subscription-modal")))
+        modal_msg = modal.find_element(By.ID, "modal-message").text.strip()
+        time.sleep(5)
+        driver.find_element(By.ID, "close-modal").click()
+        time.sleep(1)
+        return modal_msg
+    
+    def is_valid_phone(number):
+        return number.isdigit() and len(number) >= 10
 
+    # Example usag
+    
+    # Email flow
+    first_email_msg = submit_email(new_email)
+    print("🟢 Email Submission:", first_email_msg)
+
+    second_email_msg = submit_email(existing_email)
+    print("🟡 Email (again):", second_email_msg)
+
+    # Phone flow
+    # Test: Phone-only submission
+    first_phone_msg = submit_phone(phone=test_phone)
+    print("🔵 Phone Submission:", first_email_msg)
+    
+    second_phone_msg = submit_phone(phone=test_phone)
+    print("🔵 Phone Submission:", second_phone_msg)
 finally:
-    time.sleep(2)
+    time.sleep(4)
     driver.quit()
