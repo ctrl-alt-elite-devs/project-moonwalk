@@ -10,9 +10,9 @@
 
 <!-- Banner -->
 <div class="img_banner">
-    <img src="{{ bannerImg00 }}" alt="Banner Image 1">
-    <img src="{{ bannerImg01 }}" alt="Banner Image 2">
-    <img src="{{ bannerImg02 }}" alt="Banner Image 3">
+    <img src="{{ bannerImg00.url }}" alt="Banner Image 1" width="33%">
+    <img src="{{ bannerImg01.url }}" alt="Banner Image 2" width="33%">
+    <img src="{{ bannerImg02.url }}" alt="Banner Image 3" width="33%">
 </div>
 
 <!-- Timer Banner -->
@@ -38,7 +38,77 @@
             <div class="label_seconds">Secs</div>
         </div>
     </div>
-    <script src="static/scripts/countdown_banner.js"></script>
+    <script>
+        var remainingTime = parseFloat("{{ total_time }}");
+        console.log(remainingTime);
+            
+        
+        // Define the function that will update the html values
+        function updateCountdown(){
+            // console.log("Entered the function");
+            // Get each time units values
+            var days = Math.floor(remainingTime / 86400);
+            var hours = Math.floor((remainingTime % 86400) / 3600);
+            var minutes = Math.floor((remainingTime % 3600) / 60);
+            var seconds = Math.floor(remainingTime % 60);
+        
+            //console.log(days)
+            // console.log(hours)
+                
+            // Format each unit
+            //days_str = String.Format("%02d", days);
+            //hours_str = String.Format("%02d", hours);
+            //minutes_str = String.Format("%02d", minutes);
+            //seconds_str = String.Format("%02d", seconds);
+        
+            // Update the values here
+            numDays = document.getElementById("number_Days");
+            numHours = document.getElementById("number_Hours");
+            numMinutes = document.getElementById("number_Minutes");
+            numSeconds = document.getElementById("number_Seconds");
+
+            if (days >= 10){
+                numDays.innerHTML = days;
+            } else {
+                numDays.innerHTML = "0" + days;
+            }
+            if (hours >= 10){
+                numHours.innerHTML = hours;
+            } else {
+                numHours.innerHTML = "0" + hours;
+            }
+            if (minutes >= 10){
+                numMinutes.innerHTML = minutes;
+            } else{
+                numMinutes.innerHTML = "0" + minutes;
+            }
+            if (seconds >= 10){
+                numSeconds.innerHTML = seconds;
+            } else{
+                numSeconds.innerHTML = "0" + seconds;
+            }
+            if (days >= 10 && hours >= 10 && minutes >= 10 && seconds >= 10){
+                numDays.innerHTML = days;
+                numHours.innerHTML = hours;
+                numMinutes.innerHTML = minutes;
+                numSeconds.innerHTML = seconds;
+            }
+            // Check to see if no time remains
+            if (remainingTime <= 0) {
+                // Set values to 00
+                clearInterval(update);
+                document.getElementById("number_Days").innerHTML = "00";
+                document.getElementById("number_Hours").innerHTML = "00";
+                document.getElementById("number_Minutes").innerHTML = "00";
+                document.getElementById("number_Seconds").innerHTML = "00";
+        
+            } else {
+                remainingTime--;
+            }
+        }
+            
+        // Update the timer every second
+        var update = setInterval(updateCountdown, 1000);</script>
 </div>
 
 <!-- Product Section -->
