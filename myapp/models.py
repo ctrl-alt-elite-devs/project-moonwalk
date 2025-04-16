@@ -138,7 +138,7 @@ class CheckoutInformation(models.Model):
 class Theme(models.Model):
     timeStamp = models.DateTimeField(auto_now=True)
     backgroundColor = models.CharField(max_length=7)
-    dropDate = models.DateField(auto_now=True)
+    dropDate = models.DateField()
     bannerImg00 = models.ImageField(storage=S3Boto3Storage(), upload_to='theme_img00/')
     bannerImg01 = models.ImageField(storage=S3Boto3Storage(), upload_to='theme_img01/')
     bannerImg02 = models.ImageField(storage=S3Boto3Storage(), upload_to='theme_img02/')
