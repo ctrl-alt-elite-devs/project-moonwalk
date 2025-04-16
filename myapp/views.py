@@ -51,15 +51,17 @@ client = Client(
 def home(request):
     # Current date is hard coded
     latest_entry = Theme.objects.latest('timeStamp')
-    date = "2024-12-06 17:00:00"
+    date = datetime.datetime.strptime(str(latest_entry.dropDate), "%Y-%m-%d")
     today = datetime.datetime.now()
+    timestamp_date = date.timestamp()
+    timestamp_today = today.timestamp()
     # Specify the date format being provided
-    countdown_date = datetime.datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
+    #countdown_date = datetime.datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
 
     # Calculate the time to the specified date from when the web is loaded
-    total_time = countdown_date - today
+    total_time = timestamp_date - timestamp_today
+    print(total_time)
     # Convert the total time to seconds
-    total_time = total_time.total_seconds()
     featured = Product.objects.filter(featured=True,  quantity__gt=0)
     context = {
         'dropDate': latest_entry.dropDate,
@@ -82,10 +84,12 @@ def home(request):
 
 def total_time(request):
     # Current date is hard coded
-    date = "2024-12-06 17:00:00"
+    latest_entry = Theme.objects.latest("timeStamp")
+    date = latest_entry.dropDate
     today = datetime.datetime.now
     # Specify the date format being provided
     countdown_date = datetime.datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
+    print(countdown_date)
 
     # Calculate the time to the specified date from when the web is loaded
     total_time = countdown_date - today
