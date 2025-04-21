@@ -46,7 +46,7 @@
 <!-- credit card payment script -->
 <script type="module">
     import { showLoadingOverlay, hideLoadingOverlay } from "{% static 'scripts/loadingOverlay.js' %}";
-  
+
     document.addEventListener("DOMContentLoaded", function () {
       console.log("📌 Confirming Local Storage Data in `payment.html`...");
       console.log("🔍 Delivery Method:", localStorage.getItem("deliveryMethod"));
@@ -213,5 +213,6 @@
         }
     })()
 </script>
+
 
 {% endblock %}

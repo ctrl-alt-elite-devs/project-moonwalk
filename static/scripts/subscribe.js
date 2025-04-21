@@ -1,3 +1,4 @@
+
 document.addEventListener("DOMContentLoaded", function () {
     console.log("✅ subscribe.js is loaded!");
 
@@ -33,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 .then(res => res.json())
                 .then(data => {
                     modalMessage.innerText = data.success
-                        ? "✅ Thank You for Subscribing!"
+                        ? "`Thank You for Subscribing!"
                         : "⚠️ " + data.message;
                     modal.style.display = "flex";
                     document.body.classList.add("darken-bg");
