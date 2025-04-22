@@ -186,10 +186,6 @@ body {
     margin: 0 auto;
 }
 
-.fa-cart-shopping, .fa-user {
-    margin-right: 30px;
-    margin-left: 30px;
-}
 
 @media screen and (max-width: 768px) {
     .fa-cart-shopping, .fa-user {
@@ -366,14 +362,11 @@ body {
     font-size: 1.5rem;
     cursor: pointer;
     position: absolute;
-    right: .5rem;
+    right: 1.2rem;
     display: flex;
     pointer-events: auto;
 }
 
-.navbar .profile_btn:hover {
-    scale: 1.05;
-}
 .navbar .profile_btn.flicker{
     opacity: 0; /* Make it invisible during re-render */
     transform: scale(0.9); /* Optional scaling effect */
@@ -394,6 +387,12 @@ body {
 .action_btn:hover {
     scale: 1.05;
 
+}
+
+.navbar .profile_btn:hover i,
+.navbar .profile_btn a:hover i {
+  transform: scale(1.05);
+  color: black !important;
 }
 
 .action_btn:active {
