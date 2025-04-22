@@ -367,9 +367,6 @@ body {
     pointer-events: auto;
 }
 
-.navbar .profile_btn:hover {
-    scale: 1.05;
-}
 .navbar .profile_btn.flicker{
     opacity: 0; /* Make it invisible during re-render */
     transform: scale(0.9); /* Optional scaling effect */
@@ -390,6 +387,12 @@ body {
 .action_btn:hover {
     scale: 1.05;
 
+}
+
+.navbar .profile_btn:hover i,
+.navbar .profile_btn a:hover i {
+  transform: scale(1.05);
+  color: black !important;
 }
 
 .action_btn:active {

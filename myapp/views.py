@@ -914,7 +914,7 @@ def login_user(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            messages.success(request, ("YOU LOGGED IN"))
+            messages.success(request, f"Welcome back, {user.first_name}!")
             return redirect('home')
         else:
             latest_entry = Theme.objects.latest('timeStamp')
@@ -952,7 +952,7 @@ def login_user(request):
 #logout request
 def logout_user(request):
     logout(request)
-    messages.success(request, ("YOU LOGGED OUT"))
+    messages.success(request, ("Successfully Logged Out"))
     return redirect('home')
 
 #register user account
@@ -1036,7 +1036,7 @@ def register_user(request):
 
             user = authenticate(request, username=username, password=password)
             login(request, user)
-            messages.success(request, "Registration successful! You are now logged in.")
+            messages.success(request, f"Welcome, {user.first_name}!")
             return redirect('home')
         except Exception as e:
             errors["server_error"] = f"Error creating account: {e}"
@@ -1228,7 +1228,6 @@ def profile(request):
     user = request.user
 
     customer = getattr(request.user, "customer", None)
-    print(f"DEBUG: Logged-in user's email: {request.user.email}")
     if customer:
         orders = Order.objects.filter(customer=customer).order_by('-created_at')
         address = customer.street_address

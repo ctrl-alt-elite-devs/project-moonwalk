@@ -1,6 +1,7 @@
 /* ========================= */
 /* Profile Container (Navbar) */
 /* ========================= */
+
 .profile_btn {
     position: relative;   /* Keeps dropdown positioned correctly */
     display: flex;        /* Aligns profile icon & dropdown */
@@ -31,7 +32,7 @@
 }
 
 /* Show dropdown when hovering over the container */
-.my-profile:hover .profile-dropdown,
+.profile_btn:hover .profile-dropdown,
 .profile-dropdown:hover {
     visibility: visible;
     opacity: 1;
@@ -59,3 +60,38 @@
     background-color: #e04a5b; /* Slightly darker pink */
     color: white;
 }
+
+.logAlert-overlay {
+    position: absolute;
+    top: 100%;          /* sit just below the profile_btn */
+    right: 0;           /* align to the right edge */
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    pointer-events: none; /* so clicks pass through except on the alert itself */
+    z-index: 1000;
+    border-color: white;
+    border-width: 1rem;
+    margin-top: .5rem;
+    margin-right: .9rem;
+
+  }
+  
+  .logAlert {
+    pointer-events: auto; /* re-enable clicks on the alert */
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    font-size: 1.2rem;
+    white-space: nowrap;
+    animation: fadeAlert 5s ease forwards;
+    border: 1px solid Black;  
+    border-radius: 0.25rem;      
+    padding: 0.5rem;
+  }
+  
+  @keyframes fadeAlert {
+    0%   { opacity: 0; }
+    10%  { opacity: 1; }
+    80%  { opacity: 1; }
+    100% { opacity: 0; }
+  }
