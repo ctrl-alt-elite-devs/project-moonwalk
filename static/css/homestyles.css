@@ -222,9 +222,7 @@ body {
     position: absolute;
     left: 1rem;
 }
-.navbar .toggle_btn:hover {
-    scale: 1.05
-}
+
 
 .navbar .cart_btn {
     color: #000;
@@ -284,11 +282,6 @@ body {
     visibility: visible;
 }
 
-.cart-dropdown:not(:hover) {
-    opacity: 0;
-    transform: translateY(-15px);
-    visibility: hidden;
-}
 
 
 .cart-items {
@@ -336,7 +329,7 @@ body {
 .cart-count {
     position: absolute;
     top: -5px;
-    right: 20px;
+    right: 15px;
     background-color: red;
     color: white;
     border-radius: 50%;
@@ -351,10 +344,6 @@ body {
     color: gray;
 }
 
-
-.navbar .cart_btn:hover {
-    scale: 1.05;
-}
 
 
 .navbar .profile_btn {
@@ -405,7 +394,6 @@ body {
 }
 
 a {
-    font-size: 1rem;
     color: #000;
     text-decoration: none;
 }
