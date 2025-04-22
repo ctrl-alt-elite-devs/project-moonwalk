@@ -9,6 +9,7 @@ from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 from django.middleware.csrf import get_token
+import re
 import json
 import uuid
 import shippo
@@ -1165,18 +1166,29 @@ def subscribe(request):
             data = json.loads(request.body)
             email = data.get("email", "").strip()
             phone = data.get("phone", "").strip()
+            
 
             if not email and not phone:
                 return JsonResponse({"success": False, "message": "Please provide an email or phone number."}, status=400)
 
-            # Check if subscriber already exists
+            # ✅ Email format validation FIRST
             if email:
-                if Subscriber.objects.filter(email=email).exists():
-                    return JsonResponse({"success": False, "message": "Email is already subscribed."})
-            if phone:
-                if Subscriber.objects.filter(phone=phone).exists():
-                    return JsonResponse({"success": False, "message": "Phone number is already subscribed."})
-                
+                try:
+                    validate_email(email)
+                except ValidationError:
+                    return JsonResponse({"success": False, "message": "Invalid email format."}, status=400)
+
+            # ✅ Phone format validation (optional)
+            if phone and not re.match(r'^\d{10}$', phone):
+                return JsonResponse({"success": False, "message": "Phone number must be 10 digits."}, status=400)
+
+            # ✅ Now check if already subscribed
+            if email and Subscriber.objects.filter(email=email).exists():
+                return JsonResponse({"success": False, "message": "Email is already subscribed."})
+            if phone and Subscriber.objects.filter(phone=phone).exists():
+                return JsonResponse({"success": False, "message": "Phone number is already subscribed."})
+
+            # ✅ Save
             Subscriber.objects.create(email=email or None, phone=phone or None)
 
 
