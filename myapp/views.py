@@ -1236,28 +1236,28 @@ def profile(request):
         # Hardcoded data for non-logged-in users
         orders = []
         address = "No address available"
-        user_data = {
-            "email": user.email,
-            "password": "********",
-            "address": address,
-            "orders": orders
-        }
-        latest_entry = Theme.objects.latest('timeStamp')
-        context = {
-        'dropDate': latest_entry.dropDate,
-        'backgroundColor': latest_entry.backgroundColor,
-        'bannerImg00': latest_entry.bannerImg00,
-        'bannerImg01': latest_entry.bannerImg01,
-        'bannerImg02': latest_entry.bannerImg02,
-        'fontStyle': latest_entry.fontStyle,
-        'dropTitle': latest_entry.dropTitle,
-        'fontColor': latest_entry.fontColor,
-        'fontWeight': latest_entry.fontWeight,
-        'fontBorderThickness': latest_entry.fontBorderThickness,
-        'borderColor': latest_entry.borderColor,
-        "user_data": user_data
-        }   
-        return render(request, "profile.html", context)
+    user_data = {
+        "email": user.email,
+        "password": "********",
+        "address": address,
+        "orders": orders
+    }
+    latest_entry = Theme.objects.latest('timeStamp')
+    context = {
+    'dropDate': latest_entry.dropDate,
+    'backgroundColor': latest_entry.backgroundColor,
+    'bannerImg00': latest_entry.bannerImg00,
+    'bannerImg01': latest_entry.bannerImg01,
+    'bannerImg02': latest_entry.bannerImg02,
+    'fontStyle': latest_entry.fontStyle,
+    'dropTitle': latest_entry.dropTitle,
+    'fontColor': latest_entry.fontColor,
+    'fontWeight': latest_entry.fontWeight,
+    'fontBorderThickness': latest_entry.fontBorderThickness,
+    'borderColor': latest_entry.borderColor,
+    "user_data": user_data
+    }   
+    return render(request, "profile.html", context)
 
 
 @require_POST

@@ -1,14 +1,20 @@
 /* ========================= */
 /* Profile Container (Navbar) */
 /* ========================= */
-.my-profile {
+.profile_btn {
     position: relative;   /* Keeps dropdown positioned correctly */
     display: flex;        /* Aligns profile icon & dropdown */
     align-items: center;  /* Keeps profile icon centered */
     justify-content: center;
-    height: 100%;         /* Ensures it matches the navbar height */
-    margin-right: 3.5rem; /* Moves it away from cart icon */
+    margin-right: 5rem; /* Moves it away from cart icon */
+    width: auto;
+    height: auto;
 }
+
+.profile_btn i {
+    font-size: 1.5rem;    /* pick whatever size you need */
+    line-height: 1;     /* keeps it centered vertically */
+  }
 
 /* ========================= */
 /* Profile Dropdown (No Background) */

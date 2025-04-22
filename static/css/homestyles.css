@@ -186,10 +186,6 @@ body {
     margin: 0 auto;
 }
 
-.fa-cart-shopping, .fa-user {
-    margin-right: 30px;
-    margin-left: 30px;
-}
 
 @media screen and (max-width: 768px) {
     .fa-cart-shopping, .fa-user {
@@ -366,7 +362,7 @@ body {
     font-size: 1.5rem;
     cursor: pointer;
     position: absolute;
-    right: .5rem;
+    right: 1.2rem;
     display: flex;
     pointer-events: auto;
 }
