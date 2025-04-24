@@ -1,25 +1,28 @@
+
 footer {
     margin: auto;
-    background-color: #F46471;
+    height: 100%;
+    background-color: var(--background_color);
     padding: 10px;
     text-align: center;
 }
 
-#header {
+#footer-header {
     font-family: Roboto, sans-serif;
-    font-weight: normal;
-    font-size: 16px;
+    font-weight: bold;
+    font-size: 18px;
     color: #000000;
     margin: auto;
     text-align: center;
     padding: 5px;
 }
 
-#phoneNum {
+/* input boxes for email and phone number */
+.subscribeInput {
     font-family: Roboto, sans-serif;
     font-style: normal;
     font-weight: normal;
-    font-size: 12px;
+    font-size: 16px;
 
     margin: 5px 0;
     background: transparent;
@@ -35,30 +38,39 @@ footer {
     align-self: center;
 }
 
-#emailAddress {
-    font-family: Roboto, sans-serif;
-    font-style: normal;
-    font-weight: normal;
-    font-size: 12px;
-
-    box-sizing: border-box;
-    background: transparent;
-    padding: 5px;
-
-    min-width: 255px;
-    min-height: 29px;
-
-    border: 1px solid #000000;
-    border-radius: 5px;
+.subscribeInput::placeholder {
+    color: black;
 }
 
 /* Subscribe button */
-button {
+.subscribeButton {
     font-family: Roboto, sans-serif;
     font-style: normal;
     font-weight: normal;
-    font-size: 12px;
+    font-size: 16px;
     letter-spacing: 0.5px;
+
+    padding: 5px;
+
+    color: var(--background_color);
+
+    background: #000000;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    min-width: 102px;
+    min-height: 29px;
+
+    cursor: pointer;
+}
+
+.subscribeButtonPhone {
+    font-family: Roboto, sans-serif;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+
+    padding: 5px;
 
     color: #F46471;
 
@@ -67,6 +79,13 @@ button {
     border-radius: 5px;
     min-width: 102px;
     min-height: 29px;
+
+    cursor: pointer;
+}
+
+
+.subscribeButton:hover {
+    color: #FFFFFF;
 }
 
 
@@ -80,9 +99,8 @@ button {
 }
 
 #footerLine {
-    position: relative;
-    left: -10px;
-    width: calc(100% + 18px);
+    width:100%;
+    /*width: calc(100% + 18px);*/
     color: black;
     margin: 0 0;
     overflow: visible;
@@ -90,6 +108,45 @@ button {
     border-top-width: 1px;
     border-top-color: black;
     border-bottom: hidden;
+}
+
+.subscribe-section {
+    display: flex;
+    justify-content: center;
+}
+
+.subscribe-subsection {
+    margin: 0 50px;
+}
+
+@media screen and (max-width: 768px) {
+    .subscribe-section {
+        display: block;
+    }
+
+    .subscribe-subsection {
+        margin: 10px;
+    }
+
+    .subscribeInput {
+        font-family: Roboto, sans-serif;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 16px;
+
+        margin: 5px 0;
+        background: transparent;
+        padding: 5px;
+        box-sizing: border-box;
+
+        min-width: 255px;
+        min-height: 29px;
+
+        border: 1px solid #000000;
+        border-radius: 5px;
+
+        align-self: center;
+    }
 }
 
 

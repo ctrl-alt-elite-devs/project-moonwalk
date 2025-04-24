@@ -11,7 +11,12 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
 import os
+
+
+# Load environment variables
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,8 +31,14 @@ SECRET_KEY = 'django-insecure-tqwh12c0d!hq+2&l(aaepw6v56%z3no#^n-+^^*b5)lw^spo10
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = [
+    "192.168.1.15",
+    "localhost",
+    "10.117.75.248",
+    "10.0.0.42",
+    "127.0.0.1",
+    "192.168.1.13"
+]
 
 # Application definition
 
@@ -39,6 +50,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'myapp',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
 ]
 
 MIDDLEWARE = [
@@ -49,6 +64,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'moonwalk.urls'
@@ -66,6 +82,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'myapp.context_processors.cart_context',
+                'myapp.context_processors.google_client_id',
             ],
         },
     },
@@ -79,8 +97,12 @@ WSGI_APPLICATION = 'moonwalk.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
     }
 }
 
@@ -101,7 +123,25 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
-]
+] 
+
+SOCIALACCOUNT_PROVIDERS = {
+     'google': {
+         'APP' : {
+             'client_id': os.getenv('OAUTH_GOOGLE_CLIENT_ID'),
+             'secret': os.getenv('OAUTH_GOOGLE_SECRET'),
+             'project_id': os.getenv('OAUTH_GOOGLE_PROJECT_ID'),
+              "scope": [
+                         "profile",
+                         "email",
+                     ],
+         },
+          'SCOPE': {
+             "profile",
+             "email",
+         }
+     },
+ }
 
 
 # Internationalization
@@ -109,7 +149,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Los_Angeles'
 
 USE_I18N = True
 
@@ -120,14 +160,46 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 # Additional locations of static files
-STATICFILES_DIRS = ['static/',  # Or wherever your static folder is located
+STATICFILES_DIRS = ['static/',
+
 ]
 
-MEDIA_URL = 'media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+AWS_STORAGE_BUCKET_NAME = 'bucket-hdw1z5'
+AWS_S3_REGION_NAME = 'us-west-2'
+AWS_S3_ENDPOINT_URL = f'https://s3.{AWS_S3_REGION_NAME}.amazonaws.com'
 
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+MEDIA_URL = f'{AWS_S3_ENDPOINT_URL}/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+SESSION_COOKIE_AGE = 1800
+
+# Email Backend
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587  # 465 for SSL, 587 for TLS
+EMAIL_USE_TLS = True # Use TLS for security
+EMAIL_USE_SSL = False  # Use SSL instead of TLS (not recommended for Gmail)
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+
+# Default email sender
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+#CSRF cookies
+CSRF_COOKIE_SECURE = False
+CSRF_USE_SESSIONS = False
+CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SECURE = False
+CSRF_COOKIE_SAMESITE = 'Lax'
+
+SOCIALACCOUNT_LOGIN_ON_GET = True
+SOCIALACCOUNT_ADAPTER = 'myapp.adapters.MySocialAccountAdapter'
+OAUTH_GOOGLE_CLIENT_ID = os.getenv('OAUTH_GOOGLE_CLIENT_ID')

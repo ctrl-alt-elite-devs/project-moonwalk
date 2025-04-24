@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation - MoonWalk Threads</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        .header-box {
+            background-color: #ff6f72;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header-box h2 {
+            margin: 0;
+            font-size: 18px;
+        }
+        .header-box p {
+            font-size: 14px;
+            margin: 5px 0 0 0;
+        }
+        .order-summary {
+            margin-top: 20px;
+            border-top: 2px solid #ddd;
+            padding-top: 10px;
+        }
+        .product-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        .product-item img {
+            width: 80px;
+            height: auto;
+            margin-right: 15px;
+            border-radius: 5px;
+        }
+        .product-info {
+            flex-grow: 1;
+        }
+        .total-price {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: right;
+            margin-top: 10px;
+        }
+        .pickup-message, .shipping-details {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 16px;
+        }
+        .track-btn,
+        .track-btn:link,
+        .track-btn:visited,
+        .track-btn:hover,
+        .track-btn:active {
+            color: white !important;
+            text-decoration: none;
+        }
+        .track-btn {
+            display: inline-block;
+            background-color: #ff6f72;
+            color: white;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 14px;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 12px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="email-container">
+        <div style="text-align: center;">
+            <img src="https://i.imgur.com/ewx2zck.jpeg" referrerpolicy="no-referrer" alt="MoonWalk Threads Logo" width="300">
+        </div>
+
+        <!-- 🔹 Thank You Message Box -->
+        <div class="header-box">
+            <h2>Thank You for Your Order, {{ first_name }}! </h2>
+            <p>We’ve received your order, and we're getting it ready!</p>
+        </div>
+
+        <div class="order-summary">
+            <h3>🛍 Order Summary</h3>
+            <div style="text-align: center; margin-top: 10px;">
+                <p style="font-size: 16px;"><strong>Order #: {{ square_order_id }}</strong></p>
+            </div>
+            
+            {% for item in order_items %}
+            <div class="product-item">
+                <img src="{{ item.image_url }}" alt="{{ item.name }}">
+                <div class="product-info">
+                    <p><strong>{{ item.name }}</strong></p>
+                    <p>${{ item.price|floatformat:2 }}</p>
+                </div>
+            </div>
+            {% endfor %}
+            <p><strong>Tax:</strong> ${{ tax_amount|floatformat:2 }}</p>
+            <p><strong>Subtotal:</strong> ${{ total_price|floatformat:2 }}</p>
+            
+        </div>
+
+        <!-- 🚚 DELIVERY MODE -->
+        {% if delivery_method|lower == "delivery" %}
+        <div class="shipping-details">
+            <h3>📦 Shipping Details</h3>
+            <p><strong>Address:</strong> {{ address_details.streetAddress }}</p>
+            {% if address_details.addressOptional %}
+            <p><strong>Apartment/Suite:</strong> {{ address_details.addressOptional }}</p>
+            {% endif %}
+            <p><strong>City, State, ZIP:</strong> {{ address_details.city }}, {{ address_details.state }} {{ address_details.zipCode }}</p>
+            <p>You'll receive an email once your package is shipped!</p>
+            
+            {% if tracking_number %}
+            <a href="https://tools.usps.com/go/TrackConfirmAction?tLabels={{ tracking_number }}" 
+               class="track-btn" 
+               target="_blank">
+                Track Order
+                </a>
+            {% else %}
+                <p>No tracking number available at this time.</p>
+            {% endif %}
+
+            {% if shipping_label_url %}
+            <p>
+            <a href="{{ shipping_label_url }}" class="track-btn">
+                 View Shipping Label
+            </a>
+            </p>
+            {% endif %}
+                
+        </div>
+        {% endif %}
+
+        <!-- 🏬 PICKUP MODE -->
+        {% if delivery_method == "pickup" %}
+        <div class="pickup-message">
+            <h3>🏬 Store Pickup</h3>
+            <p>Your order will be ready for pickup soon!</p>
+            <p>You’ll receive a notification when it's available at the store.</p>
+        </div>
+        {% endif %}
+
+        <div class="footer">
+            <p>Need help? Contact us at <a href="mailto:support@moonwalkthreads.com">support@moonwalkthreads.com</a></p>
+            <p>MoonWalk Threads © 2025</p>
+        </div>
+    </div>
+
+</body>
+</html>

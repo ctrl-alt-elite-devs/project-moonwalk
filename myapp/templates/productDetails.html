@@ -39,13 +39,130 @@
           <p><strong>Size: </strong>{{ product.size }}</p>
           <div class="product-details-footer">
             <a class="btn btn-secondary" href="{% url 'home' %}">Back</a>
-            <a class="btn btn-outline-dark" href="#">Add to cart</a>
+            <products class="btn btn-outline-dark add-to-cart-btn" data-id="{{ product.id }}">Add to Cart</products>
           </div>
+          <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+          <script>
+              $(document).ready(function () {
+                  $(".add-to-cart-btn").off("click").on("click", function (event) {
+                      event.preventDefault();
+
+                      const productId = $(this).data("id");
+                      console.log(`🛒 Adding product ID: ${productId}`);
+          
+                      $.ajax({
+                          url: `/add-to-cart/${productId}/`,
+                          method: "POST",
+                          headers: {
+                              "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value,
+                          },
+                          success: function (response) {
+                              console.log("✅ AJAX Success:", response);
+          
+                              if (response.message.includes("already in your cart")) {
+                                  showCartNotification("This item is already in your cart.", "warning");
+                              } else {
+                                  showCartNotification("Item added to cart!", "success");
+          
+                                  // Ensure cart counter is present
+                                  let cartCounter = $("#cart-icon .cart-count");
+          
+                                  // If cart was empty before, force refresh
+                                  if (!cartCounter.length || parseInt(cartCounter.text()) === 0) {
+                                      location.reload();
+                                      return;
+                                  }
+          
+                                  if (cartCounter.length === 0) {
+                                      $("#cart-icon").append(`<span class="cart-count">${response.cart_item_count}</span>`);
+                                  } else {
+                                      cartCounter.text(response.cart_item_count);
+                                  }
+          
+                                  // Ensure cart dropdown exists
+                                  let cartDropdown = $("#cart-dropdown");
+                                  if (cartDropdown.length === 0) {
+                                      $(".cart-container").append(`
+                                          <div class="cart-dropdown" id="cart-dropdown">
+                                              <ul class="cart-items"></ul>
+                                              <div class="cart-footer">
+                                                  <a href="/cart/" class="checkout-button">Go to Cart</a>
+                                              </div>
+                                          </div>
+                                      `);
+                                  }
+          
+                                  // Update the cart dropdown dynamically
+                                  updateCartDropdown(response.cart_items);
+                              }
+                          },
+                          error: function (xhr) {
+                              console.error("❌ AJAX Error:", xhr.responseText);
+                              showCartNotification(`${xhr.responseJSON.message}`);
+                          },
+                      });
+                  });
+          
+          
+                  function updateCartDropdown(cartItems) {
+                  console.log("🔄 Updating cart dropdown...", cartItems);
+                  let cartDropdown = $("#cart-dropdown");
+                  let cartList = cartDropdown.find(".cart-items");
+                  let cartFooter = cartDropdown.find(".cart-footer");
+          
+                  // Clear existing items and footer to prevent duplication
+                  cartList.empty();
+                  cartFooter.remove();
+          
+                  if (cartItems.length > 0) {
+                      cartItems.slice(0, 4).forEach(item => {
+                          cartList.append(`
+                              <li class="cart-item">
+                                  <img src="${item.product.image_url}" alt="${item.product.name}" width="40">
+                                  <div>
+                                      <p>${item.product.name}</p>
+                                      <p>$${item.product.price.toFixed(2)}</p>
+                                  </div>
+                              </li>
+                          `);
+                      });
+          
+                      // Append a fresh footer only once
+                      cartDropdown.append(`
+                          <div class="cart-footer">
+                              <a href="/cart/" class="checkout-button">Go to Cart</a>
+                          </div>
+                      `);
+                  } else {
+                      cartList.html(`<p class="empty-cart">Your cart is empty.</p>`);
+                  }
+              }
+          
+                          function showCartNotification(message, type = "success") {
+                          let notification = document.getElementById("cart-notification");
+          
+          
+                          notification.textContent = message;
+                          notification.style.opacity = "1";
+                          notification.style.visibility = "visible";
+                          notification.style.transform = "translateY(0px)";
+          
+                          // Hide notification after 3 seconds
+                          setTimeout(() => {
+                          notification.style.opacity = "0";
+                          notification.style.visibility = "hidden";
+                          notification.style.transform = "translateY(-10px)";
+                          }, 3000);
+                          }
+              });
+          </script>
         </div>
     <br/><br/>
 </div>
 <br/><br/>
 
+
 </html>
 
 {% endblock %}
+

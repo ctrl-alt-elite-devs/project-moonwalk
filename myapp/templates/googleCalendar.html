@@ -44,19 +44,20 @@
     }
 
     /* Styling for google calendar */
-    .c {
-        text-align: center;
-        margin-left: 10px;
-        margin-right: 10px;
+    .calendar-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 20px;
     }
 
     iframe {
+        text-align: center;
         border: 0px;
         height: 450px;
         width: 90%;
         border-radius: 0px;
-        display: inline-block;
-        margin: 0px;
+        /*display: inline-block;*/
     }
 
     /* Adjust view for tablet size */
@@ -83,7 +84,9 @@
 <h1>EVENTS</h1>
 
 <!-- Google Calendar embedded -->
-<div class="c">{{ iframe_code|safe }}</div>
+<div class="calendar-container">
+    <iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=America%2FLos_Angeles&showPrint=0&title=MoonWalk%20Threads%20Events&src=OTAwZmRmNjUwYjU3OWEwMDdmZWI2ZTdmOGFjODc5MTkwMzM3ZDAwZWFjOGU2MmFlZmZiYmI2Y2Q5ZmYxMGRmM0Bncm91cC5jYWxlbmRhci5nb29nbGUuY29t&color=%23F09300" style="border:solid 1px #777" width="800" height="600" frameborder="0" scrolling="no"></iframe>
+</div>
 
 
 <!-- Back button to home page -->
