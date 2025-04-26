@@ -9,6 +9,7 @@ from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 from django.middleware.csrf import get_token
+import re
 import json
 import uuid
 import shippo
@@ -914,7 +915,7 @@ def login_user(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            messages.success(request, ("YOU LOGGED IN"))
+            messages.success(request, f"Welcome back, {user.first_name}!")
             return redirect('home')
         else:
             latest_entry = Theme.objects.latest('timeStamp')
@@ -952,7 +953,7 @@ def login_user(request):
 #logout request
 def logout_user(request):
     logout(request)
-    messages.success(request, ("YOU LOGGED OUT"))
+    messages.success(request, ("Successfully Logged Out"))
     return redirect('home')
 
 #register user account
@@ -1036,7 +1037,7 @@ def register_user(request):
 
             user = authenticate(request, username=username, password=password)
             login(request, user)
-            messages.success(request, "Registration successful! You are now logged in.")
+            messages.success(request, f"Welcome, {user.first_name}!")
             return redirect('home')
         except Exception as e:
             errors["server_error"] = f"Error creating account: {e}"
@@ -1165,18 +1166,29 @@ def subscribe(request):
             data = json.loads(request.body)
             email = data.get("email", "").strip()
             phone = data.get("phone", "").strip()
+            
 
             if not email and not phone:
                 return JsonResponse({"success": False, "message": "Please provide an email or phone number."}, status=400)
 
-            # Check if subscriber already exists
+            # ✅ Email format validation FIRST
             if email:
-                if Subscriber.objects.filter(email=email).exists():
-                    return JsonResponse({"success": False, "message": "Email is already subscribed."})
-            if phone:
-                if Subscriber.objects.filter(phone=phone).exists():
-                    return JsonResponse({"success": False, "message": "Phone number is already subscribed."})
-                
+                try:
+                    validate_email(email)
+                except ValidationError:
+                    return JsonResponse({"success": False, "message": "Invalid email format."}, status=400)
+
+            # ✅ Phone format validation (optional)
+            if phone and not re.match(r'^\d{10}$', phone):
+                return JsonResponse({"success": False, "message": "Phone number must be 10 digits."}, status=400)
+
+            # ✅ Now check if already subscribed
+            if email and Subscriber.objects.filter(email=email).exists():
+                return JsonResponse({"success": False, "message": "Email is already subscribed."})
+            if phone and Subscriber.objects.filter(phone=phone).exists():
+                return JsonResponse({"success": False, "message": "Phone number is already subscribed."})
+
+            # ✅ Save
             Subscriber.objects.create(email=email or None, phone=phone or None)
 
 
@@ -1228,7 +1240,6 @@ def profile(request):
     user = request.user
 
     customer = getattr(request.user, "customer", None)
-    print(f"DEBUG: Logged-in user's email: {request.user.email}")
     if customer:
         orders = Order.objects.filter(customer=customer).order_by('-created_at')
         address = customer.street_address
@@ -1236,28 +1247,28 @@ def profile(request):
         # Hardcoded data for non-logged-in users
         orders = []
         address = "No address available"
-        user_data = {
-            "email": user.email,
-            "password": "********",
-            "address": address,
-            "orders": orders
-        }
-        latest_entry = Theme.objects.latest('timeStamp')
-        context = {
-        'dropDate': latest_entry.dropDate,
-        'backgroundColor': latest_entry.backgroundColor,
-        'bannerImg00': latest_entry.bannerImg00,
-        'bannerImg01': latest_entry.bannerImg01,
-        'bannerImg02': latest_entry.bannerImg02,
-        'fontStyle': latest_entry.fontStyle,
-        'dropTitle': latest_entry.dropTitle,
-        'fontColor': latest_entry.fontColor,
-        'fontWeight': latest_entry.fontWeight,
-        'fontBorderThickness': latest_entry.fontBorderThickness,
-        'borderColor': latest_entry.borderColor,
-        "user_data": user_data
-        }   
-        return render(request, "profile.html", context)
+    user_data = {
+        "email": user.email,
+        "password": "********",
+        "address": address,
+        "orders": orders
+    }
+    latest_entry = Theme.objects.latest('timeStamp')
+    context = {
+    'dropDate': latest_entry.dropDate,
+    'backgroundColor': latest_entry.backgroundColor,
+    'bannerImg00': latest_entry.bannerImg00,
+    'bannerImg01': latest_entry.bannerImg01,
+    'bannerImg02': latest_entry.bannerImg02,
+    'fontStyle': latest_entry.fontStyle,
+    'dropTitle': latest_entry.dropTitle,
+    'fontColor': latest_entry.fontColor,
+    'fontWeight': latest_entry.fontWeight,
+    'fontBorderThickness': latest_entry.fontBorderThickness,
+    'borderColor': latest_entry.borderColor,
+    "user_data": user_data
+    }   
+    return render(request, "profile.html", context)
 
 
 @require_POST

@@ -47,7 +47,7 @@ class Subscriber(models.Model):
     email = models.EmailField(unique=True,null=True,blank=True)
     phone = models.CharField(max_length=20, unique=True, null=True, blank=True)
     date_subscribed = models.DateTimeField(auto_now_add=True)
-    unsubscribe_token = models.UUIDField(default=uuid.uuid4, null=True, blank=True)  # <- temporarily not unique
+    unsubscribe_token = models.UUIDField(default=uuid.uuid4, unique=True)
 
     def get_unsubscribe_url(self):
         return reverse('unsubscribe', args=[str(self.unsubscribe_token)])

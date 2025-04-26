@@ -79,7 +79,7 @@
             <!-- Checkout Button -->
         <div class="checkout">
             <div>
-                <button class="checkout-button" onclick="window.location.href = {% url 'checkout' %}">CHECKOUT</button>
+                <button class="checkout-button" name="checkout" onclick="window.location.href = {% url 'checkout' %}">CHECKOUT</button>
             </div>
 
             <!-- Digital Payment Options -->
@@ -155,7 +155,7 @@
 
         const paymentRequest = payments.paymentRequest({
             total: {
-                amount: "1.00",
+                amount: toString({{ total_price|floatformat:2 }}),
                 label: "Total"
             },
             countryCode: "US",
@@ -187,7 +187,7 @@
 
         const paymentRequest = payments.paymentRequest({
             total: {
-                amount: "1.00",
+                amount: toString({{ total_price|floatformat:2 }}),
                 label: "Total"
             },
             countryCode: "US",

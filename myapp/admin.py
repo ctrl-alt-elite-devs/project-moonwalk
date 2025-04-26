@@ -1,5 +1,6 @@
 from os import path
 from pyexpat.errors import messages
+from uuid import uuid4
 from django.contrib import admin
 
 from .models import Category,Customer,Product,Order,OrderItem,Subscriber,Theme,Newsletter
@@ -118,6 +119,11 @@ class NewsletterAdmin(admin.ModelAdmin):
         subscribers = Subscriber.objects.all()
 
         for subscriber in subscribers:
+            # ✅ Ensure they have a valid token
+            if not subscriber.unsubscribe_token:
+                subscriber.unsubscribe_token = uuid4()
+                subscriber.save()
+
             unsubscribe_url = request.build_absolute_uri(
                 reverse("unsubscribe", args=[subscriber.unsubscribe_token])
             )

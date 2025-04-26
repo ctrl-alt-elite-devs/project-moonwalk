@@ -1,5 +1,5 @@
 /* Style the modal (background) */
-.login-modal {
+  .login-modal {
     display: none; /* Hidden by default */
     position: fixed;
     z-index: 1;
