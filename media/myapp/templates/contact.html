@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Contact{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/contact.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="contact-page">
+    <!-- Google Maps Section -->
+    <iframe 
+        loading="lazy" 
+        allowfullscreen 
+        src="https://www.google.com/maps/embed/v1/place?q=place_id:ChIJu4AL434Fm4ARolpKDAJriwU&key=AIzaSyCA5TcYi1hpEa0_FtqVGaz4cuQPU1lcRSA" alt="Moonwalk Threads location in Auburn, CA">
+    </iframe>
+
+    <!-- Contact Information Section -->
+    <div class="contact-info">
+        
+        <h2>Moonwalk Threads</h2>
+        <p><strong>Address:</strong> 490 High St, Auburn, CA 95603</p>
+
+        <!-- Business Hours -->
+        <div class="hours">
+            <h2>Business Hours</h2>
+            <ul>
+                <li><strong>Monday:</strong> <span>Closed</span></li>
+                <li><strong>Tuesday:</strong> <span>Closed</span></li>
+                <li><strong>Wednesday:</strong> <span>Closed</span></li>
+                <li><strong>Thursday:</strong> <span>12 PM - 5 PM</span></li>
+                <li><strong>Friday:</strong> <span>12 PM - 5 PM</span></li>
+                <li><strong>Saturday:</strong> <span>12 PM - 5 PM</span></li>
+                <li><strong>Sunday:</strong> <span>12 PM - 5 PM</span></li>
+            </ul>
+        </div>
+
+        <!-- Contact Us Details -->
+        <h2>Contact Us</h2>
+        <p>
+            <strong>Email Address:</strong>
+            <a href="mailto:Moonwalkthreads@gmail.com">Moonwalkthreads@gmail.com</a><br>
+            <strong>Phone:</strong> (530) 401-1105 <br>
+        </p>
+    </div>
+</div>
+{% endblock %}
