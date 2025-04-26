@@ -202,4 +202,5 @@ CSRF_COOKIE_SAMESITE = 'Lax'
 
 SOCIALACCOUNT_LOGIN_ON_GET = True
 SOCIALACCOUNT_ADAPTER = 'myapp.adapters.MySocialAccountAdapter'
+ACCOUNT_ADAPTER = "myapp.adapters.MyAccountAdapter"
 OAUTH_GOOGLE_CLIENT_ID = os.getenv('OAUTH_GOOGLE_CLIENT_ID')

@@ -47,7 +47,7 @@ class Subscriber(models.Model):
     email = models.EmailField(unique=True,null=True,blank=True)
     phone = models.CharField(max_length=20, unique=True, null=True, blank=True)
     date_subscribed = models.DateTimeField(auto_now_add=True)
-    unsubscribe_token = models.UUIDField(default=uuid.uuid4, null=True, blank=True)  # <- temporarily not unique
+    unsubscribe_token = models.UUIDField(default=uuid.uuid4, unique=True)
 
     def get_unsubscribe_url(self):
         return reverse('unsubscribe', args=[str(self.unsubscribe_token)])
@@ -138,7 +138,7 @@ class CheckoutInformation(models.Model):
 class Theme(models.Model):
     timeStamp = models.DateTimeField(auto_now=True)
     backgroundColor = models.CharField(max_length=7)
-    dropDate = models.DateField(auto_now=True)
+    dropDate = models.DateField()
     bannerImg00 = models.ImageField(storage=S3Boto3Storage(), upload_to='theme_img00/')
     bannerImg01 = models.ImageField(storage=S3Boto3Storage(), upload_to='theme_img01/')
     bannerImg02 = models.ImageField(storage=S3Boto3Storage(), upload_to='theme_img02/')
