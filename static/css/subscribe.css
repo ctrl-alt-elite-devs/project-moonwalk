@@ -25,7 +25,7 @@
 
 /* OK Button */
 #close-modal {
-    background-color:var(--background_color);
+    background: #ff6f72;
     color: white;
     border: none;
     padding: 10px 20px;
@@ -34,6 +34,9 @@
     border-radius: 5px;
 }
 
+#close-modal:hover {
+    background: #e65c5f;
+}
 
 /* Fade-in Animation */
 @keyframes fadeIn {

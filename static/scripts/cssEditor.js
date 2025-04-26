@@ -22,7 +22,7 @@ var colorValue = document.getElementById('color-hex');
 var title = document.getElementById('title');
 var titleValue = document.getElementById('drop-title');
 var titleWeight = document.querySelectorAll('input[name="weight"]');
-var fontStyle = document.querySelectorAll('input[name="font_style"]');
+var fonts = document.getElementById("font_selector");
 var fontColor = document.getElementById('color_font');
 var borderThickness = document.getElementById('border');
 var borderColor = document.getElementById('color_border');
@@ -46,7 +46,6 @@ var inputImg02 = document.getElementById("img02");
 var submit = document.getElementById("done");
 var cancel = document.getElementById("cancel");
 ////////////////////////////////////////////////////////////////////////////////
-
 
 // Method to change color theme
 colorPicker.addEventListener("input", function(){
@@ -75,7 +74,12 @@ inputImg02.onchange = function(){
     image02.style.objectFit = "cover";
 }
 
-//Method to chnage the font style
+//Method to change the font style
+fontStyle.addEventListener("change", (e) =>{
+    titleValue.style.fontFamily = e.target.value;
+    console.log(e.target.value);
+});
+
 fontStyle.forEach((font_style) => {
     font_style.addEventListener("click", function(){
         titleValue.style.fontFamily = font_style.value;

@@ -38,6 +38,24 @@
     src: url('Fonts/Vogue.ttf') format('truetype');
 }
 
+/* Apple */
+@font-face {
+    font-family: "Apple";
+    src: url('Fonts/Apple.otf') format('truetype');
+}
+
+/* Bebas Neue */
+@font-face {
+    font-family: "Bebas Neue";
+    src: url('Fonts/BebasNeue-Regular.ttf') format('truetype');
+}
+
+/* Super Sunday */
+@font-face {
+    font-family: "Super Sunday";
+    src: url('Fonts/Super Sunday Personal Use.ttf') format('truetype');
+}
+
 body {
     margin: 0;
     font-family: var(--font);
@@ -45,6 +63,8 @@ body {
 
 /********************************************************************************************************************************************/
  /* CSS for admin editor */
+ 
+
  
  .webpage {
     display: flex;
@@ -64,6 +84,43 @@ body {
 .demo {
     width: 75%;
     width: 100%;
+}
+
+
+#done {
+    appearance: none; -webkit-appearance: none;
+    width: 100px;
+    color: #000000;
+    background-color: var(--background_color);
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+
+    font-size: 18px;
+
+    cursor: pointer;
+}
+
+#done:hover {
+    color: #FFFFFF;
+}
+
+#cancel {
+    appearance: none; -webkit-appearance: none;
+    width: 100px;
+    color: #000000;
+    background-color: var(--background_color);
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+
+    font-size: 18px;
+
+    cursor: pointer;
+}
+
+#cancel:hover {
+    color: #FFFFFF;
 }
 
 .demo#img_banner{
@@ -86,7 +143,8 @@ body {
 }
 
 .img_banner img {
-    max-width: 100%;
+    width: 100%;
+    max-width: 33.33%;
     height: auto;
     object-fit: cover;
 }
@@ -186,6 +244,10 @@ body {
     margin: 0 auto;
 }
 
+.fa-cart-shopping, .fa-user {
+    margin-right: 30px;
+    margin-left: 30px;
+}
 
 @media screen and (max-width: 768px) {
     .fa-cart-shopping, .fa-user {
@@ -222,7 +284,9 @@ body {
     position: absolute;
     left: 1rem;
 }
-
+.navbar .toggle_btn:hover {
+    scale: 1.05
+}
 
 .navbar .cart_btn {
     color: #000;
@@ -282,6 +346,11 @@ body {
     visibility: visible;
 }
 
+.cart-dropdown:not(:hover) {
+    opacity: 0;
+    transform: translateY(-15px);
+    visibility: hidden;
+}
 
 
 .cart-items {
@@ -329,7 +398,7 @@ body {
 .cart-count {
     position: absolute;
     top: -5px;
-    right: 15px;
+    right: 20px;
     background-color: red;
     color: white;
     border-radius: 50%;
@@ -345,21 +414,29 @@ body {
 }
 
 
+.navbar .cart_btn:hover {
+    scale: 1.05;
+}
+
 
 .navbar .profile_btn {
     color: #000;
     font-size: 1.5rem;
     cursor: pointer;
     position: absolute;
-    right: 1.2rem;
+    right: .5rem;
     display: flex;
     pointer-events: auto;
 }
 
+.navbar .profile_btn:hover {
+    scale: 1.05;
+}
 .navbar .profile_btn.flicker{
     opacity: 0; /* Make it invisible during re-render */
     transform: scale(0.9); /* Optional scaling effect */
 }
+
 
 .action_btn {
     background-color: #000;
@@ -378,12 +455,6 @@ body {
 
 }
 
-.navbar .profile_btn:hover i,
-.navbar .profile_btn a:hover i {
-  transform: scale(1.05);
-  color: black !important;
-}
-
 .action_btn:active {
     scale: .95;
     
@@ -394,6 +465,7 @@ body {
 }
 
 a {
+    font-size: 1rem;
     color: #000;
     text-decoration: none;
 }

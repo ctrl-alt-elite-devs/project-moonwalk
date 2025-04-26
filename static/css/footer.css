@@ -63,27 +63,6 @@ footer {
     cursor: pointer;
 }
 
-.subscribeButtonPhone {
-    font-family: Roboto, sans-serif;
-    font-style: normal;
-    font-weight: normal;
-    font-size: 16px;
-    letter-spacing: 0.5px;
-
-    padding: 5px;
-
-    color: #F46471;
-
-    background: #000000;
-    border: 1px solid transparent;
-    border-radius: 5px;
-    min-width: 102px;
-    min-height: 29px;
-
-    cursor: pointer;
-}
-
-
 .subscribeButton:hover {
     color: #FFFFFF;
 }

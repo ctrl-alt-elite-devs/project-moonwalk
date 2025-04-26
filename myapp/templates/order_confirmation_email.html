@@ -117,13 +117,12 @@
                 <img src="{{ item.image_url }}" alt="{{ item.name }}">
                 <div class="product-info">
                     <p><strong>{{ item.name }}</strong></p>
-                    <p>${{ item.price|floatformat:2 }}</p>
+                    <p>${{ item.price }}</p>
                 </div>
             </div>
             {% endfor %}
-            <p><strong>Tax:</strong> ${{ tax_amount|floatformat:2 }}</p>
-            <p><strong>Subtotal:</strong> ${{ total_price|floatformat:2 }}</p>
-            
+
+            <p class="total-price">Total: ${{ total_price }}</p>
         </div>
 
         <!-- 🚚 DELIVERY MODE -->
@@ -137,24 +136,8 @@
             <p><strong>City, State, ZIP:</strong> {{ address_details.city }}, {{ address_details.state }} {{ address_details.zipCode }}</p>
             <p>You'll receive an email once your package is shipped!</p>
             
-            {% if tracking_number %}
-            <a href="https://tools.usps.com/go/TrackConfirmAction?tLabels={{ tracking_number }}" 
-               class="track-btn" 
-               target="_blank">
-                Track Order
-                </a>
-            {% else %}
-                <p>No tracking number available at this time.</p>
-            {% endif %}
-
-            {% if shipping_label_url %}
-            <p>
-            <a href="{{ shipping_label_url }}" class="track-btn">
-                 View Shipping Label
-            </a>
-            </p>
-            {% endif %}
-                
+            <!-- 🔹 Track Order Button (Placeholder) -->
+            <a href="#" class="track-btn">Track Order</a>
         </div>
         {% endif %}
 

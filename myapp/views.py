@@ -3,13 +3,13 @@ from django.shortcuts import render, redirect
 import datetime
 from django.contrib import messages
 from django.urls import reverse
+from django.contrib.admin.views.decorators import staff_member_required
 from .models import Cart, Customer, Product, Category, Subscriber, Order, OrderItem, Theme
 from .square_service import client
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 from django.middleware.csrf import get_token
-import re
 import json
 import uuid
 import shippo
@@ -35,7 +35,6 @@ from .decorator import payment_required
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
-from django.views.decorators.http import require_POST
 import re
 
 
@@ -56,12 +55,8 @@ def home(request):
     today = datetime.datetime.now()
     timestamp_date = date.timestamp()
     timestamp_today = today.timestamp()
-    # Specify the date format being provided
-    #countdown_date = datetime.datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
-
     # Calculate the time to the specified date from when the web is loaded
     total_time = timestamp_date - timestamp_today
-    print(total_time)
     # Convert the total time to seconds
     featured = Product.objects.filter(featured=True,  quantity__gt=0)
     context = {
@@ -85,12 +80,10 @@ def home(request):
 
 def total_time(request):
     # Current date is hard coded
-    latest_entry = Theme.objects.latest("timeStamp")
-    date = latest_entry.dropDate
+    date = "2024-12-06 17:00:00"
     today = datetime.datetime.now
     # Specify the date format being provided
     countdown_date = datetime.datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
-    print(countdown_date)
 
     # Calculate the time to the specified date from when the web is loaded
     total_time = countdown_date - today
@@ -172,6 +165,7 @@ def contact(request):
     return render(request, 'contact.html', context)
 
 # theme HTML - Admin CSS Editor
+@staff_member_required
 def edit_theme(request):
     latest_entry = Theme.objects.latest('timeStamp')
     context = {
@@ -461,7 +455,6 @@ def orderSummary(request, order_id=None):
         pre_tax_total = order.pre_tax_total
         tax_amount = order.tax_amount
         total_amount = order.total_amount
-        square_order_id = order.square_order_id  # ✅ Pull it from the order
     else:
         if request.user.is_authenticated:
             cart_items = Cart.objects.filter(customer = Customer.objects.filter(user=request.user).first())
@@ -486,8 +479,7 @@ def orderSummary(request, order_id=None):
         'pre_tax_total': pre_tax_total,
         'tax_amount': tax_amount,
         'total_amount': total_amount,
-        'is_order': bool(order_id),
-        'square_order_id': square_order_id  # ✅ Add to context
+        'is_order': bool(order_id)
     }
 
     return render(request, 'orderSummary.html', context)
@@ -835,12 +827,11 @@ def process_payment(request):
                 "order_items": [
                     {
                         "name": item.product.name,
-                        "price": item.price_at_purchase,
+                        "price": item.product.price,
                         "image_url": item.product.image.url if item.product.image else ""
-                    } for item in order.items.all()
+                    } for item in cart_queryset
                 ],
-                "total_price": float(order.total_amount),  # or order.total_amount if already Decimal
-                "tax_amount": float(order.tax_amount) if hasattr(order, "tax_amount") else 0.00,
+                "total_price": total_amount / 100,  # cents to dollars
                 "square_order_id": square_order_id,  # ✅ ADD THIS
                 "shipping_cost": float(cheapest_rate.amount) if cheapest_rate else 0.00,
                 "shipping_label_url": shipping_label_url,
@@ -849,11 +840,11 @@ def process_payment(request):
 
             # After Square payment is processed(uncomment to make it work)
             email_sent = False
-            try:
-                send_order_email(email_context)
-                email_sent = True
-            except Exception as e:
-                 print("❌ Email failed to send:", str(e))
+            #try:
+            #     send_order_email(email_context)
+            #     email_sent = True
+            #except Exception as e:
+            #     print("❌ Email failed to send:", str(e))
 
 
             return JsonResponse({"status": "success",
@@ -915,7 +906,7 @@ def login_user(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            messages.success(request, f"Welcome back, {user.first_name}!")
+            messages.success(request, ("YOU LOGGED IN"))
             return redirect('home')
         else:
             latest_entry = Theme.objects.latest('timeStamp')
@@ -953,7 +944,7 @@ def login_user(request):
 #logout request
 def logout_user(request):
     logout(request)
-    messages.success(request, ("Successfully Logged Out"))
+    messages.success(request, ("YOU LOGGED OUT"))
     return redirect('home')
 
 #register user account
@@ -1037,7 +1028,7 @@ def register_user(request):
 
             user = authenticate(request, username=username, password=password)
             login(request, user)
-            messages.success(request, f"Welcome, {user.first_name}!")
+            messages.success(request, "Registration successful! You are now logged in.")
             return redirect('home')
         except Exception as e:
             errors["server_error"] = f"Error creating account: {e}"
@@ -1058,7 +1049,6 @@ def register_user(request):
             }   
             return render(request, 'home.html', context)
     return redirect('home')
-
 
 class password_reset(FormView):
     form_class = PasswordResetForm  # Built-in Django form
@@ -1160,144 +1150,92 @@ def orderCartSummary(context):
     }
 
 
+@csrf_exempt  # Only use this for local testing, remove it if using CSRF middleware
 def subscribe(request):
     if request.method == "POST":
         try:
             data = json.loads(request.body)
-            email = data.get("email", "").strip()
-            phone = data.get("phone", "").strip()
-            
+            email = data.get("email")
 
-            if not email and not phone:
-                return JsonResponse({"success": False, "message": "Please provide an email or phone number."}, status=400)
+            if not email:
+                return JsonResponse({"success": False, "message": "Invalid email address."}, status=400)
 
-            # ✅ Email format validation FIRST
-            if email:
-                try:
-                    validate_email(email)
-                except ValidationError:
-                    return JsonResponse({"success": False, "message": "Invalid email format."}, status=400)
+            subscriber, created = Subscriber.objects.get_or_create(email=email)
 
-            # ✅ Phone format validation (optional)
-            if phone and not re.match(r'^\d{10}$', phone):
-                return JsonResponse({"success": False, "message": "Phone number must be 10 digits."}, status=400)
+            if not created:
+                return JsonResponse({"success": False, "message": "You are already subscribed."})
 
-            # ✅ Now check if already subscribed
-            if email and Subscriber.objects.filter(email=email).exists():
-                return JsonResponse({"success": False, "message": "Email is already subscribed."})
-            if phone and Subscriber.objects.filter(phone=phone).exists():
-                return JsonResponse({"success": False, "message": "Phone number is already subscribed."})
+            # Render HTML Email Content
+            html_content = render_to_string("subscription.html", {"email": email})
+            text_content = strip_tags(html_content)  # Convert HTML to plain text
 
-            # ✅ Save
-            Subscriber.objects.create(email=email or None, phone=phone or None)
+            # Create Email with HTML and Plain Text
+            subject = "🎉 Welcome to MoonWalk Threads!"
+            from_email = "info@yourdomain.com"
+            recipient_list = [email]
 
-
-            # Only send welcome email if they signed up with an email
-            if email:
-                html_content = render_to_string("subscription.html", {"email": email})
-                text_content = strip_tags(html_content)
-
-                email_message = EmailMultiAlternatives(
-                    subject="🎉 Welcome to MoonWalk Threads!",
-                    body=text_content,
-                    from_email="projectmoonwalk01@gmail.com",
-                    to=[email],
-                )
-                email_message.attach_alternative(html_content, "text/html")
-                email_message.send()
+            email_message = EmailMultiAlternatives(subject, text_content, from_email, recipient_list)
+            email_message.attach_alternative(html_content, "text/html")
+            email_message.send()
 
             return JsonResponse({"success": True, "message": "Subscription successful."})
 
         except json.JSONDecodeError:
             return JsonResponse({"success": False, "message": "Invalid data format."}, status=400)
 
-    return JsonResponse({"success": False, "message": "Invalid request method."}, status=405)
+    return JsonResponse({"success": False, "message": "Invalid request."}, status=405)
 
+# def send_order_email(context):(uncomment to try it out)
+#     try:
+#         html_content = render_to_string("order_confirmation_email.html", context)
+#         text_content = strip_tags(html_content)
+#         subject = f"Order #{context['square_order_id']}"
+#         from_email = "projectmoonwalk01@gmail.com"
+#         recipient_list = [context["email"]]
 
-def unsubscribe(request, token):
-    subscriber = get_object_or_404(Subscriber, unsubscribe_token=token)
-    subscriber.delete()
-    return render(request, "unsubscribe.html", {"email": subscriber.email})
-
-def send_order_email(context):
-    try:
-        html_content = render_to_string("order_confirmation_email.html", context)
-        text_content = strip_tags(html_content)
-        subject = f"Order #{context['square_order_id']}"
-        from_email = "projectmoonwalk01@gmail.com"
-        recipient_list = [context["email"]]
-
-        email = EmailMultiAlternatives(subject, text_content, from_email, recipient_list)
-        email.attach_alternative(html_content, "text/html")
-        email.send()
-        return True
-    except Exception as e:
-        print("Email Error:", e)
-        return False
+#         email = EmailMultiAlternatives(subject, text_content, from_email, recipient_list)
+#         email.attach_alternative(html_content, "text/html")
+#         email.send()
+#         return True
+#     except Exception as e:
+#         print("Email Error:", e)
+#         return False
 
 @login_required
 def profile(request):
-    user = request.user
-
-    customer = getattr(request.user, "customer", None)
-    if customer:
-        orders = Order.objects.filter(customer=customer).order_by('-created_at')
-        address = customer.street_address
+    # Check if a user is logged in
+    if request.user.is_authenticated:
+        user_data = {
+            "email": request.user.email,
+            "password": "********",  # Hidden for security
+            "address": request.user.customer.street_address if hasattr(request.user, "customer") else "No address available",
+            "orders": [],  # Placeholder for future order retrieval
+        }
     else:
         # Hardcoded data for non-logged-in users
-        orders = []
-        address = "No address available"
-    user_data = {
-        "email": user.email,
-        "password": "********",
-        "address": address,
-        "orders": orders
-    }
+        user_data = {
+            "email": "guest@example.com",
+            "password": "********",
+            "address": "No address available",
+            "orders": [
+                {"id": 1, "status": "Shipped", "total": 59.99},
+                {"id": 2, "status": "Processing", "total": 120.50},
+            ],
+        }
     latest_entry = Theme.objects.latest('timeStamp')
     context = {
-    'dropDate': latest_entry.dropDate,
-    'backgroundColor': latest_entry.backgroundColor,
-    'bannerImg00': latest_entry.bannerImg00,
-    'bannerImg01': latest_entry.bannerImg01,
-    'bannerImg02': latest_entry.bannerImg02,
-    'fontStyle': latest_entry.fontStyle,
-    'dropTitle': latest_entry.dropTitle,
-    'fontColor': latest_entry.fontColor,
-    'fontWeight': latest_entry.fontWeight,
-    'fontBorderThickness': latest_entry.fontBorderThickness,
-    'borderColor': latest_entry.borderColor,
-    "user_data": user_data
-    }   
+        'dropDate': latest_entry.dropDate,
+        'backgroundColor': latest_entry.backgroundColor,
+        'bannerImg00': latest_entry.bannerImg00,
+        'bannerImg01': latest_entry.bannerImg01,
+        'bannerImg02': latest_entry.bannerImg02,
+        'fontStyle': latest_entry.fontStyle,
+        'dropTitle': latest_entry.dropTitle,
+        'fontColor': latest_entry.fontColor,
+        'fontWeight': latest_entry.fontWeight,
+        'fontBorderThickness': latest_entry.fontBorderThickness,
+        'borderColor': latest_entry.borderColor,
+        "user_data": user_data
+        }   
     return render(request, "profile.html", context)
-
-
-@require_POST
-@login_required
-def update_address(request):
-    customer = getattr(request.user, "customer", None)
-    if not customer:
-        messages.error(request, "No customer profile found.")
-        return redirect("profile")
-
-    street = request.POST.get("street_address", "").strip()
-    street2 = request.POST.get("street_address2", "").strip()
-    city = request.POST.get("city", "").strip()
-    state = request.POST.get("state", "").strip()
-    zip_code = request.POST.get("zip_code", "").strip()
-
-    if not street or not city or not state or not zip_code:
-        messages.error(request, "All required address fields must be filled.")
-        return redirect("profile")
-
-    # Save the updated values
-    customer.street_address = street
-    customer.street_address2 = street2
-    customer.city = city
-    customer.state = state
-    customer.zip_code = zip_code
-    customer.save()
-
-    messages.success(request, "Your address has been updated.")
-    return redirect("profile")
-
 

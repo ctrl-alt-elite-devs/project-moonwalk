@@ -1,5 +1,4 @@
 from myapp.models import Cart
-from django.conf import settings
 
 
 def cart_context(request):
@@ -26,9 +25,4 @@ def cart_context(request):
         "cart_items": cart_items,
         "cart_item_count": cart_item_count,
         "total_price": total_price,
-    }
-
-def google_client_id(request):
-    return {
-        'google_client_id': settings.OAUTH_GOOGLE_CLIENT_ID
     }

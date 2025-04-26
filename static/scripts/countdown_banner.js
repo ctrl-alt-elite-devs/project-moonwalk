@@ -14,8 +14,6 @@ function updateCountdown(){
     var minutes = Math.floor((remainingTime % 3600) / 60);
     var seconds = Math.floor(remainingTime % 60);
 
-    
-
     //console.log(days)
     // console.log(hours)
         

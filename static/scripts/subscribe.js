@@ -1,85 +1,58 @@
-
 document.addEventListener("DOMContentLoaded", function () {
-    console.log("✅ subscribe.js is loaded!");
+    console.log("✅ subscribe.js is loaded!"); // Debugging check
 
-    const emailButton = document.getElementById("subscribeButton");
-    const phoneButton = document.getElementById("subscribeButtonPhone");
+    const subscribeButton = document.getElementById("subscribeButton");
     const emailInput = document.getElementById("emailAddress");
-    const phoneInput = document.getElementById("phoneNum");
     const modal = document.getElementById("subscription-modal");
     const closeModal = document.getElementById("close-modal");
     const modalMessage = document.getElementById("modal-message");
 
-    if (!modal || !closeModal || !modalMessage) {
-        console.error("❌ Modal elements not found.");
+    if (!subscribeButton || !emailInput || !modal || !closeModal || !modalMessage) {
+        console.error("❌ Subscription elements not found.");
         return;
     }
 
-    if (emailButton && emailInput) {
-        emailButton.addEventListener("click", function () {
-            const email = emailInput.value.trim();
-            if (!email) return alert("⚠️ Enter a valid email");
+    subscribeButton.addEventListener("click", function () {
+        const email = emailInput.value.trim();
 
-            console.log("📨 Sending email subscription request...");
+        if (!email) {
+            alert("⚠️ Please enter a valid email.");
+            return;
+        }
 
-            fetch("/subscribe/", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
-                },
-                body: JSON.stringify({ email }),
-                credentials: "same-origin"
-            })
-                .then(res => res.json())
-                .then(data => {
-                    modalMessage.innerText = data.success
-                        ? "`Thank You for Subscribing!"
-                        : "⚠️ " + data.message;
-                    modal.style.display = "flex";
-                    document.body.classList.add("darken-bg");
-                })
-                .catch(error => {
-                    console.error("❌ Error:", error);
-                    modalMessage.innerText = "⚠️ Subscription failed.";
-                    modal.style.display = "flex";
-                });
+        console.log("📨 Sending Subscription Request...");
+
+        // Send AJAX request to subscribe user
+        fetch("/subscribe/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({ email: email }),
+            credentials: "same-origin"
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("✅ Server Response:", data);
+
+            if (data.success) {
+                modalMessage.innerText = "✅ Thank you! A confirmation email has been sent.";
+            } else {
+                modalMessage.innerText = "⚠️ " + data.message;
+            }
+
+            modal.style.display = "flex";  // Show modal
+            document.body.classList.add("darken-bg");
+        })
+        .catch(error => {
+            console.error("❌ Error:", error);
+            modalMessage.innerText = "⚠️ Subscription failed. Please try again.";
+            modal.style.display = "flex";
         });
-    }
+    });
 
-    if (phoneButton && phoneInput) {
-        phoneButton.addEventListener("click", function () {
-            const phone = phoneInput.value.trim();
-            if (!phone) return alert("⚠️ Enter a phone number");
-
-            console.log("📨 Sending phone subscription request...");
-
-            fetch("/subscribe/", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
-                },
-                body: JSON.stringify({ phone }),
-                credentials: "same-origin"
-            })
-                .then(res => res.json())
-                .then(data => {
-                    modalMessage.innerText = data.success
-                        ? "Phone number saved!"
-                        : "⚠️ " + data.message;
-                    modal.style.display = "flex";
-                    document.body.classList.add("darken-bg");
-                })
-                .catch(error => {
-                    console.error("❌ Error:", error);
-                    modalMessage.innerText = "⚠️ Subscription failed.";
-                    modal.style.display = "flex";
-                });
-        });
-    }
-
-    closeModal.addEventListener("click", () => {
+    closeModal.addEventListener("click", function () {
         modal.style.display = "none";
         document.body.classList.remove("darken-bg");
     });
