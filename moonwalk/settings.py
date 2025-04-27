@@ -157,6 +157,8 @@ STATICFILES_DIRS = ['static/',
 
 ]
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 AWS_STORAGE_BUCKET_NAME = 'bucket-hdw1z5'
 AWS_S3_REGION_NAME = 'us-west-2'
 AWS_S3_ENDPOINT_URL = f'https://s3.{AWS_S3_REGION_NAME}.amazonaws.com'
