@@ -26,19 +26,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-tqwh12c0d!hq+2&l(aaepw6v56%z3no#^n-+^^*b5)lw^spo10'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG')
 
-ALLOWED_HOSTS = [
-    "192.168.1.15",
-    "localhost",
-    "10.117.75.248",
-    "10.0.0.42",
-    "127.0.0.1",
-    "192.168.1.13"
-]
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(' ')
 
 # Application definition
 
@@ -139,6 +132,8 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = ['static/',
 
 ]
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 AWS_STORAGE_BUCKET_NAME = 'bucket-hdw1z5'
 AWS_S3_REGION_NAME = 'us-west-2'
