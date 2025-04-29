@@ -7,118 +7,193 @@
 <div class="profile-container">
     <h2>My Profile</h2>
 
-    <p>
-        <strong>Email:</strong> 
-        <span id="user-email">{{ user.email }}</span>
-    </p>
-    <p><strong>Password:</strong> ******** (hidden)</p>
+    <!-- Profile Info Section -->
+    <div class="profile-section">
+        <h3>Profile Information</h3>
+        <p><strong>Email:</strong> <span id="user-email">{{ user.email }}</span></p>
+        <p><strong>Password:</strong> ******** (hidden)</p>
+    </div>
+
+    <hr>
 
     <!-- Displayed Address -->
-    <label><strong>Address:</strong></label>
-    <p id="address-display">
-        <em>
-            {{ user.customer.street_address }}<br>
-            {{ user.customer.street_address2 }}<br>
-            {{ user.customer.city }}, {{ user.customer.state }} {{ user.customer.zip_code }}
-        </em>
-    </p>
+<label><strong>Address:</strong></label>
+<p id="address-display">
+    <em>
+        {{ user.customer.street_address }}<br>
+        {{ user.customer.street_address2 }}<br>
+        {{ user.customer.city }}, {{ user.customer.state }} {{ user.customer.zip_code }}
+    </em>
+</p>
 
-    <!-- Hidden Update Address Form -->
-    <form id="address-form" method="POST" action="{% url 'update_address' %}" style="display:none;">
-        {% csrf_token %}
-        <input type="text" name="street_address" placeholder="Address Line 1" value="{{ user.customer.street_address }}" required>
-        <input type="text" name="street_address2" placeholder="Address Line 2" value="{{ user.customer.street_address2 }}">
-        <input type="text" name="city" placeholder="City" value="{{ user.customer.city }}" required>
-        <input type="text" name="state" placeholder="State" value="{{ user.customer.state }}" required>
-        <input type="text" name="zip_code" placeholder="Zip Code" value="{{ user.customer.zip_code }}" required>
-        <button type="submit" class="update-btn">Save</button>
-    </form>
+<!-- Hidden Update Address Form -->
+<form id="address-form" method="POST" action="{% url 'update_address' %}" style="display:none;">
+    {% csrf_token %}
+    <input type="text" name="street_address" placeholder="Address Line 1" value="{{ user.customer.street_address }}" required>
+    <input type="text" name="street_address2" placeholder="Address Line 2" value="{{ user.customer.street_address2 }}">
+    <input type="text" name="city" placeholder="City" value="{{ user.customer.city }}" required>
+    <input type="text" name="state" placeholder="State" value="{{ user.customer.state }}" required>
+    <input type="text" name="zip_code" placeholder="Zip Code" value="{{ user.customer.zip_code }}" required>
+    <button type="submit" class="update-btn">Save</button>
+</form>
 
-    <!-- Button to show the form -->
-    <button class="update-btn" onclick="document.getElementById('address-form').style.display='block'; this.style.display='none';">
-        Edit Address
-    </button>
+<!-- Edit Address Button (separately controlled) -->
+<button id="edit-address-btn" class="update-btn" onclick="toggleAddressForm()">Edit Address</button>
 
-    <!-- Order History -->
-    <h3>Order History</h3>
-<div>
-    {% for order in user_data.orders %}
-        <div style="margin-bottom: 20px;">
-            <strong>Order #{{ order.square_order_id }}</strong><br>
-            <span>Total: ${{ order.total_amount }}</span><br>
-            <small>Status: {{ order.status|capfirst }}</small><br>
-            <small><em>Placed on: {{ order.created_at|date:"F j, Y, g:i a" }}</em></small>
+    <hr>
 
-            <div style="list-style: none; padding: 0;">
-                {% for item in order.items.all %}
-                    <div style="display: flex; align-items: center; margin-top: 10px;">
-                        {% if item.product.image %}
-                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width: 60px; height: auto; margin-right: 10px; border-radius: 5px;">
-                        {% endif %}
-                        <div>
-                            <strong>{{ item.product.name }}</strong> x{{ item.quantity }}<br>
-                            ${{ item.total_price }}
+    <!-- Order History Section -->
+    <div class="profile-section">
+        <h3>Order History</h3>
+        {% for order in user_data.orders %}
+            <div class="order-card">
+                <div class="order-header">
+                    <strong>Order #{{ order.square_order_id }}</strong>
+                    <span class="order-total">${{ order.total_amount }}</span>
+                </div>
+                <div class="order-details">
+                    <small>Status: {{ order.status|capfirst }}</small><br>
+                    <small><em>Placed on: {{ order.created_at|date:"F j, Y, g:i a" }}</em></small>
+                </div>
+                <div class="order-items">
+                    {% for item in order.items.all %}
+                        <div class="order-item">
+                            {% if item.product.image %}
+                                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                            {% endif %}
+                            <div>
+                                <strong>{{ item.product.name }}</strong> x{{ item.quantity }}<br>
+                                ${{ item.total_price }}
+                            </div>
                         </div>
-                    </div>
-                {% empty %}
-                    <div>No items in this order.</div>
-                {% endfor %}
+                    {% endfor %}
+                </div>
             </div>
-        </div>
-    {% empty %}
-        <div>No orders yet.</div>
-    {% endfor %}
-</div>
+        {% empty %}
+            <p>No orders yet.</p>
+        {% endfor %}
+    </div>
 
+    <hr>
 
-
-
-
-    <!-- Profile Actions -->
-    <button class="update-btn" onclick="window.location.href='{% url 'password_change' %}';">Change Password</button>
-    <button class="update-btn" onclick="window.location.href='{% url 'logout' %}';">Logout</button>
+    <!-- Profile Actions Section -->
+    <div class="profile-section">
+        <button class="update-btn" onclick="window.location.href='{% url 'password_change' %}';">Change Password</button>
+        <button class="update-btn" onclick="window.location.href='{% url 'logout' %}';">Logout</button>
+    </div>
 </div>
 
 <!-- Styling -->
 <style>
     .profile-container {
         max-width: 800px;
-        margin: 20px auto;
+        margin: 30px auto;
         padding: 40px;
-        background: #fff;
+        background: #f9f9f9;
         border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
     }
+
     .profile-container h2 {
         text-align: center;
-        font-size: 24px;
+        font-size: 28px;
+        margin-bottom: 30px;
     }
+
+    .profile-section {
+        margin-bottom: 30px;
+    }
+
+    hr {
+        border: none;
+        height: 1px;
+        background: #ddd;
+        margin: 30px 0;
+    }
+
     .update-btn {
         display: block;
         width: 100%;
-        padding: 10px;
+        padding: 12px;
         margin-top: 10px;
         background: #f45b69;
         color: white;
         border: none;
         cursor: pointer;
-        border-radius: 5px;
+        border-radius: 8px;
         font-weight: bold;
+        font-size: 16px;
+        transition: background 0.3s ease;
     }
+
     .update-btn:hover {
         background: #d94452;
     }
-    form {
-        margin-top: 10px;
-        margin-bottom: 20px;
-    }
+
     input[type="text"] {
         width: 100%;
         padding: 10px;
-        margin-top: 5px;
+        margin-top: 8px;
         border-radius: 5px;
         border: 1px solid #ccc;
         box-sizing: border-box;
     }
+
+    .order-card {
+        background: #fff;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .order-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .order-total {
+        font-weight: bold;
+        color: #4CAF50;
+    }
+
+    .order-details small {
+        color: #666;
+    }
+
+    .order-item {
+        display: flex;
+        align-items: center;
+        margin-top: 10px;
+    }
+
+    .order-item img {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        margin-right: 10px;
+        border-radius: 5px;
+    }
+
+    .order-item div {
+        font-size: 14px;
+    }
 </style>
+
+<!-- Script to Toggle Address Form -->
+<script>
+    function toggleAddressForm() {
+        const form = document.getElementById('address-form');
+        const addressDisplay = document.getElementById('address-display');
+        const editButton = document.getElementById('edit-address-btn');
+    
+        form.style.display = 'block';          // Show the form
+        addressDisplay.style.display = 'none'; // Hide the address
+        editButton.style.display = 'none';      // Hide the Edit Address button
+    }
+    </script>
+    
+
 {% endblock %}
