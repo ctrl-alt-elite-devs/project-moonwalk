@@ -46,17 +46,24 @@ class OrderAdmin(admin.ModelAdmin):
     inlines = [OrderItemInline]
 
 def render_subscribers_with_checkboxes(subscribers):
-    html = """
-    <button type="button" onclick="selectAll()">Select All</button>
+    # ✅ Filter and sort
+    subscribers = (
+        subscribers.exclude(email__isnull=True)
+                   .exclude(email="")
+                   .order_by("email")
+    )
+    total = subscribers.count()
+
+    html = f"""
+    <div><strong>Total Subscribers:</strong> {total}</div>
     <form id="subscriber-form">
-        <ul style='list-style-type:none; padding-left: 0;'>
+        <ul style='list-style-type:none; padding-left: 0; margin-left: 0;'>
     """
 
     for i, sub in enumerate(subscribers[:50]):
         html += f"""
-        <li>
-            <label>
-                <input type="checkbox" name="subscriber" value="{sub.email}" id="sub_{i}">
+        <li style="margin-bottom: 4px;">
+            <label style="display: block; text-align: left; padding-left: 10px;">
                 {sub.email}
             </label>
         </li>
@@ -65,14 +72,7 @@ def render_subscribers_with_checkboxes(subscribers):
     html += """
         </ul>
     </form>
-    <script>
-        function selectAll() {
-            const checkboxes = document.querySelectorAll("input[name='subscriber']");
-            checkboxes.forEach(cb => cb.checked = true);
-        }
-    </script>
     """
-
     return mark_safe(html)
 
 @admin.register(Newsletter)

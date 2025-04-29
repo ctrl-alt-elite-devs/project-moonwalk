@@ -229,7 +229,7 @@ body {
     font-size: 1.5rem;
     cursor: pointer;
     position: absolute;
-    right: 3rem;
+    right: 1rem;
     margin-top: -.8438rem;
     transition: transform 0.3s ease, opacity 0.3s ease;
     opacity: 1; /* Fully visible by default */

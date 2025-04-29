@@ -3,13 +3,13 @@
 /* ========================= */
 
 .profile_btn {
-  position: relative;   /* Keeps dropdown positioned correctly */
-  display: flex;        /* Aligns profile icon & dropdown */
-  align-items: center;  /* Keeps profile icon centered */
-  justify-content: center;
-  margin-right: 5rem; /* Moves it away from cart icon */
-  width: auto;
-  height: auto;
+    position: relative;   /* Keeps dropdown positioned correctly */
+    display: flex;        /* Aligns profile icon & dropdown */
+    align-items: center;  /* Keeps profile icon centered */
+    justify-content: center;
+    margin-right: 2.5rem; /* Moves it away from cart icon */
+    width: auto;
+    height: auto;
 }
 
 .profile_btn i {
