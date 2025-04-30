@@ -5,6 +5,7 @@
 
 {% block content %}
 
+
 <div class="webpage">
     <div class="editor">
         <!-- Drop Date-->
@@ -17,7 +18,7 @@
         <h1>Pick banner color</h1>
         <div class ="color-editor">
             <input type="color" id="color_banner" value="{{ backgroundColor }}"/>
-            <label id="color-hex">######</label>
+            <label id="color-hex">{{ backgroundColor }}</label>
         </div>
         <!-- Image banner -->
         <h1>Select image layout</h1>
@@ -33,18 +34,18 @@
         <!-- Drop title -->
          <h1>Select font</h1>
          <div class="font-selector">
-             <select id="font_selector" name="font_style">
-                 <option value="Roboto">Roboto</option>
-                 <option value="Fat Kat">Fat Kat</option>
-                 <option value="Milky Vintage">Milky Vintage</option>
-                 <option value="Million Design">Million Design</option>
-                 <option value="Modern Prestige Demo">Modern Prestige Demo</option>
-                 <option value="Verve">Verve</option>
-                 <option value="Vogue">Vogue</option>
-                 <option value="Apple">Apple</option>
-                 <option value="Bebas Neue">Bebas Neue</option>
-                 <option value="Super Sunday">Super Sunday</option>
-             </select>
+            <select id="font_selector" name="font_style">
+                <option value="Roboto">Roboto</option>
+                <option value="Fat Kat">Fat Kat</option>
+                <option value="Milky Vintage">Milky Vintage</option>
+                <option value="Million Design">Million Design</option>
+                <option value="Modern Prestige Demo">Modern Prestige Demo</option>
+                <option value="Verve">Verve</option>
+                <option value="Vogue">Vogue</option>
+                <option value="Apple">Apple</option>
+                <option value="Bebas Neue">Bebas Neue</option>
+                <option value="Super Sunday">Super Sunday</option>
+            </select>
          </div>
         <h1>Edit drop title</h1>
         <div class="title-editor">
@@ -79,8 +80,8 @@
         <!-- Banner -->
         <div class="img_banner" id="img_banner">
             <img src="{{ bannerImg00.url }}" alt="Placeholder" height="331px" width="430" object-fit="cover" id="image00"/>
-             <img src="{{ bannerImg01.url }}" alt="Placeholder" height="331px" width="430" object-fit="cover" id="image01"/>
-             <img src="{{ bannerImg02.url }}" alt="Placeholder" height="331px" width="430" object-fit="cover" id="image02"/>
+            <img src="{{ bannerImg01.url }}" alt="Placeholder" height="331px" width="430" object-fit="cover" id="image01"/>
+            <img src="{{ bannerImg02.url }}" alt="Placeholder" height="331px" width="430" object-fit="cover" id="image02"/>
             <!--<img src="{% static 'images/img_banner.png' %}" alt="Banner Image">-->
         </div>
 
@@ -107,8 +108,7 @@
                     <div class="label_seconds">Secs</div>
                 </div>
             </div>
-            <script src="{% static 'scripts/countdown_banner.js' %}"></script>
-
+            <script src="static/scripts/countdown_banner.js"></script>
         </div>
 
         <!-- Product Section -->
@@ -210,73 +210,79 @@
 </script>
 
 <script>
-    var date = new Date("{{ dropDate }}");
- date = date.toISOString().split("T")[0];
- drop_date = document.getElementById("date-drop");
- drop_date.value = date;
- 
- 
- // Iterate through the fonts and weights to select the one that is currently enabled
- fonts = document.getElementById("font_selector");
- fonts.value = "{{ fontStyle }}";
- 
- //Method to change the font style
- fonts.addEventListener("change", (e) =>{
-     titleValue.style.fontFamily = e.target.value;
-     console.log(e.target.value);
- });
- 
- weights = document.getElementsByName("weight");
- for (let i = 0; i < fonts.length; i++){
-     if (fonts[i].value == "{{ fontStyle }}"){
-         fonts[i].value = "{{ fontStyle }}";
-         break;
-     }
- }
- for (let i = 0; i < weights.length; i++){
-     if (weights[i].value == "{{ fontWeight }}"){
-         weights[i].checked = true;
-         break;
-     }
- }
+
+var date = new Date("{{ dropDate }}");
+date = date.toISOString().split("T")[0];
+drop_date = document.getElementById("date-drop");
+drop_date.value = date;
+
+
+// Iterate through the fonts and weights to select the one that is currently enabled
+fonts = document.getElementById("font_selector");
+fonts.value = "{{ fontStyle }}";
+
+//Method to change the font style
+fonts.addEventListener("change", (e) =>{
+    titleValue.style.fontFamily = e.target.value;
+    console.log(e.target.value);
+});
+
+weights = document.getElementsByName("weight");
+for (let i = 0; i < fonts.length; i++){
+    if (fonts[i].value == "{{ fontStyle }}"){
+        fonts[i].value = "{{ fontStyle }}";
+        break;
+    }
+}
+for (let i = 0; i < weights.length; i++){
+    if (weights[i].value == "{{ fontWeight }}"){
+        weights[i].checked = true;
+        break;
+    }
+}
+
+
     // Method to submit changes to server
 done.addEventListener("click", function(){
     console.log("submitted");
 
     if (img00.files.length == 0){
-         alert("A file must be selected for image 1");
-     } else if (img01.files.length == 0){
-         alert("A file must be selected for image 2");
-     } else if (img02.files.length == 0){
-         alert("A file must be selected for image 3");
-     } else{
-         let image00 = img00.files[0];
-         let image01 = img01.files[0];
-         let image02 = img02.files[0];
-         let formData = new FormData();
- 
-         formData.append('dropDate', dropDate.value);
-         formData.append('backgroundColor', colorPicker.value);
-         formData.append('bannerImg00', image00);
-         formData.append('bannerImg01', image01);
-         formData.append('bannerImg02', image02);
-         formData.append('dropTitle', title.value);
-         formData.append('fontStyle', fonts.value);
-         formData.append('fontColor', fontColor.value);
-         formData.append('fontWeight', document.querySelector('input[name="weight"]:checked').value);
-         formData.append('fontBorderThickness', borderThickness.value);
-         formData.append('borderColor', borderColor.value);
-         
-         fetch("{% url 'submit_theme' %}", {
-             method: 'POST',
-             body: formData
-         });
-     }
+        alert("A file must be selected for image 1");
+    } else if (img01.files.length == 0){
+        alert("A file must be selected for image 2");
+    } else if (img02.files.length == 0){
+        alert("A file must be selected for image 3");
+    } else{
+        let image00 = img00.files[0];
+        let image01 = img01.files[0];
+        let image02 = img02.files[0];
+        let formData = new FormData();
 
-    // Method for the cancel button
-    cancel.addEventListener("click", function(){
-     window.location.reload();
- });
+        formData.append('dropDate', dropDate.value);
+        formData.append('backgroundColor', colorPicker.value);
+        formData.append('bannerImg00', image00);
+        formData.append('bannerImg01', image01);
+        formData.append('bannerImg02', image02);
+        formData.append('dropTitle', title.value);
+        formData.append('fontStyle', fonts.value);
+        formData.append('fontColor', fontColor.value);
+        formData.append('fontWeight', document.querySelector('input[name="weight"]:checked').value);
+        formData.append('fontBorderThickness', borderThickness.value);
+        formData.append('borderColor', borderColor.value);
+        
+        fetch("{% url 'submit_theme' %}", {
+            method: 'POST',
+            body: formData
+        });
+    }
+
+    
+});
+
+// Method for the cancel button
+cancel.addEventListener("click", function(){
+    window.location.reload();
+});
 </script>
 
 {% endblock %}
