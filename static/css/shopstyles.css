@@ -54,7 +54,7 @@
 }
 
 .shop-button:hover {
-    background-color: #F46471;
+    background-color: var(--background_color);
     color: white;
     transform: scale(var(--hover-scale));
 }
