@@ -57,7 +57,7 @@
             <br>
             <input type="radio" id="bold" name="weight" value="bold" />
             <label for="bold">Bold</label><br>
-            <input type="radio" id="normal" name="weight" value="normal" />
+            <input type="radio" id="normal" name="weight" value="normal" chekced/>
             <label for="normal">Normal</label><br>
             <label>Font border:</label><br>
             <input type="range" id="border" name="border" min="0" max="3" step="0.1" value="{{ fontBorderThickness }}"/>
@@ -210,6 +210,8 @@
 </script>
 
 <script>
+    var done = documents.getElementById("done");
+    var cancel = document.getElementById("cancel");
     var date = new Date("{{ dropDate }}");
  date = date.toISOString().split("T")[0];
  drop_date = document.getElementById("date-drop");
