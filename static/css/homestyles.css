@@ -461,7 +461,7 @@ a:hover {
     top: 100px;
     height: 0;
     width: 300px;
-    background: #F46471;
+    background: var(--background_color);
     border-radius: 10px;
     overflow: hidden;
     transition: height .2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
