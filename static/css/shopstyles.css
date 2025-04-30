@@ -5,7 +5,7 @@
     --hover-scale: 1.05;
     --button-color: #333333;
     --button-border-color: #333333;
-    --button-hover-color: #F46471;
+    --button-hover-color: var(--background_color);
 }
 
 /* Ensure Search Bar & Buttons Are Side by Side */
@@ -44,7 +44,7 @@
 /* Search & Filter Buttons */
 .shop-button {
     font-size: 16px;
-    background-color: #F46471;
+    background-color: var(--background_color);
     color: #000;
     border: 1px solid transparent;
     border-radius: 5px;
@@ -54,7 +54,7 @@
 }
 
 .shop-button:hover {
-    background-color: #F46471;
+    background-color: var(--background_color);
     color: white;
     transform: scale(var(--hover-scale));
 }

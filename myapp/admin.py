@@ -124,15 +124,13 @@ class NewsletterAdmin(admin.ModelAdmin):
                 subscriber.unsubscribe_token = uuid4()
                 subscriber.save()
 
-            unsubscribe_url = request.build_absolute_uri(
-                reverse("unsubscribe", args=[subscriber.unsubscribe_token])
-            )
-
+            unsubscribe_url = f"https://www.moonwalkthreads.com{reverse('unsubscribe', args=[subscriber.unsubscribe_token])}"
+            
             html_content = render_to_string("newsletter.html", {
                 "subject": newsletter.title,
                 "message": mark_safe(newsletter.description),
                 "banner_url": newsletter.banner_image.url if newsletter.banner_image else None,
-                "button_url": "http://localhost:8000",  # Or dynamic value
+                "button_url": newsletter.store_link if newsletter.store_link else None,  # Or dynamic value
                 "unsubscribe_url": unsubscribe_url,
             })
 
