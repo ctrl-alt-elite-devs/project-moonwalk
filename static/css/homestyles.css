@@ -238,10 +238,6 @@ body {
     margin: 0 auto;
 }
 
-.fa-cart-shopping, .fa-user {
-     margin-right: 30px;
-     margin-left: 30px;
- }
 
 @media screen and (max-width: 768px) {
     .fa-cart-shopping, .fa-user {

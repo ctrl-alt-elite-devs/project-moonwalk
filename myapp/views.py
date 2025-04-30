@@ -1166,7 +1166,7 @@ def subscribe(request):
     if request.method == "POST":
         try:
             data = json.loads(request.body)
-            email = data.get("email", "").strip()
+            email = data.get("email", "").strip().lower()  # ✅ Normalize email
             phone = data.get("phone", "").strip()
             
 
