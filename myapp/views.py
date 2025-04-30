@@ -83,8 +83,7 @@ def home(request):
     return render(request, 'home.html', context)
     # return render(request, 'home.html')
 
-/////////////////////////////////////////////////////////////////////////////////////////
-// Don't think this si used
+#Don't think this si used
 def total_time(request):
     # Current date is hard coded
     latest_entry = Theme.objects.latest("timeStamp")
@@ -102,7 +101,6 @@ def total_time(request):
         'total_time': total_time
     }
     return render(request, 'home.html', 'cart.html', context)
-    ///////////////////////////////////////////////////////////////////////////////////
 
 def shop(request, foo=None):
     # If a category is provided (foo), filter by category, else show all products
