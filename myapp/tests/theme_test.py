@@ -5,6 +5,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.support.ui import Select
 import time
 import unittest
 from time import sleep
@@ -12,11 +13,14 @@ from time import sleep
 driver = webdriver.Chrome()
 a = ActionChains(driver)
 driver.get("http://localhost:8000/edit-theme")
+sleep(2)
+
 
 driver.find_element(By.NAME, "username").send_keys("admin")
 driver.find_element(By.NAME, "password").send_keys("test123")
 driver.find_element(By.XPATH, "//input[@type='submit']").click()
 sleep(2)
+
 
 date_picker = driver.find_element(by=By.ID, value="date-drop")
 date_picker.click()
@@ -38,10 +42,13 @@ img02_picker = driver.find_element(By.ID, value="img02")
 img02_picker.send_keys("C:\\Users\\Valiant\\Pictures\\Saved Pictures\\WeepingRockZion.jpg")
 
 
-font_picker = driver.find_element(By.ID, value="Modern Prestige Demo")
-font_picker.click()
+font_picker = driver.find_element(By.ID, value="font_selector")
+select_font = Select(font_picker)
+select_font.select_by_value('Modern Prestige Demo')
+sleep(2)
 
 title_picker = driver.find_element(By.ID, value="title")
+title_picker.clear()
 title_picker.click()
 title_picker.send_keys("This is for the testing")
 
