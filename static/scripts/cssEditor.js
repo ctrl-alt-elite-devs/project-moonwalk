@@ -22,7 +22,7 @@ var colorValue = document.getElementById('color-hex');
 var title = document.getElementById('title');
 var titleValue = document.getElementById('drop-title');
 var titleWeight = document.querySelectorAll('input[name="weight"]');
-var fonts = document.getElementById("font_selector");
+var fontStyle = document.getElementById("font_selector");
 var fontColor = document.getElementById('color_font');
 var borderThickness = document.getElementById('border');
 var borderColor = document.getElementById('color_border');
