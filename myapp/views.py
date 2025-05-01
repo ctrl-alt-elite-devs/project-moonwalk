@@ -103,20 +103,27 @@ def total_time(request):
     return render(request, 'home.html', 'cart.html', context)
 
 def shop(request, foo=None):
-    # If a category is provided (foo), filter by category, else show all products
     latest_entry = Theme.objects.latest('timeStamp')
+    categories = Category.objects.all()
+
+    # Get search query
+    search_query = request.GET.get('q', '')
+
     if foo:
         foo = foo.replace('-', ' ')
         try:
             category = Category.objects.get(name=foo)
-            products = Product.objects.filter(category=category,  quantity__gt=0)
+            products = Product.objects.filter(category=category, quantity__gt=0)
         except Category.DoesNotExist:
             messages.success(request, ("Category Doesn't Exist!"))
             return redirect('shop')
     else:
-        # No category, show all products
         products = Product.objects.filter(quantity__gt=0)
-        category = None  # No category selected
+        category = None
+
+    # Apply search filter if query exists
+    if search_query:
+        products = products.filter(name__icontains=search_query)
 
     context = {
         'dropDate': latest_entry.dropDate,
@@ -130,12 +137,12 @@ def shop(request, foo=None):
         'fontWeight': latest_entry.fontWeight,
         'fontBorderThickness': latest_entry.fontBorderThickness,
         'borderColor': latest_entry.borderColor,
-        'products': products, 
-        'category': category, 
-        'categories': category
+        'products': products,
+        'category': category,
+        'categories': categories,
+        'search_query': search_query  # pass it back to the template
     }
 
-    categories = Category.objects.all()  # Pass all categories to the template
     return render(request, 'shop.html', context)
 
 def about(request):
