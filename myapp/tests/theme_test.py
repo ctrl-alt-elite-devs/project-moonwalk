@@ -13,6 +13,11 @@ driver = webdriver.Chrome()
 a = ActionChains(driver)
 driver.get("http://localhost:8000/edit-theme")
 
+driver.find_element(By.NAME, "username").send_keys("admin")
+driver.find_element(By.NAME, "password").send_keys("test123")
+driver.find_element(By.XPATH, "//input[@type='submit']").click()
+sleep(2)
+
 date_picker = driver.find_element(by=By.ID, value="date-drop")
 date_picker.click()
 
