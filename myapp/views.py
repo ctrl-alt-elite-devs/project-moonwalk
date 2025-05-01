@@ -240,26 +240,20 @@ def submit_theme(request):
 
 
 def cart(request):
-    #mock items
-        # Current date is hard coded
-    date = "2024-12-06 00:00:00"
-    today = datetime.datetime.now()
-    # Specify the date format being provided
-    countdown_date = datetime.datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
-
-    # Calculate the time to the specified date from when the web is loaded
-    total_time = countdown_date - today
-    # Convert the total time to seconds
-    total_time = total_time.total_seconds()
-
     if request.user.is_authenticated:
-        cart_items = Cart.objects.filter(customer = Customer.objects.filter(user=request.user).first())
+        customer = Customer.objects.filter(user=request.user).first()
+        cart_items = Cart.objects.filter(customer=customer)
     else:
-        cart_items = Cart.objects.filter(session_key=request.session.session_key)
+        session_key = request.session.session_key
+        if not session_key:
+            request.session.create()
+            session_key = request.session.session_key
+        cart_items = Cart.objects.filter(session_key=session_key)
 
     total_price = sum(item.product.price * item.quantity for item in cart_items)
-    tax_amount = float(total_price) * 0.0725
-    tax_total = float(total_price) + tax_amount
+    tax_amount = total_price * Decimal("0.0725")
+    tax_total = total_price + tax_amount
+
     latest_entry = Theme.objects.latest('timeStamp')
     context = {
         'dropDate': latest_entry.dropDate,
@@ -274,32 +268,48 @@ def cart(request):
         'fontBorderThickness': latest_entry.fontBorderThickness,
         'borderColor': latest_entry.borderColor,
         'cart_items': cart_items,
-        'total_price': total_price, 
-        'tax_amount': tax_amount, 
+        'total_price': total_price,
+        'tax_amount': tax_amount,
         'tax_total': tax_total
     }
 
-    # Render the cart page with items and total and timer count down
     return render(request, 'cart.html', context)
 
+@require_POST
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-    quantity = int(request.POST.get("quantity", 1))  # default to 1 if not passed
+    quantity = int(request.POST.get("quantity", 1))
 
     if request.user.is_authenticated:
         customer, _ = Customer.objects.get_or_create(user=request.user)
-        cart_item, created = Cart.objects.get_or_create(customer=customer, product=product)
+        cart_item, created = Cart.objects.get_or_create(
+            customer=customer,
+            product=product
+        )
     else:
-        session_key = request.session.session_key or request.session.create()
-        cart_item, created = Cart.objects.get_or_create(session_key=request.session.session_key, product=product)
+        # Ensure session key exists
+        session_key = request.session.session_key
+        if not session_key:
+            request.session.create()
+            session_key = request.session.session_key
 
+        cart_item, created = Cart.objects.get_or_create(
+            session_key=session_key,
+            product=product
+        )
+
+    # Update quantity
     if not created:
         cart_item.quantity += quantity
     else:
         cart_item.quantity = quantity
     cart_item.save()
 
-    cart_items = Cart.objects.filter(customer=customer) if request.user.is_authenticated else Cart.objects.filter(session_key=request.session.session_key)
+    # Get cart items for this user/session only
+    if request.user.is_authenticated:
+        cart_items = Cart.objects.filter(customer=request.user.customer)
+    else:
+        cart_items = Cart.objects.filter(session_key=session_key)
 
     return JsonResponse({
         'message': 'Product added to cart successfully!',
@@ -345,16 +355,26 @@ def remove_from_cart(request, cart_item_id):
 
 def merge_cart(sender, request, user, **kwargs):
     session_key = request.session.session_key
+    if not session_key:
+        return
+
     session_cart = Cart.objects.filter(session_key=session_key)
-    customer_cart = Cart.objects.filter(customer = Customer.objects.filter(user=request.user).first())
+    customer = Customer.objects.filter(user=user).first()
+    if not customer:
+        customer = Customer.objects.create(user=user)
 
     for item in session_cart:
         cart_item, created = Cart.objects.get_or_create(
-            customer = Customer.objects.filter(user=request.user).first(), product=item.product,
+            customer=customer,
+            product=item.product
         )
         if not created:
-            cart_item.save()
+            cart_item.quantity += item.quantity
+        cart_item.save()
         item.delete()
+
+    # Optional: mark merge complete
+    request.session["merged_cart"] = True
 
 def googleCalendar(request):
     iframe_code = '''
