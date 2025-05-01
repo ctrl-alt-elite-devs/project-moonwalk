@@ -12,7 +12,7 @@ from time import sleep
 
 driver = webdriver.Chrome()
 a = ActionChains(driver)
-driver.get("http://localhost:8000/edit-theme")
+driver.get("https://moonwalkthreads.com/edit-theme")
 sleep(2)
 
 
@@ -74,7 +74,7 @@ submit_button = driver.find_element(By.ID, value="done")
 submit_button.click()
 sleep(10)
 
-driver.get("http://localhost:8000")
+driver.get("https://moonwalkthreads.com")
 
 assert "This is for the testing" in driver.find_element(By.ID, value="drop_title").text
 print("Style successfuly changed and updated")
