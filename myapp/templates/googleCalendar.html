@@ -71,8 +71,10 @@
     /* Adjust view for desktop size */
     @media (min-width: 1024px) {
         iframe {
-            width: 90%;
-            height: 625px;
+            width: 100%;
+            max-width: 1000px;
+            aspect-ratio: 16 / 9;
+            border: none;
         }
         .c {
             margin: 0px;
