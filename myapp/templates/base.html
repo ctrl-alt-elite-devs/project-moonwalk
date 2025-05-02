@@ -66,6 +66,7 @@
             ✅ Item added to cart!
         </div>
 <body>
+<div class="wrapper">
     <header>
         <div class="brand-header">
             <a href="{% url 'home' %}"><img src="{% static 'images/logo.png' %}" alt="MoonWalk Threads Logo" class="brand-logo"></a>
@@ -78,6 +79,7 @@
             <li><a href="{% url 'shop' %}">Shop</a></li>
             <li><a href="{% url 'about' %}">About</a></li>
             <li><a href="{% url 'contact' %}">Contact</a></li>
+            <li><a href="{% url 'googleCalendar' %}">Events</a></li>
         </ul>
         <div class="toggle_btn">
             <i class="fa-solid fa-bars"></i>
@@ -373,7 +375,7 @@
 
     {% block content %}
     {% endblock %}
-
+</div>
     <footer>
         <p id="footer-header">SIGN UP FOR MORE</p>
         <label for="phoneNum"></label>
