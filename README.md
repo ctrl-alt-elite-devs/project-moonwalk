@@ -132,52 +132,9 @@ You can get the commit hashes from github's tracking system
 
 ![image](https://github.com/user-attachments/assets/9735b085-cd8b-4829-a7fb-260fb5d25627)
 
-# Tentative Timeline
-Sprint 5
+# Testing
+Tests located myapp/tests. Tests were done via Selenium and Chrome and Firefox web drivers. Run any of the test files in order to execute a test
 
-* Have the UI look presentable on mobile and web view.
+# Deployment
 
-* Readjust the UI to make sure the same components have the same style, to have consistency.
-
-* Finish the shipping and payment front end.
-
-* Start the shipping and payment back end. 
-
-* Finish the detailed view of the product details.
-
-* Decide if we want to use Google Calendar or database for events and get started on the backend. 
-
-* Finalization on the cart. 
-
-Sprint 6
-
-* Begin on admin view. 
-
-* Manage product
-
-* Manage orders
-
-* Manage customers
-
-* Implement the search bar to browse and search for products.
-
-* Create a user profile.
-
-* Implement order confirmation and tracking with Square. 
-
-* Implement discounts codes and view promotions. 
-
-* Implement SEO.
-
-Sprint 7
-
-* Testing
-
-Sprint 8
-
-* Testing
-
-Sprint 9
-
-* Testing
 
