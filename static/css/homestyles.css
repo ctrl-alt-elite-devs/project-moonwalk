@@ -168,6 +168,7 @@ body {
     -webkit-text-stroke-color: var(--font_border_color);
     -webkit-text-stroke-width: calc(var(--font_border_thickness) * 1px);
     transform: translateY(-20px);
+    padding-top: 8px;
 }
 
 /* Countdown container */
@@ -176,6 +177,7 @@ body {
     flex-direction: column; /* Align time units in a row */
     align-items: center;
     transform: translateY(5px);
+    padding-top: 10px;
 }
 
 /* Container for each time unit */
@@ -256,9 +258,10 @@ body {
     display: flex;
     justify-content: space-between;
     background-color: var(--background_color);
-    font-family: 'Cobito', monospace;
+    font-family: "Roboto", sans-serif;
     align-items: center;
     position: relative;
+    font-weight: bold;
 }
 
 .navbar .links {
