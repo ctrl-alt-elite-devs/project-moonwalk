@@ -8,6 +8,10 @@
     --button-hover-color: var(--background_color);
 }
 
+.shop_title{
+    text-align: center;
+}
+
 /* Ensure Search Bar & Buttons Are Side by Side */
 .shop-search-filter {
     display: flex;
