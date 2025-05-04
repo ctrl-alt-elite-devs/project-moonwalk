@@ -136,5 +136,43 @@ You can get the commit hashes from github's tracking system
 Tests located myapp/tests. Tests were done via Selenium and Chrome and Firefox web drivers. Run any of the test files in order to execute a test
 
 # Deployment
+The Moonwalk Threads website is deployed on an Ubuntu server hosted on AWS Lightsail. The production stack uses Gunicorn as the WSGI server and Nginx as a reverse proxy to serve the Django application.
 
+Code updates are automatically triggered via a GitHub webhook connected to the main branch. When a new commit is pushed, the webhook notifies the server to update the project.
 
+If needed, you can also manually pull and apply updates by following these steps:
+
+1. SSH into the Server
+    You can connect in two ways:
+        -From your local terminal:
+           `ssh -i your-key.pem ubuntu@your-server-ip`
+        -Alternatively, use the built-in SSH terminal from the AWS Lightsail Console:
+           -Go to your instance
+           -Click "Connect using SSH"
+   
+2. Navigate to the Project Directory
+   `cd ~/project_moonwalk/project-moonwalk`
+
+3. Activate the Virtual Environment
+   `source venv/bin/activate`
+
+4. Pull the Latest Code from GitHub (Manual Method)
+   `git pull origin main`
+   
+6. Install Dependencies
+   `pip install -r requirements.txt`
+   
+7. Apply Database Migrations
+   `python manage.py migrate`
+   
+8. Collect Static Files
+   `python manage.py collectstatic`
+
+9. Restart Gunicorn and Nginx
+   `sudo systemctl restart gunicorn`
+   `sudo systemctl restart nginx`
+
+# SSL and HTTPS
+Certbot is used to register SSL Certificate for our domain and is set to auto-renew the certificate annually.
+To test that Certbot is properly setup to suto-renew still you can run the following command in a terminal connected to the server:
+    `sudo certbot renew --dry-run`
