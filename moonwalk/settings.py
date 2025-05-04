@@ -31,7 +31,9 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG')
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(' ')
+ALLOWED_HOSTS = ['moonwalkthreads.com', 'www.moonwalkthreads.com', '52.200.55.243']
+if DEBUG:
+    ALLOWED_HOSTS += ['127.0.0.1', 'localhost']
 
 # Application definition
 
