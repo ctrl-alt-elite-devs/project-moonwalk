@@ -1,14 +1,14 @@
 # project-moonwalk
 
 Contributors:
-* Ren Dhadda
-* Sunshine Xiong
-* Aye Myat Noe Khin
-* Andrew Lawson
-* Paul Arnett
-* Julian Bucio
-* Tyler Judt-Martine
-* Nazar Potapchuk
+* Ren Dhadda (sdhadda@csus.edu)
+* Sunshine Xiong (sunshinehxiong@csus.edu)
+* Aye Myat Noe Khin (ayemyatnoekhin@csus.edu)
+* Andrew Lawson (andrewlawson@csus.edu)
+* Paul Arnett (parnett@csus.edu)
+* Julian Bucio (julianbucio@csus.edu)
+* Tyler Judt-Martine (julianbucio@csus.edu)
+* Nazar Potapchuk (npotapchuk@csus.edu)
 
 ![image](https://github.com/ctrl-alt-elite-devs/project-moonwalk/blob/main/static/images/logo_white_bg.png))
 
