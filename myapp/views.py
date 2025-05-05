@@ -947,7 +947,17 @@ def login_user(request):
             messages.success(request, f"Welcome back, {user.first_name}!")
             return redirect('home')
         else:
+            
             latest_entry = Theme.objects.latest('timeStamp')
+            date = datetime.datetime.strptime(str(latest_entry.dropDate), "%Y-%m-%d")
+            today = datetime.datetime.now()
+            timestamp_date = date.timestamp()
+            timestamp_today = today.timestamp()
+            # Specify the date format being provided
+            #countdown_date = datetime.datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
+
+            # Calculate the time to the specified date from when the web is loaded
+            total_time = timestamp_date - timestamp_today
             context = {
                 'dropDate': latest_entry.dropDate,
                 'backgroundColor': latest_entry.backgroundColor,
@@ -960,6 +970,7 @@ def login_user(request):
                 'fontWeight': latest_entry.fontWeight,
                 'fontBorderThickness': latest_entry.fontBorderThickness,
                 'borderColor': latest_entry.borderColor,
+                'total_time': total_time,
                 "login_error": "Incorrect email or password"
             }
             return render(request, 'home.html', context)
