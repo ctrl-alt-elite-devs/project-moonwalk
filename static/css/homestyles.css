@@ -143,6 +143,7 @@ body {
 
 .img_banner img {
     width: 100%;
+    max-width: 33.33%;
     height: auto;
     max-height: 100%;
     object-fit: contain;
