@@ -10,7 +10,7 @@ Contributors:
 * Tyler Judt-Martine (julianbucio@csus.edu)
 * Nazar Potapchuk (npotapchuk@csus.edu)
 
-![image](https://github.com/ctrl-alt-elite-devs/project-moonwalk/blob/main/static/images/logo_white_bg.png))
+![image](https://github.com/ctrl-alt-elite-devs/project-moonwalk/blob/main/static/images/logo_white_bg.png)
 
 This is the repository for Moonwalk Threads vintage clothing store website built with Django, showcasing a collection of curated, high-quality vintage apparel. The website provides an e-commerce platform where users can browse, view, and purchase unique, one-of-a-kind clothing items from various eras.
 
@@ -128,7 +128,19 @@ You can get the commit hashes from github's tracking system
 ![figmaPrototype-min](https://github.com/user-attachments/assets/d35413ee-6d58-40a3-aadb-1eb9f3c363c8)
 
 # Product
-![demoWebsite-min](https://github.com/user-attachments/assets/83cc6900-0a6c-491a-bf6a-f1795368dede)
+![image](https://github.com/ctrl-alt-elite-devs/project-moonwalk/blob/main/static/images/website1.png)
+![image](https://github.com/ctrl-alt-elite-devs/project-moonwalk/blob/main/static/images/website2.png)
+Figure 1: Home Page
+Figure 2: Calendar Page: That displays the Moonwalk Thread events taking place that month.
+Figure 3: Instagram Pop Up & Events (on the Homepage): An Instagram preview of Moonwalk Thread's Instagram account. Events section that displays the 4 upcoming events (if any).
+Figure 4: Log-In/Sign-Up Pop Up
+Figure 5: User Profile Page: That displays the user profile information, purchase history, and ability to edit address, change password, and log out.
+Figure 6: Shop Page
+Figure 7: Product Details
+Figure 8: Cart page
+Figure 9: Checkout Page: That allows the user to choose between shipping or pickup. 
+Figure 10: About Page
+Figure 11: Contact Page
 
 # ER Diagram
 
