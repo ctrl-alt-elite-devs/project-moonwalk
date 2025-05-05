@@ -10,7 +10,7 @@ Contributors:
 * Tyler Judt-Martine
 * Nazar Potapchuk
 
-![image](https://github.com/ctrl-alt-elite-devs/project-moonwalk/blob/main/static/images/logo.png)
+![image](https://github.com/ctrl-alt-elite-devs/project-moonwalk/blob/main/static/images/logo_white_bg.png))
 
 This is the repository for Moonwalk Threads vintage clothing store website built with Django, showcasing a collection of curated, high-quality vintage apparel. The website provides an e-commerce platform where users can browse, view, and purchase unique, one-of-a-kind clothing items from various eras.
 
