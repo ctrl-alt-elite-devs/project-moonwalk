@@ -131,15 +131,25 @@ You can get the commit hashes from github's tracking system
 ![image](https://github.com/ctrl-alt-elite-devs/project-moonwalk/blob/main/static/images/website1.png)
 ![image](https://github.com/ctrl-alt-elite-devs/project-moonwalk/blob/main/static/images/website2.png)
 Figure 1: Home Page
+
 Figure 2: Calendar Page: That displays the Moonwalk Thread events taking place that month.
+
 Figure 3: Instagram Pop Up & Events (on the Homepage): An Instagram preview of Moonwalk Thread's Instagram account. Events section that displays the 4 upcoming events (if any).
+
 Figure 4: Log-In/Sign-Up Pop Up
+
 Figure 5: User Profile Page: That displays the user profile information, purchase history, and ability to edit address, change password, and log out.
+
 Figure 6: Shop Page
+
 Figure 7: Product Details
+
 Figure 8: Cart page
+
 Figure 9: Checkout Page: That allows the user to choose between shipping or pickup. 
+
 Figure 10: About Page
+
 Figure 11: Contact Page
 
 # ER Diagram
