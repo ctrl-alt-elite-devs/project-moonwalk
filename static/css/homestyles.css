@@ -136,17 +136,14 @@ body {
 .img_banner {
     display: flex;
     justify-content: center;
-    align-items: center;
     overflow: hidden;
-    max-height: 600px;
 }
 
 .img_banner img {
     width: 100%;
     max-width: 33.33%;
     height: auto;
-    max-height: 100%;
-    object-fit: contain;
+    object-fit: cover;
     flex: 1;
 }
 
