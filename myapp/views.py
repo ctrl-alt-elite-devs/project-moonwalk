@@ -218,35 +218,20 @@ def submit_theme(request):
         fontBorderThickness = request.POST.get("fontBorderThickness")
         borderColor = request.POST.get("borderColor")
 
-        if Theme.objects.get(dropTitle=dropTitle):
-            obj = Theme.objects.get(dropTitle=dropTtile)
-            obj.dropDate = dropDate
-            obj.backgroundColor = backgroundColor
-            obj.bannerImg00 = bannerImg00
-            obj.bannerImg01 = bannerImg01
-            obj.bannerImg02 = bannerImg02
-            obj.fontStyle = fontStyle
-            obj.dropTitle = dropTitle
-            obj.fontColor = fontColor
-            obj.fontWeight = fontWeight
-            obj.fontBorderThickness = fontBorderThickness
-            obj.borderColor = borderColor
-            obj.save()
-
-        else:
-            new_theme = Theme(dropDate = dropDate, 
-                          backgroundColor = backgroundColor, 
-                          bannerImg00 = bannerImg00, 
-                          bannerImg01 = bannerImg01,
-                          bannerImg02 = bannerImg02,
-                          fontStyle = fontStyle,
-                          dropTitle = dropTitle,
-                          fontColor = fontColor,
-                          fontWeight = fontWeight,
-                          fontBorderThickness = fontBorderThickness,
-                          borderColor = borderColor)
+       
+        new_theme = Theme(dropDate = dropDate, 
+                        backgroundColor = backgroundColor, 
+                        bannerImg00 = bannerImg00, 
+                        bannerImg01 = bannerImg01,
+                        bannerImg02 = bannerImg02,
+                        fontStyle = fontStyle,
+                        dropTitle = dropTitle,
+                        fontColor = fontColor,
+                        fontWeight = fontWeight,
+                        fontBorderThickness = fontBorderThickness,
+                        borderColor = borderColor)
         
-            new_theme.save()
+        new_theme.save()
 
         
         return JsonResponse({"message": "Theme saved successfully"})
