@@ -136,15 +136,18 @@ class CheckoutInformation(models.Model):
     phoneNumber = models.CharField(max_length=10)
 
 class Theme(models.Model):
-    timeStamp = models.DateTimeField(auto_now=True)
-    backgroundColor = models.CharField(max_length=7)
+    timeStamp = models.DateTimeField(auto_now=True, null=False, blank=False)
+    backgroundColor = models.CharField(max_length=7, null=False, blank=False)
     dropDate = models.DateField()
-    bannerImg00 = models.ImageField(storage=S3Boto3Storage(), upload_to='theme_img00/')
-    bannerImg01 = models.ImageField(storage=S3Boto3Storage(), upload_to='theme_img01/')
-    bannerImg02 = models.ImageField(storage=S3Boto3Storage(), upload_to='theme_img02/')
-    fontStyle = models.CharField(max_length=100)
-    dropTitle = models.CharField(max_length=30)
-    fontColor = models.CharField(max_length=7)
-    fontWeight = models.CharField(max_length=6)
-    fontBorderThickness = models.DecimalField(default=0, decimal_places=2, max_digits=3)
-    borderColor = models.CharField(max_length=7)
+    bannerImg00 = models.ImageField(storage=S3Boto3Storage(), upload_to='theme_img00/', null=False, blank=False)
+    bannerImg01 = models.ImageField(storage=S3Boto3Storage(), upload_to='theme_img01/', null=False, blank=False)
+    bannerImg02 = models.ImageField(storage=S3Boto3Storage(), upload_to='theme_img02/', null=False, blank=False)
+    fontStyle = models.CharField(max_length=100, null=False, blank=False)
+    dropTitle = models.CharField(max_length=30, null=False, blank=False)
+    fontColor = models.CharField(max_length=7, null=False, blank=False)
+    fontWeight = models.CharField(max_length=6, null=False, blank=False)
+    fontBorderThickness = models.DecimalField(default=0, decimal_places=2, max_digits=3, null=False, blank=False)
+    borderColor = models.CharField(max_length=7, null=False, blank=False)
+
+    def __str__(self):
+        return self.dropTitle
