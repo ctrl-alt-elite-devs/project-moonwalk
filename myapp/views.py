@@ -549,7 +549,7 @@ def productDetails(request,pk):
 def paymentPortal(request):
     request.session['from_paymentPortal'] = True
     
-    square_app_id = 'sandbox-sq0idb-8IPgsCCDGo1xxuoCMh0SSQ'
+    square_app_id = 'sq0idp-TiOAyqoqPdTwATdqAnXnKg'
     square_location_id = 'LNG128XEAPR21'
 
     if request.user.is_authenticated:
@@ -905,7 +905,7 @@ def process_payment(request):
 def checkout(request):
     request.session['from_checkout'] = True
 
-    square_app_id = 'sandbox-sq0idb-8IPgsCCDGo1xxuoCMh0SSQ'
+    square_app_id = 'sq0idp-TiOAyqoqPdTwATdqAnXnKg'
     square_location_id = 'LNG128XEAPR21'
 
     if request.user.is_authenticated:
